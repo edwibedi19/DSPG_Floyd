@@ -1,0 +1,123 @@
+---
+title: "precipation-streams-wells"
+author: "Rebstock"
+date: "6/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+##streams 
+library(tidyverse)
+library(readxl)
+library(x12)
+```
+
+
+```{r}
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sp)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+```
+
+```{r}
+
+
+locations_features_floyd_county <- read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/locations-features-floyd-county.xlsx")
+
+colnames(locations_features_floyd_county) <- locations_features_floyd_county[1,]
+
+locations_features_floyd_county <- data.frame(locations_features_floyd_county[-c(1, 10,15:19),-c(2,4,6,8,10,11)])
+
+locations_features_floyd_county
+
+
+locations_features_floyd <- locations_features_floyd_county%>% 
+  mutate(Latitude1 = str_replace_all(Latitude, "°", ""), Longitude1 = str_replace_all(Longitude, "°", "")
+) %>%
+  select(Feature.Name,Type,Latitude1, Longitude1)
+
+
+locations_features_floyd <- locations_features_floyd%>% 
+  mutate(Latitude = str_replace_all(Latitude1, "N", ""), Longitude = str_replace_all(Longitude1, "W", "")
+) %>%
+  select(Feature.Name,Type,Latitude, Longitude)
+
+locations_features_floyd$Latitude <- as.numeric(locations_features_floyd$Latitude) 
+locations_features_floyd$Longitude <- as.numeric(locations_features_floyd$Longitude) 
+
+locations_features_floyd 
+
+
+
+##m <- ggplot(data = world) +
+    geom_sf() +
+    geom_point(data = locations_features_floyd_county, aes(x = Longitude, y = Latitude), size = 4, 
+        shape = 23, fill = "darkred") +
+    coord_sf(xlim = c(-85, -78), ylim = c(30, 40), expand = FALSE)
+
+
+
+```
+
+
+```{r}
+
+##wells
+NRV_wells_floyd_county_2011 <- t(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/NRV-wells-floyd-county-2011.xlsx")) 
+
+NRV_wells_floyd_county_2011
+
+
+```
+
+
+
+```{r}
+
+##precipation 
+rainfall_temp_roanke_monthly <- read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/rainfall-temp-roanke-monthly.xlsx")
+
+
+rainfall_temp_roanke_monthly
+
+r <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Average_Rainfall)) +
+  geom_line() + 
+  geom_point() + 
+  scale_x_discrete(limits = month.abb) + 
+  labs(x = "Month", 
+       y = "Rainfall (in)", 
+       title = "2017 Average Rainfall in Roanke, VA",
+       caption = "Data Source: Underground Weather")
+r
+
+t <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Average_Temp)) +
+  geom_line() + 
+  geom_point() + 
+  scale_x_discrete(limits = month.abb) + 
+  labs(x = "Month", 
+       y = "Temperatures (F)", 
+       title = "2017 Average Rainfall in Roanke, VA",
+       caption = "Data Source: Underground Weather")
+
+t
+
+w <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Wind_Max)) +
+  geom_line() + 
+  geom_point() + 
+  scale_x_discrete(limits = month.abb) + 
+  labs(x = "Month", 
+       y = "Wind Speed", 
+       title = "2017 Wind Max in Roanke, VA",
+       caption = "Data Source: Underground Weather")
+w
+
+```
+
