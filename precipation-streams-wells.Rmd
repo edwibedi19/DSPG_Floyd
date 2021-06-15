@@ -101,7 +101,6 @@ climate <- data.frame(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County
 View(climate)
 
 
-
 gc <- ggplot(climate, aes(x = Month, y = Rainfall)) +
   geom_col() + 
   scale_x_discrete(limits = month.abb) +
