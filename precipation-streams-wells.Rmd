@@ -10,35 +10,39 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r}
+```{r, include=FALSE, echo=FALSE}
 ##streams 
+
 library(tidyverse)
 library(readxl)
 library(x12)
+
 ```
 
 
-```{r}
+```{r,  include=FALSE, echo=FALSE}
 library(rnaturalearth)
 library(rnaturalearthdata)
-library(sp)
-world <- ne_countries(scale = "medium", returnclass = "sf")
-class(world)
+
+library(maps) 
+library(dplyr) 
+library(ggplot2)
 
 ```
 
 ```{r}
 
-
+## pulling in data 
 locations_features_floyd_county <- read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/locations-features-floyd-county.xlsx")
-
+## chaning column names 
 colnames(locations_features_floyd_county) <- locations_features_floyd_county[1,]
+
+## only want certain columns and rows 
 
 locations_features_floyd_county <- data.frame(locations_features_floyd_county[-c(1, 10,15:19),-c(2,4,6,8,10,11)])
 
-locations_features_floyd_county
 
-
+## replacing the degree sign and N and W 
 locations_features_floyd <- locations_features_floyd_county%>% 
   mutate(Latitude1 = str_replace_all(Latitude, "°", ""), Longitude1 = str_replace_all(Longitude, "°", "")
 ) %>%
@@ -50,20 +54,30 @@ locations_features_floyd <- locations_features_floyd%>%
 ) %>%
   select(Feature.Name,Type,Latitude, Longitude)
 
+## need to change the Longitude and Latitude columns to numeric 
 locations_features_floyd$Latitude <- as.numeric(locations_features_floyd$Latitude) 
 locations_features_floyd$Longitude <- as.numeric(locations_features_floyd$Longitude) 
 
-locations_features_floyd 
+## need to multiply the Longitude by -1 since it is W 
+locations_features_floyd <- locations_features_floyd%>% 
+  mutate(Longitude1 = -1*Longitude
+) %>%
+  select(Feature.Name,Type, Latitude, Longitude1)
 
 
+locations_features_floyd
 
-##m <- ggplot(data = world) +
-    geom_sf() +
-    geom_point(data = locations_features_floyd_county, aes(x = Longitude, y = Latitude), size = 4, 
-        shape = 23, fill = "darkred") +
-    coord_sf(xlim = c(-85, -78), ylim = c(30, 40), expand = FALSE)
+## creating map 
+MainStates <- map_data("state")
+states <- ggplot() + 
+  geom_polygon( data=MainStates, aes(x=long, y=lat, group=group),
+                color="black", fill="lightblue" )
 
+states <- states + geom_point(data=locations_features_floyd, aes(x=Longitude1, y=Latitude), color = "gold", alpha = .5)
 
+states <- states + coord_cartesian(xlim=c(-80.5, -80), ylim = c(36.55, 37.25))
+
+states
 
 ```
 
@@ -71,6 +85,8 @@ locations_features_floyd
 ```{r}
 
 ##wells
+## not sure how to visualize this data 
+
 NRV_wells_floyd_county_2011 <- t(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/NRV-wells-floyd-county-2011.xlsx")) 
 
 NRV_wells_floyd_county_2011
@@ -81,43 +97,40 @@ NRV_wells_floyd_county_2011
 
 
 ```{r}
+climate <- data.frame(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/climate-floyd-county-usClimateData.xlsx")) 
+View(climate)
 
-##precipation 
-rainfall_temp_roanke_monthly <- read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/rainfall-temp-roanke-monthly.xlsx")
 
 
-rainfall_temp_roanke_monthly
-
-r <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Average_Rainfall)) +
-  geom_line() + 
-  geom_point() + 
-  scale_x_discrete(limits = month.abb) + 
+gc <- ggplot(climate, aes(x = Month, y = Rainfall)) +
+  geom_col() + 
+  scale_x_discrete(limits = month.abb) +
   labs(x = "Month", 
        y = "Rainfall (in)", 
-       title = "2017 Average Rainfall in Roanke, VA",
-       caption = "Data Source: Underground Weather")
-r
+       title = "1981-2010 Average Rainfall in Floyd County",
+       caption = "Data Source: US Climate Data") 
 
-t <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Average_Temp)) +
-  geom_line() + 
-  geom_point() + 
-  scale_x_discrete(limits = month.abb) + 
-  labs(x = "Month", 
-       y = "Temperatures (F)", 
-       title = "2017 Average Rainfall in Roanke, VA",
-       caption = "Data Source: Underground Weather")
 
-t
+rainfall <- ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  scale_x_discrete(limits = month.abb)
 
-w <- ggplot(rainfall_temp_roanke_monthly, aes(x = Month, y = Wind_Max)) +
-  geom_line() + 
-  geom_point() + 
-  scale_x_discrete(limits = month.abb) + 
-  labs(x = "Month", 
-       y = "Wind Speed", 
-       title = "2017 Wind Max in Roanke, VA",
-       caption = "Data Source: Underground Weather")
-w
+
+max_temp <- ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  scale_x_discrete(limits = month.abb)
+
+
+min_temp <- ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  scale_x_discrete(limits = month.abb)
+
+```
+
+
+```{r}
+
+
 
 ```
 
