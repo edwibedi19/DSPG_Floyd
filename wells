@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 22 15:58:41 2021
+
+@author: julierebstock
+"""
+
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+def tif_to_array(image_path):
+    im = Image.open(image_path)
+    imarray = np.array(im)
+    return imarray
+
+array = tif_to_array("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/Domestic_Well_BGM_map_2010 (1)/BGM_map_2010_Floyd.tif")
+
+floyd_array = array[1460:1520, 3700:3770]
+
+# This plots the particular data as a cmesh numpy plot
+def plot_cmap(image, figure=1):
+    image = np.array(image)
+    plt.figure(num=figure, figsize=(12, 10))
+    plt.pcolormesh(image, cmap='nipy_spectral')
+    cbar = plt.colorbar()
+    plt.show()
+
+plot_cmap(floyd_array)

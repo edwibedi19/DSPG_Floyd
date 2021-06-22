@@ -21,12 +21,14 @@ water_df <- fortify(water)
 flo_w <- water_df %>% 
   filter(water_df$long > -80.6 & water_df$long < -80.1
          & water_df$lat < 37.2 & water_df$lat > 36.7) 
+flo_w$group <- 1
 
 ## Forests, lakes, wetlands 
 natural_df <- fortify(natural)
 flo_n <- natural_df %>% 
   filter(natural_df$long > -80.6 & natural_df$long < -80.1 & 
            natural_df$lat < 37.2 & natural_df$lat > 36.7) 
+flo_n$group <- 2 
 
 
 ## simple point plots 
@@ -57,32 +59,38 @@ library(FRK)
 floyd <- left_join(countydata, counties, by = "county_fips") %>% 
   filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
 
-pts <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
+# turning into SpatialPointsDF 
+pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
+pts_n <- SpatialPointsDataFrame(flo_n, coords = flo_n[,1:2]) 
 
-floyd_df1 <- as.data.frame(floyd) 
+floyd_df <- as.data.frame(floyd) 
 
-points_poly <- df_to_SpatialPolygons(floyd_df1, key = "group", coords = c("long","lat"), proj = CRS()) 
+## turning floyd_df into spatialPolygon 
+points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS()) 
 
-# didnt work 
-#new_shape <- over( pts , points_poly , fn = NULL) 
-#new_shape <- point.in.poly(pts, points_poly) 
 
 # this is filtering the points 
-new_shape <- pts[points_poly,]
-new_shape_df <- as.data.frame(new_shape)
+new_shape_w <- pts_w[points_poly,]
+new_shape_df_w <- as.data.frame(new_shape_w)
+
+# this is filtering the points 
+new_shape_n <- pts_n[points_poly,]
+new_shape_df_n <- as.data.frame(new_shape_n)
 
 ## only points within the polygon 
 floyd %>% 
-  ggplot(aes(long, lat, group = group)) +
+  ggplot(aes(long, lat,color = group)) +
   geom_polygon(color = "white", size = 0.05, fill = "light blue") +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   theme(legend.position = "right",
         legend.direction = "vertical", 
         legend.title = element_text(face = "bold", size = 11),
         legend.key.height = unit(.25, "in")) +
-  geom_point(data=new_shape_df, aes(long, lat), inherit.aes = FALSE, alpha = 0.5, size = .5) + 
-  geom_point(data=nhdp_df_f, aes(x=coords.x1, y=coords.x2), inherit.aes = FALSE, alpha = 0.5, size = 1, colour = "red") + 
-  ggtitle("Floyd County Water bodies, Lakes, Ponds, Springs")
+  geom_point(data=new_df, aes(long, lat), inherit.aes = FALSE, alpha = 0.1, size = 2 ) +  
+  geom_point(data=new_shape_df_p, aes(coords.x1, coords.x2), inherit.aes = FALSE, alpha = 0.2, size = 4, color = "red" ) +  
+  scale_color_manual(breaks = c("1", "2"),
+                     values=c("red", "blue"))+ 
+  ggtitle("Floyd County Forests, Water bodies, Lakes, Ponds, Springs")
 
 
 ## just the county outline 
@@ -96,15 +104,21 @@ floyd %>%
         legend.key.height = unit(.25, "in")) +  ggtitle("Floyd County") 
 
 
-
-
 nhdp <- readOGR( 
   dsn= "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/Shape" , 
   layer="NHDPoint"
 )
 
 nhdp_df <- as(nhdp, "data.frame")
-## point map of towns in Virginia  
-nhdp_df_f <- filter(nhdp_df, nhdp_df$coords.x1>-80.8, nhdp_df$coords.x2<37.1, !is.na(nhdp_df$GNIS_Name) )
+pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
 
-nhdp_df_f <- filter(nhdp_df_f, nhdp_df_f$coords.x1 < -79, nhdp_df_f$coords.x2 > 36.7)
+
+## point map of towns in Virginia  
+new_shape_p <- pts_p[points_poly,]
+new_shape_df_p <- as.data.frame(new_shape_p)
+
+new_shape_df_p$group <- 3 
+
+new_df <- rbind(new_shape_df_n, new_shape_df_w) 
+
+
