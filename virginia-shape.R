@@ -80,7 +80,7 @@ map <- ggplot(floyd, aes(long, lat)) +
         legend.key.height = unit(.25, "in")) +
   scale_colour_manual(labels = c("Water bodies", "Forests"), values=c("dark blue","green")) + 
   geom_point(data=new_df, aes(long, lat, color = as.factor(group)), inherit.aes = FALSE, alpha = 0.1, size = 3)  +  
-  labs(title = "Floyd County Land Features",
+  labs(title = "Floyd County Features",
        color = "Features",
        x = "Longitude",
        y = "Latitude")
