@@ -11,18 +11,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, include=FALSE, echo=FALSE}
-##streams 
 
 library(tidyverse)
 library(readxl)
 library(x12)
 
-```
-
-
-```{r,  include=FALSE, echo=FALSE}
-library(rnaturalearth)
-library(rnaturalearthdata)
+library(urbnmapr)
+library(rworldmap)
+library(sp)
+library(sf)
 
 library(maps) 
 library(dplyr) 
@@ -32,7 +29,7 @@ library(ggplot2)
 
 ```{r}
 
-## pulling in data 
+## pulling in data for streams in Floyd 
 locations_features_floyd_county <- read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/locations-features-floyd-county.xlsx")
 ## chaning column names 
 colnames(locations_features_floyd_county) <- locations_features_floyd_county[1,]
@@ -64,20 +61,20 @@ locations_features_floyd <- locations_features_floyd%>%
 ) %>%
   select(Feature.Name,Type, Latitude, Longitude1)
 
+## getting county data for just floyd 
+floyd <- left_join(countydata, counties, by = "county_fips") %>% 
+  filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
 
-locations_features_floyd
-
-## creating map 
-MainStates <- map_data("state")
-states <- ggplot() + 
-  geom_polygon( data=MainStates, aes(x=long, y=lat, group=group),
-                color="black", fill="lightblue" )
-
-states <- states + geom_point(data=locations_features_floyd, aes(x=Longitude1, y=Latitude), color = "gold", alpha = .5)
-
-states <- states + coord_cartesian(xlim=c(-80.5, -80), ylim = c(36.55, 37.25))
-
-states
+## creating map for the streams in Floyd County 
+floyd %>%
+  ggplot(aes(long, lat, group = 1)) +
+  geom_polygon( size = 0.05, fill = "grey") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  geom_point(data=locations_features_floyd, aes(x=Longitude1, y=Latitude), color = "gold", alpha = .2, size = 5) + 
+  theme(legend.position = "right",
+        legend.direction = "vertical", 
+        legend.title = element_text(face = "bold", size = 11),
+        legend.key.height = unit(.25, "in")) +  ggtitle("Floyd County") 
 
 ```
 
@@ -85,51 +82,68 @@ states
 ```{r}
 
 ##wells
-## not sure how to visualize this data 
 
-NRV_wells_floyd_county_2011 <- t(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/NRV-wells-floyd-county-2011.xlsx")) 
+wells <- data.frame(t(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/NRV-wells-floyd-county-2011.xlsx", col_types = "numeric"))  ) 
+colnames(wells) = c("Number_Wells", "Well_Depth", "Casing_Depth" , "Diameter", "Withdrawl_MGD", "Withdrawl_GPD", "Max_MGD", "Max_GPD", "Permitted")
+wells <- wells[-1,]
+wells$Names <- c("Christie", "Shortt", "Howard", "Rec.Park", "Comm. Cntr")
 
-NRV_wells_floyd_county_2011
+wells %>% 
+  ggplot(aes(x = Names, y = Withdrawl_GPD, fill = Names)) + 
+  geom_bar(stat = "identity", position = "dodge")
+
+## above is a bar plot of the daily withdrawals from each well
+wells$Percent <- wells$Withdrawl_GPD/wells$Max_GPD
+
+## plotting the percent usage of each well and the well depth to see if there is a correlation 
+p <- ggplot(wells, aes(x = Names)) + 
+geom_col(aes(y = Percent), fill = "white", color = "red")  + 
+geom_line(aes(y = Well_Depth/1000), color = "blue", size = 1, group = 1) +
+scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  + 
+  ggtitle("Percent of Usage and Well Depth of Wells in Floyd County")
 
 
-```
-
-
+``` 
 
 ```{r}
+
+
 climate <- data.frame(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/climate-floyd-county-usClimateData.xlsx")) 
-View(climate)
 
-
+## Average Rainfall in Floyd 
 gc <- ggplot(climate, aes(x = Month, y = Rainfall)) +
-  geom_col() + 
+  geom_bar(stat = "identity") + 
   scale_x_discrete(limits = month.abb) +
   labs(x = "Month", 
        y = "Rainfall (in)", 
-       title = "1981-2010 Average Rainfall in Floyd County",
-       caption = "Data Source: US Climate Data") 
+       title = "Average Rainfall in Floyd County",
+       caption = "Data Source: US Climate Data",
+       subtitle = "*This data is the average of each month from 1980-2010")
 
 
+## monthly rainfall for 3 surrounding counties 
 rainfall <- ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
   geom_bar(position="dodge", stat="identity") + 
-  scale_x_discrete(limits = month.abb)
+  scale_x_discrete(limits = month.abb)+ 
+  labs(title = "Average Monthly Ranfall from 3 surrounding counties in Virginia",
+       caption = "Data Source: US Climate Data",
+       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on groundwater.")
 
-
+## monthly max temps for 3 surrounding counties 
 max_temp <- ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
   geom_bar(position="dodge", stat="identity") + 
-  scale_x_discrete(limits = month.abb)
+  scale_x_discrete(limits = month.abb) + 
+  labs(title = "Max Tempature from 3 surrounding counties in Virginia",
+       caption = "Data Source: US Climate Data",
+       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater is getting evaporated")
 
-
+## monthly min temps for 3 surrounding counties 
 min_temp <- ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
   geom_bar(position="dodge", stat="identity") + 
-  scale_x_discrete(limits = month.abb)
+  scale_x_discrete(limits = month.abb) +
+   labs(title = "Min Tempature from 3 surrounding counties in Virginia",
+       caption = "Data Source: US Climate Data")
 
 ```
 
-
-```{r}
-
-
-
-```
 

@@ -4,6 +4,13 @@ library(sf)
 library(ggplot2)
 library(dplyr)
 library(lubridate) 
+library(tidyverse)
+library(urbnmapr)
+library(rworldmap)
+library(sp)
+library(sf)
+library(spatialEco)
+library(FRK)
 
 
 water <- readOGR( 
@@ -42,19 +49,6 @@ ggplot(flo_w, aes(x = long, y = lat)) +
   ggtitle("Floyd County Water bodies, Lakes, Ponds")
 
 
-
-
-
-## creating maps 
-library(tidyverse)
-library(urbnmapr)
-library(rworldmap)
-library(sp)
-library(sf)
-library(spatialEco)
-library(FRK)
-
-
 ## getting county data for just floyd 
 floyd <- left_join(countydata, counties, by = "county_fips") %>% 
   filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
@@ -77,20 +71,21 @@ new_shape_df_w <- as.data.frame(new_shape_w)
 new_shape_n <- pts_n[points_poly,]
 new_shape_df_n <- as.data.frame(new_shape_n)
 
-## only points within the polygon 
-floyd %>% 
-  ggplot(aes(long, lat,color = group)) +
-  geom_polygon(color = "white", size = 0.05, fill = "light blue") +
+map <- ggplot(floyd, aes(long, lat)) +
+  geom_polygon(color = "white", size = 0.05, fill = "grey") +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   theme(legend.position = "right",
         legend.direction = "vertical", 
-        legend.title = element_text(face = "bold", size = 11),
+        legend.title = element_text(face = "bold", size = 7),
         legend.key.height = unit(.25, "in")) +
-  geom_point(data=new_df, aes(long, lat), inherit.aes = FALSE, alpha = 0.1, size = 2 ) +  
-  geom_point(data=new_shape_df_p, aes(coords.x1, coords.x2), inherit.aes = FALSE, alpha = 0.2, size = 4, color = "red" ) +  
-  scale_color_manual(breaks = c("1", "2"),
-                     values=c("red", "blue"))+ 
-  ggtitle("Floyd County Forests, Water bodies, Lakes, Ponds, Springs")
+  scale_colour_manual(labels = c("Water bodies", "Forests"), values=c("dark blue","green")) + 
+  geom_point(data=new_df, aes(long, lat, color = as.factor(group)), inherit.aes = FALSE, alpha = 0.1, size = 3)  +  
+  labs(title = "Floyd County Land Features",
+       color = "Features",
+       x = "Longitude",
+       y = "Latitude")
+
+map
 
 
 ## just the county outline 
@@ -112,8 +107,7 @@ nhdp <- readOGR(
 nhdp_df <- as(nhdp, "data.frame")
 pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
 
-
-## point map of towns in Virginia  
+#Springs only 1 in Floyd 
 new_shape_p <- pts_p[points_poly,]
 new_shape_df_p <- as.data.frame(new_shape_p)
 
