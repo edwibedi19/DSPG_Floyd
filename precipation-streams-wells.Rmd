@@ -70,11 +70,15 @@ floyd %>%
   ggplot(aes(long, lat, group = 1)) +
   geom_polygon( size = 0.05, fill = "grey") +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  geom_point(data=locations_features_floyd, aes(x=Longitude1, y=Latitude), color = "gold", alpha = .2, size = 5) + 
-  theme(legend.position = "right",
-        legend.direction = "vertical", 
-        legend.title = element_text(face = "bold", size = 11),
-        legend.key.height = unit(.25, "in")) +  ggtitle("Floyd County") 
+  geom_point(data=locations_features_floyd, aes(x=Longitude1, y=Latitude), color = "gold", alpha = .6, size = 5) + 
+  theme(
+  plot.title = element_text(color = "black", size = 12, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 7),
+  plot.caption = element_text(color = "black", face = "italic", size = 7)
+) + 
+  labs(title = "Streams Located in Floyd County",
+       caption = "Data Source: https://www.topoquest.com/place-detail.php?id=2390186",
+       subtitle = "*Most of these streams flow into the Town of Floyd which is why they are centered around the same area.")
 
 ```
 
@@ -90,7 +94,13 @@ wells$Names <- c("Christie", "Shortt", "Howard", "Rec.Park", "Comm. Cntr")
 
 wells %>% 
   ggplot(aes(x = Names, y = Withdrawl_GPD, fill = Names)) + 
-  geom_bar(stat = "identity", position = "dodge")
+  geom_bar(stat = "identity", position = "dodge")+ 
+  labs(title = "Average Daily Withdrawals of Public Wells", 
+       caption = "Data Source: New River Valley Water Supply Plan 2011", 
+       subtitle = "*Note this data is from 2011 so the average daily withdrawal may be different now. ",
+       x = "Wells",
+       y = "Withdrawal (GPD) ") + theme(legend.position = "none", 
+                                        plot.subtitle = element_text(color = "blue", size = 9), plot.caption = element_text(color = "black", face = "italic", size = 7))
 
 ## above is a bar plot of the daily withdrawals from each well
 wells$Percent <- wells$Withdrawl_GPD/wells$Max_GPD
@@ -100,8 +110,13 @@ p <- ggplot(wells, aes(x = Names)) +
 geom_col(aes(y = Percent), fill = "white", color = "red")  + 
 geom_line(aes(y = Well_Depth/1000), color = "blue", size = 1, group = 1) +
 scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  + 
-  ggtitle("Percent of Usage and Well Depth of Wells in Floyd County")
+  labs(title = "Percent of Usage and Well Depth of Wells in Floyd County",
+       caption = "Data Source: New River Valley Water Supply Plan 2011",
+       subtitle = "*could be a potential correlation of well depth compared to the average daily withdrawal amount",x = "Wells") + theme(plot.subtitle = element_text(color = "blue", size = 7), 
+        plot.caption = element_text(color = "black", face = "italic", size = 7),)
 
+
+p
 
 ``` 
 
@@ -111,15 +126,16 @@ scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))
 climate <- data.frame(read_excel("~/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/climate-floyd-county-usClimateData.xlsx")) 
 
 ## Average Rainfall in Floyd 
-gc <- ggplot(climate, aes(x = Month, y = Rainfall)) +
+gc <- ggplot(climate, aes(x = Month, y = Rainfall, fill = Month)) +
   geom_bar(stat = "identity") + 
   scale_x_discrete(limits = month.abb) +
   labs(x = "Month", 
        y = "Rainfall (in)", 
        title = "Average Rainfall in Floyd County",
        caption = "Data Source: US Climate Data",
-       subtitle = "*This data is the average of each month from 1980-2010")
-
+       subtitle = "*This data is the average of each month from 1980-2010") + theme(legend.position = "none", 
+                                                                                    plot.subtitle = element_text(size = 9, color = "blue"))
+gc
 
 ## monthly rainfall for 3 surrounding counties 
 rainfall <- ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
@@ -127,23 +143,34 @@ rainfall <- ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) +
   scale_x_discrete(limits = month.abb)+ 
   labs(title = "Average Monthly Ranfall from 3 surrounding counties in Virginia",
        caption = "Data Source: US Climate Data",
-       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on groundwater.")
+       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on groundwater.", 
+       y="Rainfall (in)")+ theme( 
+                                                                                    plot.subtitle = element_text(size = 9, color = "blue"))
 
+rainfall
 ## monthly max temps for 3 surrounding counties 
 max_temp <- ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
   geom_bar(position="dodge", stat="identity") + 
   scale_x_discrete(limits = month.abb) + 
-  labs(title = "Max Tempature from 3 surrounding counties in Virginia",
+  labs(title = "Maximum Tempature from 3 surrounding counties in Virginia",
        caption = "Data Source: US Climate Data",
-       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater is getting evaporated")
+       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater is getting evaporated",
+       y = "Temperature (F) ")+ theme( 
+                                                                                    plot.subtitle = element_text(size = 7, color = "blue"))
+
+max_temp
 
 ## monthly min temps for 3 surrounding counties 
 min_temp <- ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
   geom_bar(position="dodge", stat="identity") + 
   scale_x_discrete(limits = month.abb) +
-   labs(title = "Min Tempature from 3 surrounding counties in Virginia",
-       caption = "Data Source: US Climate Data")
+   labs(title = "Minimum Tempature from 3 surrounding counties in Virginia",
+       caption = "Data Source: US Climate Data",
+       subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater freezes and melts during the Winter",
+       y = "Temperature (F)") + theme( 
+                                                                                    plot.subtitle = element_text(size = 6, color = "blue"))
 
+min_temp
 ```
 
 
