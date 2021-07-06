@@ -136,6 +136,13 @@ body <- dashboardBody(
                             solidHeader = TRUE,
                             collapsible = TRUE, 
                             p(), 
+                            selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                "Employment by Industry" = "industry",
+                                "Projected Population Change" = "pop", 
+                                "Population by Age" = "age", 
+                                "Number of Commuters" = "commute", 
+                                "New Business Growth" = "business")
+                            ),
                             plotlyOutput("trend1")
                             
                         ) 
@@ -322,6 +329,18 @@ server <- function(input, output) {
         
         
     })
+    
+    
+    econ1 <- reactive({
+        input$econ1
+    })
+    
+    output$trend1 <- renderPlotly({
+        
+        
+    }) 
+    
+    
 
     
     
