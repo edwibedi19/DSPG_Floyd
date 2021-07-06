@@ -52,6 +52,10 @@ sidebar <- dashboardSidebar(
             text = "Data and Methodology",
             icon = icon("database")) ,
         menuItem(
+            tabName = "economics",
+            text = "Economic and Business Trends",
+            icon = icon("database")) , 
+        menuItem(
             tabName = "wells",
             text = "Well Data",
             icon = icon("database"))
@@ -122,6 +126,21 @@ body <- dashboardBody(
                         ) 
                     ) 
             ),
+            tabItem(tabName = "economics",
+                    fluidRow(
+                        box(
+                            title = "Resident and Commerial Development",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE, 
+                            p(), 
+                            plotlyOutput("trend1")
+                            
+                        ) 
+                    ) 
+            ), 
             tabItem(tabName = "wells",
                     fluidRow(
                         box(
