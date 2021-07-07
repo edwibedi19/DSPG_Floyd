@@ -4,6 +4,8 @@ library(shinydashboard)
 library(leaflet)
 library(plotly)
 library(dplyr)
+library(tidyverse)
+library(tidycensus)
 library(readxl)
 library(urbnmapr)
 library(rworldmap)
@@ -14,42 +16,86 @@ library(FRK)
 library(rgdal)
 
 # data -----------------------------------------------------------
+# Demographics 
+total_pop <- 15074 
+home <- get_acs(geography = "block group", 
+                variables = "B25077_001", 
+                state = "VA",
+                county = "Floyd County",
+                geometry = TRUE)
+
+income <- get_acs(geography = "block group",
+                  variables = "B19013_001",
+                  state = "VA",
+                  county = "Floyd County",
+                  geometry = T) 
+
+age <- get_acs(geography = "block group", 
+               variables = "B01002_001", 
+               state = "VA",
+               county = "Floyd County",
+               geometry = TRUE)
+
+employment_status <- get_acs(geography = "block group",
+                             variables = "B23025_005" ,
+                             state = "VA",
+                             county = "Floyd County",
+                             geometry = TRUE, 
+                             summary_var = "B23025_003")
+
+employment_status <-employment_status %>%
+    mutate(rate = as.numeric(estimate)/as.numeric(summary_est)*100)
+
+education <- get_acs(geography = "block group",
+                     variables = c("B15003_017", "B15003_022","B15003_023","B15003_025"),
+                     state = "VA",
+                     county = "Floyd County",
+                     geometry = TRUE)
+high <- education%>%
+    filter(variable == "B15003_017")
+bach <- education%>%
+    filter(variable == "B15003_022")
+mast <- education%>%
+    filter(variable == "B15003_023")
+doct <- education%>%
+    filter(variable == "B15003_025")
+
+
 # County
-floyd <- left_join(countydata, counties, by = "county_fips") %>% 
-    filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
-floyd_df <- as.data.frame(floyd) 
+floyd <- left_join(countydata, counties, by = "county_fips" , copy =T) %>%
+    filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County"))
+
+floyd_df <- as.data.frame(floyd)
 points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS())
-# Streams 
+# Streams
 water <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/virginia_water/virginia_water.shp")
 water_df <- fortify(water)
-flo_w <- water_df %>% 
+flo_w <- water_df %>%
     filter(water_df$long > -80.6 & water_df$long < -80.1
-           & water_df$lat < 37.2 & water_df$lat > 36.7) 
-flo_w$group <- 1 
-pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
+           & water_df$lat < 37.2 & water_df$lat > 36.7)
+flo_w$group <- 1
+pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2])
 
 new_shape_w <- pts_w[points_poly,]
 new_shape_df_w <- as.data.frame(new_shape_w)
-# Springs 
+# Springs
 nhdp <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/NHDPoint.shp")
 nhdp_df <- as(nhdp, "data.frame")
-pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
+pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11])
 new_shape_p <- pts_p[points_poly,]
 new_shape_df_p <- as.data.frame(new_shape_p)
 
 names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
 data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
-springs <- t(data.frame(data)) 
+springs <- t(data.frame(data))
 colnames(springs) <- names
 water_springs <- rbind(new_shape_df_w, springs) %>%
     select(long, lat, group)
 water_springs <- water_springs %>%
-    mutate(feature = case_when(group == 1 ~ 'Water Body', 
+    mutate(feature = case_when(group == 1 ~ 'Water Body',
                                group == 3 ~ 'Spring'
     ))
-
-
-
+# rainfall and temperatures 
 climate <- data.frame(read_excel(paste0(getwd(),"/data/climate-floyd-county-usClimateData.xlsx"))) 
 wells <- data.frame(t(read_excel(paste0(getwd(),"/data/NRV-wells-floyd-county-2011.xlsx"), col_types = "numeric")))  
 
@@ -103,19 +149,27 @@ sidebar <- dashboardSidebar(
         menuItem(
             tabName = "intro",
             text = "Introduction to Floyd County",
-            icon = icon("database")) ,
+            icon = icon("leaf")) ,
         menuItem(
             tabName = "data",
             text = "Data and Methodology",
-            icon = icon("database")) ,
+            icon = icon("server")) ,
         menuItem(
             tabName = "economics",
             text = "Economic and Business Trends",
-            icon = icon("database")) , 
+            icon = icon("server")) , 
         menuItem(
             tabName = "wells",
             text = "Well Data",
-            icon = icon("database"))
+            icon = icon("database")), 
+        menuItem(
+            tabName = "findings",
+            text = "Conclusion",
+            icon = icon("check-double")),
+        menuItem(
+            tabName = "team",
+            text = "Team",
+            icon = icon("users"))
     ) 
 ) 
 
@@ -136,7 +190,7 @@ body <- dashboardBody(
                             h1("Water Management And Industry And Residential Growth In Floyd County"),
                             h2("Project Description"),
                             p(""),
-                            plotlyOutput("census")
+                            img(src = 'floyd-map.png', height = "150", width = "140", align = "center")
                         ) 
                     ) 
             ), 
@@ -150,9 +204,20 @@ body <- dashboardBody(
                             status = "primary",
                             solidHeader = TRUE,
                             collapsible = TRUE,
-                            h2("Demographics of Floyd")
-                            # p(), 
-                            # plotlyOutput("demos")
+                            h2("Demographics of Floyd"), 
+                            p(),
+                            selectInput("demo1", "Select Variable:", width = "100%", choices = c(
+                                "Median Household Income" = "income",
+                                "Median Home Value" = "home", 
+                                "Median Age" = "age" ,
+                                "Unemployment Rate" = "unemploy",
+                                "Population 25 and over with high school diploma" = "high",
+                                "Population 25 and over with Bachelor's" = "bach",
+                                "Population 25 and over with Master's" = "mast",
+                                "Population 25 and over with Doctorate's" = "doct"
+                                )
+                            ), 
+                            leafletOutput("demo")
                         ) ,
                         box(
                             title = "Geology/Water Features",
@@ -255,18 +320,250 @@ ui <- dashboardPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-    output$census <- renderPlotly({
-        
-        # colors <- c("dodgerblue4", "steelblue2","lightblue2", "cyan2", "skyblue1" )
-        # options(sf_max.plot=1)
-        # ggplot() + geom_sf(mapping = aes(geometry = geometry), data = tract20, fill = colors)+
-        #     labs(title = "Subdivisions of Floyd County",
-        #          caption = "Data Source: US Census Bureau",
-        #          subtitle = "To protect the privacy of private well owners, we may locate the wells according to these subdivisions instead of exact coordinates. ") + 
-        #     theme(plot.subtitle = element_text(size = 7))
-        
-        
+    demo1 <- reactive({
+        input$demo1
     })
+    output$demo <- renderLeaflet({
+        if(demo1() == "home") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = home$estimate)
+            
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      home$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(home$estimate, format = "f", big.mark =",", digits = 0)),
+                htmltools::HTML
+            )
+            
+            home %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Median Home Value",
+                          labFormat = labelFormat(prefix = "$"),
+                          opacity = .7)
+            
+            
+            
+        }else if(demo1() == "income") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = income$estimate)
+            
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      income$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(income$estimate, format = "f", big.mark =",", digits = 0)),
+                htmltools::HTML
+            )
+            
+            
+            income %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Household Income",
+                          labFormat = labelFormat(prefix = "$"),
+                          opacity = 1)
+            
+            
+        }else if (demo1() =="unemploy") {
+            
+            
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = employment_status$rate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      employment_status$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(employment_status$rate, format = "f", digits = 3)),
+                htmltools::HTML
+            )
+            employment_status %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(rate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ rate,
+                          title = "Unemployment Rate",
+                          labFormat = labelFormat(suffix = "%"),
+                          opacity = .7)
+            
+            
+        }
+        else if (demo1() == "age") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = age$estimate)
+            
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      age$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(age$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            
+            
+            
+            age %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Median Age",
+                          labFormat = labelFormat(),
+                          opacity = 1)
+            
+            
+            
+        }else if (demo1() =="high") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = high$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      high$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(high$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            high %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "High School Diploma",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else if (demo1() =="bach") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = bach$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      bach$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(bach$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            bach %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Bachelor's Degree",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else if (demo1() =="mast") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = mast$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      mast$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(mast$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            mast %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Master's Degree",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else  {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = doct$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      doct$NAME,
+                      "<br />",
+                      "<strong>Home Value: </strong>",
+                      formatC(doct$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            doct %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Doctorate Degree",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }
+        
+    }) 
     
     
     var1 <- reactive({
@@ -319,28 +616,28 @@ server <- function(input, output) {
     
     # Census tract plot 
     output$water <- renderLeaflet({
-        
-        
+
+
         features <- unique(water_springs$feature)
-        Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'), 
+        Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'),
                                   levels = features)
-        
-        ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry 
-        floyd_map <- water_springs %>% 
-            leaflet(options = leafletOptions(minzoom = 19)) %>% 
-            setView(lng = -80.3, lat = 36.91, zoom = 9.5) %>% 
-            addProviderTiles("CartoDB") %>% 
-            addCircleMarkers(lng = ~long, lat = ~lat,  radius = 1, color = ~Pillar_pal(feature)) %>% 
-            addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, popup = "Town of Floyd") %>% 
-            addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, popup = "Floyd Quarry") %>% 
+
+        ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry
+        floyd_map <- water_springs %>%
+            leaflet(options = leafletOptions(minzoom = 19)) %>%
+            setView(lng = -80.3, lat = 36.91, zoom = 9.5) %>%
+            addProviderTiles("CartoDB") %>%
+            addCircleMarkers(lng = ~long, lat = ~lat,  radius = 1, color = ~Pillar_pal(feature)) %>%
+            addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, popup = "Town of Floyd") %>%
+            addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, popup = "Floyd Quarry") %>%
             addLegend(title = "Feature", position = "bottomleft", pal = Pillar_pal, values = features) %>%
             addPolygons(data = f,
                         fillColor = "black",
                         fillOpacity = .5,
-                        stroke = FALSE) 
+                        stroke = FALSE)
         floyd_map
-        
-        
+
+
     })
     
     

@@ -174,11 +174,204 @@ virginiaCounty <- st_read(
   "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
 f <- virginiaCounty[5,]
 
+library(dplyr)
+library(tidyverse)
+library(tidycensus)
+
+## try to get block level 
+
+home <- get_acs(geography = "block group", 
+                     variables = "B25077_001", 
+                     state = "VA",
+                     county = "Floyd County",
+                     geometry = TRUE)
+
+income <- get_acs(geography = "tract",
+                  variables = "B19013_001",
+                  state = "VA",
+                  county = "Floyd County",
+                  geometry = T) 
+
+age <- get_acs(geography = "tract", 
+                variables = "B01002_001", 
+                state = "VA",
+                county = "Floyd County",
+                geometry = TRUE)
+
+
+pal <- colorNumeric(palette = "viridis", 
+                    domain = home$estimate)
+pal <- colorNumeric(palette = "viridis", 
+                    domain = income$estimate)
+pal <- colorNumeric(palette = "viridis", 
+                           domain = age$estimate)
+pal_unemployed <- colorNumeric(palette = "viridis", 
+                            domain = unemployed$estimate)
+
+labels <- lapply(
+  paste("<strong>Area: </strong>",
+        home$NAME,
+        "<br />",
+        "<strong>Home Value: </strong>",
+        formatC(home$estimate, format = "f", big.mark =",", digits = 0)),
+  htmltools::HTML
+)
+
+
+home %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              label = labels,
+              color = ~ pal(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ estimate,
+            title = "Median Home Value",
+            labFormat = labelFormat(prefix = "$"),
+            opacity = .7)
+
+
+labels <- lapply(
+  paste("<strong>Area: </strong>",
+        income$NAME,
+        "<br />",
+        "<strong>Home Value: </strong>",
+        formatC(income$estimate, format = "f", big.mark =",", digits = 0)),
+  htmltools::HTML
+)
+
+income %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              label = labels,
+              color = ~ pal_income(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal_income, 
+            values = ~ estimate,
+            title = "Household Income",
+            labFormat = labelFormat(prefix = "$"),
+            opacity = 1)
+
+
+age %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              color = ~ pal_age(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal_age, 
+            values = ~ estimate,
+            title = "Median Age",
+            labFormat = labelFormat(suffix = ""),
+            opacity = 1)
+
+labels <- lapply(
+  paste("<strong>Area: </strong>",
+        unemployed$NAME,
+        "<br />",
+        "<strong>Home Value: </strong>",
+        formatC(unemployed$estimate, format = "f", big.mark =",", digits = 0)),
+  htmltools::HTML
+)
+
+
+
+unemployed %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              label = labels,
+              color = ~ pal_unemployed(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal_unemployed, 
+            values = ~ estimate,
+            title = "Total Unemployed",
+            labFormat = labelFormat(prefix = ""),
+            opacity = .7)
 
 
 
 
 
+employment_status <- get_acs(geography = "block group",
+                          variables = "B23025_005" ,
+                          state = "VA",
+                          county = "Floyd County",
+                          geometry = TRUE, 
+                          summary_var = "B23025_003")
+
+employment_status <-employment_status %>%
+  mutate(rate = as.numeric(estimate)/as.numeric(summary_est)*100) 
+pal <- colorNumeric(palette = "viridis", 
+                               domain = employment_status$rate)
+labels <- lapply(
+  paste("<strong>Area: </strong>",
+        employment_status$NAME,
+        "<br />",
+        "<strong>Home Value: </strong>",
+        formatC(employment_status$rate, format = "f", digits = 3)),
+  htmltools::HTML
+)
+employment_status %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              label = labels,
+              color = ~ pal(rate)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ rate,
+            title = "Unemployment Rate",
+            labFormat = labelFormat(suffix = "%"),
+            opacity = .7)
+
+
+
+education <- get_acs(geography = "block group",
+                       variables = c("B15003_017", "B15003_022","B15003_023","B15003_025"),
+                       state = "VA",
+                       county = "Floyd County",
+                       geometry = TRUE)
+high <- education%>%
+  filter(variable == "B15003_017")
+bach <- education%>%
+  filter(variable == "B15003_022")
+mast <- education%>%
+  filter(variable == "B15003_023")
+doct <- education%>%
+  filter(variable == "B15003_025")
+
+
+
+
+poverty <- get_acs(geography = "block group",
+                     variables = "B17020_010",
+                     state = "VA",
+                     county = "Floyd County",
+                     geometry = TRUE
+                    )
 
 
 
