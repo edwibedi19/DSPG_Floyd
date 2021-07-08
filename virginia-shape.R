@@ -365,14 +365,43 @@ doct <- education%>%
 
 
 
-
-poverty <- get_acs(geography = "block group",
-                     variables = "B17020_010",
+commute <- get_acs(geography = "tract",
+                     variables = c("B08135_002", "B08135_003",
+                                   "B08135_004","B08135_005",
+                                   "B08135_006","B08135_007","B08135_008",
+                                   "B08135_009","B08135_010"),
                      state = "VA",
                      county = "Floyd County",
                      geometry = TRUE
                     )
 
+
+f <- commute %>%
+  filter(NAME =="Census Tract 9202, Floyd County, Virginia")
+
+
+poverty <- get_acs(geography = "tract",
+                   variables = "B17020_002",
+                   state = "VA",
+                   county = "Floyd County",
+                   geometry = TRUE)
+
+total_block <-  get_acs(geography = "block group",
+                        variables = "B01003_001",
+                        state = "VA",
+                        county = "Floyd County",
+                        geometry = TRUE)
+
+total_census <-  get_acs(geography = "tract",
+                        variables = "B01003_001",
+                        state = "VA",
+                        county = "Floyd County",
+                        geometry = TRUE)
+food <-  get_acs(geography = "tract",
+                         variables = "B22007_002",
+                         state = "VA",
+                         county = "Floyd County",
+                         geometry = TRUE)
 
 
 

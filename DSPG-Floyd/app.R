@@ -60,41 +60,71 @@ mast <- education%>%
 doct <- education%>%
     filter(variable == "B15003_025")
 
+food <-  get_acs(geography = "tract",
+                 variables = "B22007_002",
+                 state = "VA",
+                 county = "Floyd County",
+                 geometry = TRUE)
+
+poverty <- get_acs(geography = "tract",
+                   variables = "B17020_002",
+                   state = "VA",
+                   county = "Floyd County",
+                   geometry = TRUE)
+
+total_block <-  get_acs(geography = "block group",
+                        variables = "B01003_001",
+                        state = "VA",
+                        county = "Floyd County",
+                        geometry = TRUE)
+
+total_census <-  get_acs(geography = "tract",
+                         variables = "B01003_001",
+                         state = "VA",
+                         county = "Floyd County",
+                         geometry = TRUE)
+
 
 # County
-floyd <- left_join(countydata, counties, by = "county_fips" , copy =T) %>%
-    filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County"))
+virginiaCounty <- st_read(
+    "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
+f <- virginiaCounty[5,] 
+areawater2 <- st_read(
+    "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/tl_2020_51063_areawater/tl_2020_51063_areawater.shp")
+# floyd <- left_join(countydata, counties, by = "county_fips" , copy =T) %>%
+#     filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County"))
+# 
+# floyd_df <- as.data.frame(floyd)
+# points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS())
+# # Streams
+# water <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/virginia_water/virginia_water.shp")
+# water_df <- fortify(water)
+# flo_w <- water_df %>%
+#     filter(water_df$long > -80.6 & water_df$long < -80.1
+#            & water_df$lat < 37.2 & water_df$lat > 36.7)
+# flo_w$group <- 1
+# pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2])
+# 
+# new_shape_w <- pts_w[points_poly,]
+# new_shape_df_w <- as.data.frame(new_shape_w)
+# # Springs
+# nhdp <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/NHDPoint.shp")
+# nhdp_df <- as(nhdp, "data.frame")
+# pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11])
+# new_shape_p <- pts_p[points_poly,]
+# new_shape_df_p <- as.data.frame(new_shape_p)
+# 
+# names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
+# data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
+# springs <- t(data.frame(data))
+# colnames(springs) <- names
+# water_springs <- rbind(new_shape_df_w, springs) %>%
+#     select(long, lat, group)
+# water_springs <- water_springs %>%
+#     mutate(feature = case_when(group == 1 ~ 'Water Body',
+#                                group == 3 ~ 'Spring'
+#     ))
 
-floyd_df <- as.data.frame(floyd)
-points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS())
-# Streams
-water <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/virginia_water/virginia_water.shp")
-water_df <- fortify(water)
-flo_w <- water_df %>%
-    filter(water_df$long > -80.6 & water_df$long < -80.1
-           & water_df$lat < 37.2 & water_df$lat > 36.7)
-flo_w$group <- 1
-pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2])
-
-new_shape_w <- pts_w[points_poly,]
-new_shape_df_w <- as.data.frame(new_shape_w)
-# Springs
-nhdp <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/NHDPoint.shp")
-nhdp_df <- as(nhdp, "data.frame")
-pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11])
-new_shape_p <- pts_p[points_poly,]
-new_shape_df_p <- as.data.frame(new_shape_p)
-
-names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
-data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
-springs <- t(data.frame(data))
-colnames(springs) <- names
-water_springs <- rbind(new_shape_df_w, springs) %>%
-    select(long, lat, group)
-water_springs <- water_springs %>%
-    mutate(feature = case_when(group == 1 ~ 'Water Body',
-                               group == 3 ~ 'Spring'
-    ))
 # rainfall and temperatures 
 climate <- data.frame(read_excel(paste0(getwd(),"/data/climate-floyd-county-usClimateData.xlsx"))) 
 wells <- data.frame(t(read_excel(paste0(getwd(),"/data/NRV-wells-floyd-county-2011.xlsx"), col_types = "numeric")))  
@@ -155,6 +185,10 @@ sidebar <- dashboardSidebar(
             text = "Data and Methodology",
             icon = icon("server")) ,
         menuItem(
+            tabName = "geology",
+            text = "Geology and Water Features",
+            icon = icon("server")), 
+        menuItem(
             tabName = "economics",
             text = "Economic and Business Trends",
             icon = icon("server")) , 
@@ -163,7 +197,7 @@ sidebar <- dashboardSidebar(
             text = "Well Data",
             icon = icon("database")), 
         menuItem(
-            tabName = "findings",
+            tabName = "conclusion",
             text = "Conclusion",
             icon = icon("check-double")),
         menuItem(
@@ -190,7 +224,7 @@ body <- dashboardBody(
                             h1("Water Management And Industry And Residential Growth In Floyd County"),
                             h2("Project Description"),
                             p(""),
-                            img(src = 'floyd-map.png', height = "150", width = "140", align = "center")
+                            img(src = 'floyd-map.png', height = "150", width = "400", align = "center", style="display: block; margin-left: auto; margin-right: auto;")
                         ) 
                     ) 
             ), 
@@ -204,36 +238,25 @@ body <- dashboardBody(
                             status = "primary",
                             solidHeader = TRUE,
                             collapsible = TRUE,
-                            h2("Demographics of Floyd"), 
+                            h2("Demographics of Floyd County by Censu Tract or Block Group"), 
                             p(),
                             selectInput("demo1", "Select Variable:", width = "100%", choices = c(
-                                "Median Household Income" = "income",
-                                "Median Home Value" = "home", 
-                                "Median Age" = "age" ,
+                                "Population Median Household Income" = "income",
+                                "Population Median Home Value" = "home", 
+                                "Population Median Age" = "age" ,
                                 "Unemployment Rate" = "unemploy",
                                 "Population 25 and over with high school diploma" = "high",
                                 "Population 25 and over with Bachelor's" = "bach",
                                 "Population 25 and over with Master's" = "mast",
-                                "Population 25 and over with Doctorate's" = "doct"
+                                "Population 25 and over with Doctorate's" = "doct",
+                                "Population who received Food Stamps/SNAP within 12 months" = "food",
+                                "Population with Income below the Poverty Level" = "poverty", 
+                                "Total Population by Census Tract" = "census",
+                                "Total Population by Block Group" = "block"
                                 )
                             ), 
-                            leafletOutput("demo")
-                        ) ,
-                        box(
-                            title = "Geology/Water Features",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,
-                            h1("Geology and Water Feautres"), 
-                            plotlyOutput("water"), 
-                            selectInput("var1", "Select Variable:", width = "100%", choices = c(
-                                "Rainfall" = "rainfall",
-                                "Minimum Temeprature" = "min", 
-                                "Maximum Temeprature" = "max")
-                            ),
-                            plotlyOutput("precipitation")
+                            leafletOutput("demo"), 
+                            p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))
                         ) 
                     ) 
             ), 
@@ -255,6 +278,39 @@ body <- dashboardBody(
                         ) 
                     ) 
             ),
+            ## Tab Geology--------------------------------------------
+            tabItem(tabName = "geology",
+                    fluidRow(
+                        box(
+                            title = "Water Retaintion",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE, 
+                            p(), 
+                            selectInput("var1", "Select Variable:", width = "100%", choices = c(
+                                "Rainfall" = "rainfall",
+                                "Minimum Temeprature" = "min", 
+                                "Maximum Temeprature" = "max")
+                            ),
+                            plotlyOutput("precipitation"), 
+                            p(tags$small("Data Source: US Climate "))
+                            
+                        ) ,
+                        box(
+                            title = "Geology and Water Features",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE, 
+                            p(), 
+                            plotlyOutput("water")
+
+                        ) 
+                    ) 
+            ), 
             ## Tab Economics--------------------------------------------
             tabItem(tabName = "economics",
                     fluidRow(
@@ -299,7 +355,68 @@ body <- dashboardBody(
                             p(tags$small("Data Source: New River Valley Water SUpply Plan 2011"))
                         ) 
                     ) 
-            )
+            ),
+            ## Tab Conclusion --------------------------------------------
+            tabItem(tabName = "conclusion",
+                    fluidRow(
+                        box(
+                            title = "Conclusion",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE, 
+                            p(), 
+                            p()
+                        ) 
+                    ) 
+            ), 
+            ## Tab Team --------------------------------------------
+            tabItem(tabName = "team",
+                    fluidRow(
+                        box(
+                            title = "Team",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE,
+                            h2("Data Science for the Public Good Program"),
+                            p("The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at the Biocomplexity Institute’s Social and Decision Analytics Division (SDAD). In its eighth year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today. DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information generated within every community can be leveraged to improve quality of life and inform public policy. For more information on program highlights, how to apply, and our annual symposium, please visit the official Biocomplexity DSPG website."),
+                            h2("2021 Loudoun County Summer Project"),
+                            p("Our project goal was to identify the gaps in the services available for transitional aged youth in Loudoun County, VA. We visualized the programs by education, employment, housing, transportation, insurance and funding & policy and mapped their locations. Our team is comprised of talented individuals with a broad range of skills and experience."),
+                            h2("DSPG Team Members"),
+                            # change the images 
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            img(src = 'team-julie.png', height = "150", width = "150", align = "center"),
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            br(),
+                            br(),
+                            p("Esha Dwibedi, Fellow ()"),
+                            p("Julie Rebstock, Intern (Undergraduate Student at Virginia Tech, Computational Modeling and Data Anaylytics and Economics)"),
+                            p("Ryan Jacobs, Intern (Undergraduate. Student at Virginia Tech, )"),
+                            p("John Wright, Intern ()"),
+                            h2("Virginia Tech Faculty Team Members"),
+                            img(src = 'Susan.Chen.VT.jpg', height = "150", width = "140", align = "center"),
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            img(src = '', height = "150", width = "140", align = "center"),
+                            br(),
+                            br(),
+                            p("Susan Chen (Associate Professor, Food and Health Economics, DSPG Project Co-Lead)"),
+                            p("Brianna Posadas ()"),
+                            p("Sarah M. Witiak ()"),
+                            h2("Project Sponsors"),
+                            img(src = '', height = "150", width = "200", align = "center", style="display: block; margin-left: auto; margin-right: auto;"),
+                            h2("Acknowledgements"),
+                            # Stakeholders 
+                            p("We would like to thank:"),
+                            p(" (),"),
+                            p(" ()"),
+                            p(" ()")
+                        )
+                    ))
             
             
         ) 
@@ -364,7 +481,7 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       income$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Household Income: </strong>",
                       formatC(income$estimate, format = "f", big.mark =",", digits = 0)),
                 htmltools::HTML
             )
@@ -397,7 +514,7 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       employment_status$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Unemployment Rate: </strong>",
                       formatC(employment_status$rate, format = "f", digits = 3)),
                 htmltools::HTML
             )
@@ -428,11 +545,10 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       age$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Median Age: </strong>",
                       formatC(age$estimate, format = "f", digits = 0)),
                 htmltools::HTML
             )
-            
             
             
             age %>%
@@ -443,6 +559,7 @@ server <- function(input, output) {
                             stroke = FALSE,
                             smoothFactor = 0,
                             fillOpacity = 0.7,
+                            label = labels, 
                             color = ~ pal(estimate)) %>%
                 addLegend("bottomright", 
                           pal = pal, 
@@ -460,7 +577,7 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       high$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Population Estimate: </strong>",
                       formatC(high$estimate, format = "f", digits = 0)),
                 htmltools::HTML
             )
@@ -487,7 +604,7 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       bach$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Population Estimate: </strong>",
                       formatC(bach$estimate, format = "f", digits = 0)),
                 htmltools::HTML
             )
@@ -514,7 +631,7 @@ server <- function(input, output) {
                 paste("<strong>Area: </strong>",
                       mast$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Population Estimate: </strong>",
                       formatC(mast$estimate, format = "f", digits = 0)),
                 htmltools::HTML
             )
@@ -534,14 +651,14 @@ server <- function(input, output) {
                           title = "Master's Degree",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else  {
+        }else if(demo1() == "doct") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = doct$estimate)
             labels <- lapply(
                 paste("<strong>Area: </strong>",
                       doct$NAME,
                       "<br />",
-                      "<strong>Home Value: </strong>",
+                      "<strong>Population Estimate: </strong>",
                       formatC(doct$estimate, format = "f", digits = 0)),
                 htmltools::HTML
             )
@@ -559,6 +676,114 @@ server <- function(input, output) {
                           pal = pal, 
                           values = ~ estimate,
                           title = "Doctorate Degree",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else if(demo1() == "food") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = food$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      food$NAME,
+                      "<br />",
+                      "<strong>Population Estimate: </strong>",
+                      formatC(food$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            food %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Received Food Stamps/SNAP",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else if(demo1() == "poverty") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = poverty$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      poverty$NAME,
+                      "<br />",
+                      "<strong>Population Estimate: </strong>",
+                      formatC(poverty$estimate, format = "f", digits = 0)),
+                htmltools::HTML
+            )
+            poverty %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Population Income below Poverty",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else if (demo1() == "block") {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = total_block$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      total_block$NAME,
+                      "<br />",
+                      "<strong>Total Population: </strong>",
+                      formatC(total_block$estimate, format = "f",  big.mark =",",digits = 0)),
+                htmltools::HTML
+            )
+            total_block %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Total Population",
+                          labFormat = labelFormat(suffix = ""),
+                          opacity = .7)
+        }else {
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = total_census$estimate)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      total_census$NAME,
+                      "<br />",
+                      "<strong>Total Population: </strong>",
+                      formatC(total_census$estimate, format = "f",  big.mark =",",digits = 0)),
+                htmltools::HTML
+            )
+            total_census %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(estimate)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ estimate,
+                          title = "Total Population",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
         }
@@ -615,27 +840,21 @@ server <- function(input, output) {
     })
     
     # Census tract plot 
-    output$water <- renderLeaflet({
+    output$water <- renderPlotly({
 
 
-        features <- unique(water_springs$feature)
-        Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'),
-                                  levels = features)
+        # features <- unique(water_springs$feature)
+        # Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'),
+        #                           levels = features)
 
         ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry
-        floyd_map <- water_springs %>%
-            leaflet(options = leafletOptions(minzoom = 19)) %>%
-            setView(lng = -80.3, lat = 36.91, zoom = 9.5) %>%
-            addProviderTiles("CartoDB") %>%
-            addCircleMarkers(lng = ~long, lat = ~lat,  radius = 1, color = ~Pillar_pal(feature)) %>%
-            addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, popup = "Town of Floyd") %>%
-            addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, popup = "Floyd Quarry") %>%
-            addLegend(title = "Feature", position = "bottomleft", pal = Pillar_pal, values = features) %>%
-            addPolygons(data = f,
-                        fillColor = "black",
-                        fillOpacity = .5,
-                        stroke = FALSE)
-        floyd_map
+        # floyd_map <- water_springs %>%
+            
+        ggplot() + 
+            geom_sf(mapping = aes(geometry = geometry), data = f) + 
+            geom_sf(mapping = aes(geometry = geometry), data = areawater2,  color = "blue") + 
+            labs(title = "Streams and Water bodies in Floyd")
+        
 
 
     })
@@ -748,12 +967,6 @@ server <- function(input, output) {
         
         
     }) 
-    
-    
-
-    
-    
-    
     
     
 }
