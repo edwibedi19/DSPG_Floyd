@@ -84,6 +84,39 @@ total_census <-  get_acs(geography = "tract",
                          county = "Floyd County",
                          geometry = TRUE)
 
+commute <- get_acs(geography = "tract",
+                   variables = c("B08135_002", "B08135_003",
+                                 "B08135_004","B08135_005",
+                                 "B08135_006","B08135_007","B08135_008",
+                                 "B08135_009","B08135_010"),
+                   state = "VA",
+                   county = "Floyd County",
+                   geometry = TRUE
+)
+f <- commute %>%
+    filter(NAME =="Census Tract 9202, Floyd County, Virginia")
+f_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+                  f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+                  f[9,4]$estimate*60) /sum(f$estimate)
+
+f <- commute %>%
+    filter(NAME =="Census Tract 9201.01, Floyd County, Virginia")
+f2_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+                   f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+                   f[9,4]$estimate*60) /sum(f$estimate)
+
+f <- commute %>%
+    filter(NAME =="Census Tract 9201.02, Floyd County, Virginia")
+f3_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+                   f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+                   f[9,4]$estimate*60) /sum(f$estimate)
+
+new <- commute%>%
+    select(NAME, geometry)
+
+new <- new[c(1,10,19),]
+new$average <- c(f_average, f2_average, f3_average)
+
 
 # County
 virginiaCounty <- st_read(
@@ -238,7 +271,7 @@ body <- dashboardBody(
                             status = "primary",
                             solidHeader = TRUE,
                             collapsible = TRUE,
-                            h2("Demographics of Floyd County by Censu Tract or Block Group"), 
+                            h2("Demographics of Floyd County by Census Tract or Block Group"), 
                             p(),
                             selectInput("demo1", "Select Variable:", width = "100%", choices = c(
                                 "Population Median Household Income" = "income",
@@ -249,6 +282,7 @@ body <- dashboardBody(
                                 "Population 25 and over with Bachelor's" = "bach",
                                 "Population 25 and over with Master's" = "mast",
                                 "Population 25 and over with Doctorate's" = "doct",
+                                "Weighted Average Commute Time" = "commute",
                                 "Population who received Food Stamps/SNAP within 12 months" = "food",
                                 "Population with Income below the Poverty Level" = "poverty", 
                                 "Total Population by Census Tract" = "census",
@@ -678,7 +712,36 @@ server <- function(input, output) {
                           title = "Doctorate Degree",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if(demo1() == "food") {
+        }else if (demo1() == "commute"){
+            
+            pal <- colorNumeric(palette = "viridis", 
+                                domain = new$average)
+            labels <- lapply(
+                paste("<strong>Area: </strong>",
+                      new$NAME,
+                      "<br />",
+                      "<strong>Commute Time: </strong>",
+                      formatC(new$average, format = "f", digits = 2)),
+                htmltools::HTML
+            )
+            new %>%
+                st_transform(crs = "+init=epsg:4326") %>%
+                leaflet(width = "100%") %>%
+                addProviderTiles(provider = "CartoDB.Positron") %>%
+                addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                            stroke = FALSE,
+                            smoothFactor = 0,
+                            fillOpacity = 0.7,
+                            label = labels,
+                            color = ~ pal(average)) %>%
+                addLegend("bottomright", 
+                          pal = pal, 
+                          values = ~ average,
+                          title = "Weighted Average Commute Time",
+                          labFormat = labelFormat(suffix = " mins"),
+                          opacity = .7)
+        }
+        else if(demo1() == "food") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = food$estimate)
             labels <- lapply(

@@ -364,7 +364,7 @@ doct <- education%>%
   filter(variable == "B15003_025")
 
 
-
+library(tidycensus)
 commute <- get_acs(geography = "tract",
                      variables = c("B08135_002", "B08135_003",
                                    "B08135_004","B08135_005",
@@ -375,9 +375,57 @@ commute <- get_acs(geography = "tract",
                      geometry = TRUE
                     )
 
-
+# weighted averages of commute time 
 f <- commute %>%
   filter(NAME =="Census Tract 9202, Floyd County, Virginia")
+f_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+  f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+    f[9,4]$estimate*60) /sum(f$estimate)
+
+f <- commute %>%
+  filter(NAME =="Census Tract 9201.01, Floyd County, Virginia")
+f2_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+                f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+                f[9,4]$estimate*60) /sum(f$estimate)
+
+f <- commute %>%
+  filter(NAME =="Census Tract 9201.02, Floyd County, Virginia")
+f3_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
+                 f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
+                 f[9,4]$estimate*60) /sum(f$estimate)
+new <- commute%>%
+  select(NAME, geometry)
+
+new <- new[c(1,10,19),]
+new$average <- c(f_average, f2_average, f3_average)
+pal <- colorNumeric(palette = "viridis", 
+                    domain = new$average)
+labels <- lapply(
+  paste("<strong>Area: </strong>",
+        new$NAME,
+        "<br />",
+        "<strong>Commute Time: </strong>",
+        formatC(new$average, format = "f", digits = 2)),
+  htmltools::HTML
+)
+new %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              label = labels,
+              color = ~ pal(average)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ average,
+            title = "Weighted Average Commute Time",
+            labFormat = labelFormat(suffix = " mins"),
+            opacity = .7)
+
+
 
 
 poverty <- get_acs(geography = "tract",
