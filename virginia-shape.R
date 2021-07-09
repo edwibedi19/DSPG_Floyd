@@ -451,5 +451,52 @@ food <-  get_acs(geography = "tract",
                          county = "Floyd County",
                          geometry = TRUE)
 
+# John's Mining Data 
+# Collection of the abandoned
+
+library(ggplot2)
+library(tidyverse)
+library(tigris)
+library(readr)
+library(tmap)
+library(leaflet)
+
+options(tigris_class = "sf")
+options(tigris_use_cache = TRUE)
+mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/AbandonedMineralMineLands.txt")
+
+# Filter the mine data for only those within Floyd County
+mines_Floyd <- mines %>%
+  filter(County == "Floyd")
+head(mines_Floyd)
+
+
+# Get Floyd County borders and water maps
+va_counties <- counties(state = "VA", cb = TRUE)
+floyd <- va_counties %>%
+  filter(NAME == "Floyd")
+
+
+floyd_water <- area_water(state = "VA", county = "Floyd")
+
+head(floyd)
+head(floyd_water)
+
+
+
+plot(floyd$geometry)
+plot(floyd_water$geometry, add = TRUE, color = "blue")
+
+
+ggplot() +
+  geom_sf(data = floyd) +
+  geom_sf(data = floyd_water, color = "blue") +
+  geom_point(data = mines_Floyd, aes(x = Lon, y = Lat), color = "red", size = 2) +
+  coord_sf(datum = NA) +
+  theme_minimal() +
+  labs(title = "Floyd County Abandon Mines and Water Areas",
+       x = "",
+       y = "")
+
 
 

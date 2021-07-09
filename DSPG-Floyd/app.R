@@ -124,6 +124,12 @@ virginiaCounty <- st_read(
 f <- virginiaCounty[5,] 
 areawater2 <- st_read(
     "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/tl_2020_51063_areawater/tl_2020_51063_areawater.shp")
+mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/AbandonedMineralMineLands.txt")
+
+# Filter the mine data for only those within Floyd County
+mines_Floyd <- mines %>%
+    filter(County == "Floyd")
+
 # floyd <- left_join(countydata, counties, by = "county_fips" , copy =T) %>%
 #     filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County"))
 # 
