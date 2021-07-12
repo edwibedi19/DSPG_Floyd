@@ -1,6 +1,4 @@
 library(shiny)
-library(shinydashboardPlus)
-library(shinydashboard)
 library(leaflet)
 library(plotly)
 library(dplyr)
@@ -14,6 +12,10 @@ library(sf)
 library(spatialEco)
 library(FRK)
 library(rgdal)
+library(shinycssloaders)
+library(shinythemes)
+library(stringr)
+library(shinyjs)
 
 # data -----------------------------------------------------------
 # Demographics 
@@ -178,345 +180,324 @@ colnames(busgrowth_df) <- c("Time","Quantity")
 busgrowth_df$Time <- factor(busgrowth_df$Time, levels=unique(busgrowth_df$Time))
 busgrowth_df$Quantity <- as.numeric(busgrowth_df$Quantity)
 
-
-# sidebar -----------------------------------------------------------
-sidebar <- dashboardSidebar(
-    sidebarMenu(
-        id = "tabs",
-        menuItem(
-            tabName = "overview",
-            text = "Project Overview",
-            icon = icon("info circle")),
-        menuItem(
-            tabName = "intro",
-            text = "Introduction to Floyd County",
-            icon = icon("leaf")) ,
-        menuItem(
-            tabName = "data",
-            text = "Data and Methodology",
-            icon = icon("server")) ,
-        menuItem(
-            tabName = "geology",
-            text = "Geology and Water Features",
-            icon = icon("server")), 
-        menuItem(
-            tabName = "economics",
-            text = "Economic and Business Trends",
-            icon = icon("server")) , 
-        menuItem(
-            tabName = "wells",
-            text = "Well Data",
-            icon = icon("database")), 
-        menuItem(
-            tabName = "conclusion",
-            text = "Conclusion",
-            icon = icon("check-double")),
-        menuItem(
-            tabName = "team",
-            text = "Team",
-            icon = icon("users"))
-    ) 
-) 
-
 # body -----------------------------------------------------------
-body <- dashboardBody(
-    fluidPage(
-        tabItems(
+ui <- navbarPage(title = "DSPG 2021",
+                 selected = "overview",
+                 theme = shinytheme("lumen"),
+                 tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
+               
+                 
+                 
             ## Tab Overview--------------------------------------------
-            tabItem(tabName = "overview",
-                    fluidRow(style = "margin: 2px;",
-                             align = "center",
-                             br(""),
-                             h1(strong("Water Management And Industry And Residential Growth In Floyd County, VA"),
-                                br(""),
-                                h4("Data Science for the Public Good Program"),
-                                h4("Virginia Tech"),
-                                br()
-                             ), 
-                            column(4,
-                                   h2(strong("Project Background")),
-                                   p(strong("The problem."), "" ),
-                                   p(),
-                                   p(strong("The setting."), ""),
-                                   p(),
-                                   p(strong("The project."), "This University of Virginia", a(href = "https://biocomplexity.virginia.edu/social-decision-analytics", "Biocomplexity Institute", target = "_blank"),
-                                     "Data Science for Public Good (DSPG) project aimed to build local capacity, leverage social and data science to address current and future resident well-being, and enhance
-                                             data-driven decision making about rural health in Patrick County, Virginia.")
-                            ),
-                            column(4,
-                                   h2(strong("Our Work")),
-                                   p("Our research team worked closely with Patrick County Extension Office, Virginia Department of Health, and Healthy Patrick County coalition stakeholders
+            tabPanel("Overview", value = "overview",
+                     fluidRow(style = "margin: 2px;",
+                              align = "center",
+                              # br("", style = "padding-top:2px;"),
+                              # img(src = "uva-dspg-logo.jpg", class = "topimage", width = "20%", style = "display: block; margin-left: auto; margin-right: auto;"),
+                              br(""),
+                              h1(strong("Water Management And Industry And Residential Growth In Floyd County, Virginia"),
+                                 br(""),
+                                 h4("Data Science for the Public Good Program"),
+                                 h4("Virginia Tech"),
+                                 br()
+                              )
+                     ),
+                     fluidRow(style = "margin: 6px;",
+                              column(4,
+                                     h2(strong("Project Background")),
+                                     p(strong("The problem."), "Rural counties often face challenges in providing health care access to their residents given limited", a(href = "https://www.ruralhealthinfo.org/topics/hospitals", "health facilities", target = "_blank"),
+                                       "available, lack of broadband infrastructure that makes it difficult to provide", a(href = "https://www.ruralhealthinfo.org/topics/telehealth", "telemedicine access", target = "_blank"), "or communicate health information, and individual-level",
+                                       a(href = "https://www.ruralhealthinfo.org/topics/social-determinants-of-health", "inequalities", target = "_blank"), "that pose barriers to health care use and health
+                                            behaviors. Identifying areas of high need or potential solutions may also be difficult for rural areas without adequate resources to acquire, analyze, and interpret
+                                            relevant data."),
+                                     p(),
+                                     p(strong("The setting."), a(href = "https://www.floydcova.org/", "Floyd County", target = "_blank"), "is a rural area in Virginia’s Central Piedmont, bordering North Carolina,
+                                            with a declining population of approximately 17,600 people. Like many other rural areas in the United States, Patrick County is having difficulty meeting its residents’ health and quality of life needs.
+                                            The county’s", a(href = "https://www.countyhealthrankings.org/app/virginia/2019/rankings/patrick/county/outcomes/overall/snapshot", "doctor to patient ratios", target = "_blank"),
+                                       "of 3,530 to 1 for primary care providers, 8,840 to 1 for dentists, and 2,520 to 1 for mental health providers are 3-
+                                            to 8-times higher than statewide, and the county’s only hospital closed in 2017. At the same time, the median income for Patrick County residents is $42,900,
+                                            46% of children living in the county are eligible for free or reduced-price school lunch, and 12% of residents are food insecure."),
+                                     p(),
+                                     p(strong("The project."), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
+                                       "Data Science for Public Good (DSPG) project aimed to build local capacity, leverage social and data science to address current and future resident well-being, and enhance
+                                             data-driven decision making about rural health in Floyd County, Virginia.")
+                              ),
+                              column(4,
+                                     h2(strong("Our Work")),
+                                     p("Our research team worked closely with Floyd County Extension Office, Virginia Department of Health, and Healthy Floyd County coalition stakeholders
                                             to identify the county’s priority challenges in the area of health. The research team reviewed a prior", a(href = "https://www.vdh.virginia.gov/west-piedmont/2020/05/27/patrick-county-health-needs-improvement-plan-completed/",
                                                                                                                                                        "community health assessment,", target = "blank"), a(href = "https://www.pubs.ext.vt.edu/VCE/VCE-596/VCE-596-75/VCE-1002-75.html", "situation analysis", target = "_blank"),
-                                     "relevant funding applications, and held a listening meeting with stakeholders to identify these challenges. Lack of
+                                       "relevant funding applications, and held a listening meeting with stakeholders to identify these challenges. Lack of
                                             data on health care access, food access as related to diabetes and heart disease prevalence, older adult health, and digital connectivity that would facilitate
                                             access to telemedicine emerged as key problems where providing actionable insights could address barriers to Patrick County residents’ health."),
-                                   p(),
-                                   p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
+                                     p(),
+                                     p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
                                             publicly available data to provide Patrick County with data-driven resources in each of the four priority areas. We:"),
-                                   tags$li("Provided census tract- and census block group-level maps of Patrick County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
-                                   tags$li("Created census tract-level maps on", strong("older adult health"), "to show the geographic distribution of older adults in the county by gender and
+                                     tags$li("Provided census tract- and census block group-level maps of Patrick County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                     tags$li("Created census tract-level maps on", strong("older adult health"), "to show the geographic distribution of older adults in the county by gender and
                                                   type of disability, identifying areas where providing telehealth or travelling preventive care services may be particularly important."),
-                                   tags$li("Mapped residents'", strong("computing device and internet access"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
+                                     tags$li("Mapped residents'", strong("computing device and internet access"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
                                                   wifi hotspots to highlight internet gaps that could suggest where new wi-fi hotspots could be optimally placed to provide internet access to more residents."),
-                                   tags$li("Calculated and mapped", strong("emergency medical service (EMS) station coverage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
+                                     tags$li("Calculated and mapped", strong("emergency medical service (EMS) station coverage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
                                                    standard EMS travel thresholds."),
-                                   tags$li("Constructed", strong("food access"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
+                                     tags$li("Constructed", strong("food access"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
                                                 highlighting food deserts and areas that could benefit from programs facilitating access to fresh produce."),
-                                   p(),
-                                   p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively.")
-                            ),
-                            column(4,
-                                   h2(strong("Dashboard Aims")),
-                                   p("Our dashboard is aimed at:"),
-                                   p(strong("Floyd County extension professionals and the communities they serve."), ""),
-                                   p(strong("Local health-related agencies and departments seeking data insights to inform their decision-making."), ""),
-                                   p(strong("State government representatives in the Virginia Department of Health and the State Office of Rural Health."), ".")
-                            )
+                                     p(),
+                                     p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively.")
+                              ),
+                              column(4,
+                                     h2(strong("Dashboard Aims")),
+                                     p("Our dashboard is aimed at:"),
+                                     p(strong("Floyd County extension professionals and the communities they serve."), "Information available through the interface helps extension
+                                            agents identify areas where residents may not have access to internet, or areas with a high smartphone ownership share, suggesting what channels agents may
+                                            want to use to disseminate health-related information most effectively. Information on older adult populations and grocery store access can help extension agents
+                                            better understand where underserved populations live and how to advocate on their behalf."),
+                                     p(strong("Local health-related agencies and departments seeking data insights to inform their decision-making."), "For local stakeholders, identifying broadband
+                                            access gaps that limit access to telemedicine, grocery store access gaps, and areas with high proportions of older adults with independent living difficulty can suggest
+                                            optimal locations for placing free wifi hotspots, providing grocery delivery services, devising mobile health unit routes, or can inform other solutions that would benefit
+                                            a broad population base."),
+                                     p(strong("State government representatives in the Virginia Department of Health and the State Office of Rural Health."), "These and similar stakeholders may
+                                            need small or rural area-specific insights that Centers for Disease Control and other county-level datasets cannot provide.")
+                              )
+                     ),
+                     fluidRow(align = "center",
+                              p(tags$small(em('Last updated: August 2021')))
                         
                         
                     ) 
             ), 
             ## Tab Introduction--------------------------------------------
-            tabItem(tabName = "intro",
-                    fluidRow(
-                        box(
-                            title = "Introduction to Floyd County",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,                            
-                            br(),
-                            column(4, 
+            tabPanel("Sociodemographics", value = "socio",
+                    fluidRow(style = "margin: 6px;",
+                             h1(strong("Floyd County Residents' Sociodemographic Characteristics"), align = "center"),
+                             p("", style = "padding-top:10px;"),
+                             column(4, 
                                    h4(strong("Who does Patrick County Serve?")),
-                            p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
-                            
-                             p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. A
-                              CS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. We used the most recently available 5-year estimates from 2014/18 to compute percent Patrick County residents in a given block group or tract by age, race, ethnicity, 
-                              employment, health insurance coverage, and other relevant characteristics."), 
-                            
-                              p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents.")) ,
-                            br(), 
-                            column(8,
+                                    p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
+                                    p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. A
+                                      CS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. 
+                                      We used the most recently available 5-year estimates from 2014/18 to compute percent Patrick County residents in a given block group or tract by age, race, ethnicity, 
+                                      employment, health insurance coverage, and other relevant characteristics."), 
+                                     p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents.")
+                            ) ,
+                             column(8,
                                    h4(strong("Map of Resident Socioeconomic Characteristics by Census Tract or Block Group")),
-                            selectInput("demo1", "Select Variable:", width = "100%", choices = c(
-                                "Population Median Household Income" = "income",
-                                "Population Median Home Value" = "home", 
-                                "Population Median Age" = "age" ,
-                                "Unemployment Rate" = "unemploy",
-                                "Population 25 and over with high school diploma" = "high",
-                                "Population 25 and over with Bachelor's" = "bach",
-                                "Population 25 and over with Master's" = "mast",
-                                "Population 25 and over with Doctorate's" = "doct",
-                                "Weighted Average Commute Time" = "commute",
-                                "Population who received Food Stamps/SNAP within 12 months" = "food",
-                                "Population with Income below the Poverty Level" = "poverty", 
-                                "Total Population by Census Tract" = "census",
-                                "Total Population by Block Group" = "block"
-                                )
-                            ), 
-                            leafletOutput("demo"), 
-                            p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))) 
-                            
-                        ) 
+                                    selectInput("char1", "Select Variable:", width = "100%", choices = c(
+                                        "Population Median Household Income" = "income",
+                                        "Population Median Home Value" = "home", 
+                                        "Population Median Age" = "age" ,
+                                        "Unemployment Rate" = "unemploy",
+                                        "Population 25 and over with high school diploma" = "high",
+                                        "Population 25 and over with Bachelor's" = "bach",
+                                        "Population 25 and over with Master's" = "mast",
+                                        "Population 25 and over with Doctorate's" = "doct",
+                                        "Weighted Average Commute Time" = "commute",
+                                        "Population who received Food Stamps/SNAP within 12 months" = "food",
+                                        "Population with Income below the Poverty Level" = "poverty", 
+                                        "Total Population by Census Tract" = "census",
+                                        "Total Population by Block Group" = "block"
+                                        )
+                                    ), 
+                                   withSpinner(leafletOutput("demo1")) , 
+                                   p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))
+                                 ) 
+                          
                     ) 
             ), 
             ## Tab Data and Methodology--------------------------------------------
-            tabItem(tabName = "data",
-                    fluidRow(
-                        box(
-                            title = "Data and Methodology",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,
-                            h1("Data and Methodology"),
-                            p(),
-                            p()
-                            
-                            
-                        ) 
-                    ) 
+            tabPanel("Data and Methodology", value = "data",
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Data and Methodology"), align = "center"),
+                              br(),
+                              column(4,
+                                     img(src = "data-hifld.png", style = "display: inline; float: left;", width = "100px"),
+                                     p(strong("Homeland Infrastructure Foundation-Level Data."), "Homeland Infrastructure Foundation-Level Data (HIFLD) is a collection of public
+                                              source datasets at property level provided by the Department of Homeland Security. Since 2002, this HIFLD has provided quarterly
+                                              updated layers on topics from education to energy, including on health care facilities. We used HIFLD emergency medical services
+                                              station data at the latitude and longitude geographic level in our analyses."),
+                                     br(""),
+                                     img(src = "data-gmaps.png", style = "display: inline; float: left;", width = "130px"),
+                                     p(strong("Google Maps."), "Google Maps is a comprehensive web mapping service created by Google. Its goal is to provide an interactive map
+                                              of all the geographical contents of the world. This resource has a variety of uses, ranging from examining all service locations within
+                                              a city to finding the quickest route between locations. It provides data at latitude and longitude level. We used Google Maps to locate
+                                              all supermarkets, convenience stores, and farmers’ markets in Patrick County, and subsequently employed the information in calculating
+                                              grocery access and coverage isochrones.")
+                              ),
+                              column(4,
+                                     img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
+                                     p(strong("American Community Survey."), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census
+                                            Bureau. ACS samples households to compile 1-year and 5-year datasets providing information on population sociodemographic and
+                                            socioeconomic characteristics including employment, disability, and health insurance coverage. We used AC 2014/18 5-year
+                                            estimates to obtain census tract and census block group-level to explore Patrick County resident characteristics."),
+                                     br(""),
+                                     img(src = "data-connect.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("CommonwealthConnect."), "The Virginia Tech CommonwealthConnect Wi-Fi Hotspot Map is an interactive map of free, publicly
+                                           available wi-fi hotspots in Virginia. Its goal is to provide an easily accessible map of areas where individuals can connect to the
+                                           internet for free, decreasing the constraints placed on families that do not have internet access at home. We used the 2020 wi-fi
+                                           hotspot map data to retrieve hotspot locations in Patrick County and subsequently employed the information in calculating hotspot
+                                           coverage isochrones."),
+                                     br(""),
+                                     img(src = "data-corelogic.png", style = "display: inline; float: left;", width = "120px"),
+                                     p(strong("CoreLogic."), "CoreLogic is a supplier of proprietary US real estate and specialized business data at the property level.
+                                           This company provides data spanning over 50 years at the latitude and longitude level. Information available in the dataset includes
+                                           property characteristics, mortgage, foreclosures and performance. We used 2019 CoreLogic data to obtain the locations of all residential
+                                           properties in Patrick County.")
+                              ),
+                              column(4,
+                                     img(src = "data-traveltime.png", style = "display: inline; float: left;", width = "140px"),
+                                     p(strong("TravelTime."), "TravelTime Application Programming Interface (API) aggregates data from OpenStreetMap, transport timetables and
+                                           speed profiles to generate isochrones. An isochrone is a shape covering all locations that can be reached within the same timeframe
+                                           given a start location, departure time, and a mode of transportation. We used the TravelTime API to produce isochrones of 10- and
+                                           15-minute drive time interval from supermarkets, farmers' markets, and free wi-fi hotspots, and of 8-, 10-, and 12-minute drive
+                                           time intervals from all emergency medical service stations in Patrick County."),
+                                     br(""),
+                                     img(src = "data-ers.png", style = "display: inline; float: left;", width = "120px"),
+                                     p(strong("Food Access Research Atlas."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
+                                          created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
+                                          individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
+                                          Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics.")
+                              )
+                     )
             ),
             ## Tab Geology--------------------------------------------
-            tabItem(tabName = "geology",
-                    fluidRow(
-                        box(
-                            title = "Water Retaintion",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            p(), 
-                            selectInput("var1", "Select Variable:", width = "100%", choices = c(
-                                "Rainfall" = "rainfall",
-                                "Minimum Temeprature" = "min", 
-                                "Maximum Temeprature" = "max")
-                            ),
-                            plotlyOutput("precipitation"), 
-                            p(tags$small("Data Source: US Climate "))
-                            
-                        ) ,
-                        box(
-                            title = "Geology and Water Features",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            p(), 
-                            plotlyOutput("water")
-
-                        ) ,
-                        box(
-                            
-                            title = "Abandoned and Active Mines",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            p(), 
-                            
-                            
-                            leafletOutput("mines")
-                        )
-                    ) 
+            tabPanel("Geology and Water Features" , value = "geology",
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Water Retention"), align = "center"),
+                              p("", style = "padding-top:10px;"), 
+                              tabsetPanel(
+                                  tabPanel("Precipitation",
+                                           p(""),
+                                           selectInput("var1", "Select Variable:", width = "100%", choices = c(
+                                               "Rainfall" = "rainfall",
+                                               "Minimum Temeprature" = "min", 
+                                               "Maximum Temeprature" = "max")
+                                           ),
+                                           p(strong("Precipitation")),
+                                           plotlyOutput("precipitation"),
+                                           p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
+                                  ),
+                                  tabPanel("Water Features",
+                                           p(""),
+                                           p(strong("Streams")),
+                                           plotlyOutput("water")
+                                           
+                              )
+                            ) 
+                     ) 
             ), 
             ## Tab Economics--------------------------------------------
-            tabItem(tabName = "economics",
-                    fluidRow(
-                        box(
-                            title = "Resident and Commerial Development",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            p(), 
-                            selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                "Employment by Industry" = "industry",
-                                "Projected Population Change" = "pop", 
-                                "Population by Age" = "age", 
-                                "Number of Commuters" = "commute", 
-                                "New Business Growth" = "business")
-                            ),
-                            plotlyOutput("trend1"),
-                            p(tags$small("Data Source: Virginia Employment Commission"))
-                            
-                        ) 
-                    ) 
+            tabPanel("Economics", value = "economics",
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Resident and Commerical Development"), align = "center"),
+                              p("", style = "padding-top:10px;"), 
+                              selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                  "Employment by Industry" = "industry",
+                                  "Projected Population Change" = "pop", 
+                                  "Population by Age" = "age", 
+                                  "Number of Commuters" = "commute", 
+                                  "New Business Growth" = "business")
+                              ),
+                              plotlyOutput("trend1"),
+                              p(tags$small("Data Source: Virginia Employment Commission"))
+                    )
+                     
+                    
             ), 
             ## Tab Wells and Water Quality --------------------------------------------
-            tabItem(tabName = "wells",
-                    fluidRow(
-                        box(
-                            title = "Private and Public Wells",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            h1("Community Wells"), 
-                            selectInput("var2", "Select Variable:", width = "100%", choices = c(
-                                "Average Daily Withdrawals (GPD)" = "gpd",
-                                "Well Depth with Percent of Usage" = "depth", 
-                                "Maximum Daily Withdrawals" = "max")
-                            ),
-                            plotlyOutput("wells"),
-                            p(tags$small("Data Source: New River Valley Water SUpply Plan 2011"))
-                        ) 
-                    ) 
+            tabPanel("Water Quality", tabName = "wells",
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Water Quality"), align = "center"),
+                              p("", style = "padding-top:10px;"), 
+                              tabsetPanel(
+                                  tabPanel("Public and Private Wells",
+                                           p(""),
+                                           selectInput("var2", "Select Variable:", width = "100%", choices = c(
+                                               "Average Daily Withdrawals (GPD)" = "gpd",
+                                               "Well Depth with Percent of Usage" = "depth", 
+                                               "Maximum Daily Withdrawals" = "max")
+                                           ),
+                                           p(strong("Wells")),
+                                           plotlyOutput("wells"),
+                                           p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
+                                  ),
+                                  tabPanel("Contamination",
+                                           h1(strong("Potential Sources of Contamination"), align = "center"),
+                                           p("", style = "padding-top:10px;"), 
+                                           withSpinner(leafletOutput("mines")) 
+                                           
+                                  )
+                              ) 
+                     ) 
+                     
             ),
             ## Tab Conclusion --------------------------------------------
-            tabItem(tabName = "conclusion",
-                    fluidRow(
-                        box(
-                            title = "Conclusion",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE, 
-                            p(), 
-                            p()
-                        ) 
-                    ) 
+            tabPanel("Conclusion", value = "conclusion"
+                     
             ), 
             ## Tab Team --------------------------------------------
-            tabItem(tabName = "team",
-                    fluidRow(
-                        box(
-                            title = "Team",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,
-                            h2("Data Science for the Public Good Program"),
-                            p("The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at the Biocomplexity Institute’s Social and Decision Analytics Division (SDAD). In its eighth year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today. DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information generated within every community can be leveraged to improve quality of life and inform public policy. For more information on program highlights, how to apply, and our annual symposium, please visit the official Biocomplexity DSPG website."),
-                            h2("2021 Loudoun County Summer Project"),
-                            p("Our project goal was to identify the gaps in the services available for transitional aged youth in Loudoun County, VA. We visualized the programs by education, employment, housing, transportation, insurance and funding & policy and mapped their locations. Our team is comprised of talented individuals with a broad range of skills and experience."),
-                            h2("DSPG Team Members"),
-                            # change the images 
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            img(src = 'team-julie.png', height = "150", width = "150", align = "center"),
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            br(),
-                            br(),
-                            p("Esha Dwibedi, Fellow ()"),
-                            p("Julie Rebstock, Intern (Undergraduate Student at Virginia Tech, Computational Modeling and Data Anaylytics and Economics)"),
-                            p("Ryan Jacobs, Intern (Undergraduate. Student at Virginia Tech, )"),
-                            p("John Wright, Intern ()"),
-                            h2("Virginia Tech Faculty Team Members"),
-                            img(src = 'Susan.Chen.VT.jpg', height = "150", width = "140", align = "center"),
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            img(src = '', height = "150", width = "140", align = "center"),
-                            br(),
-                            br(),
-                            p("Susan Chen (Associate Professor, Food and Health Economics, DSPG Project Co-Lead)"),
-                            p("Brianna Posadas ()"),
-                            p("Sarah M. Witiak ()"),
-                            h2("Project Sponsors"),
-                            img(src = '', height = "150", width = "200", align = "center", style="display: block; margin-left: auto; margin-right: auto;"),
-                            h2("Acknowledgements"),
-                            # Stakeholders 
-                            p("We would like to thank:"),
-                            p(" (),"),
-                            p(" ()"),
-                            p(" ()")
-                        )
-                    ))
-            
-            
-        ) 
-    )
-)
+            tabPanel("Team", value = "team",
+                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                              h1(strong("Team"), align = "center"),
+                              br(),
+                              h4(strong("VT Data Science for the Public Good")),
+                              p("The", a(href = 'https://biocomplexity.virginia.edu/social-decision-analytics/dspg-program', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
+                                "is a summer immersive program offered by the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
+                                "In its eighth year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around
+                              critical social issues relevant in the world today. DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences
+                              to determine how information generated within every community can be leveraged to improve quality of life and inform public policy. For more information on program
+                              highlights, how to apply, and our annual symposium, please visit", 
+                                a(href = 'https://aaec.vt.edu/content/aaec_vt_edu/en/academics/undergraduate/beyond-classroom/dspg.html#select=1.html', 'the official VT DSPG website.', target = "_blank")),
+                              p("", style = "padding-top:10px;")
+                     ),
+                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                              column(6, align = "center",
+                                     h4(strong("DSPG Team Members")),
+                                     img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-julie.png", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     p(a(href = 'https://www.linkedin.com/in/morgan-stockham/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Applied Microeconomics);",
+                                       a(href = 'https://www.linkedin.com/in/tasfia-chowdhury-89005a1b2/', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Economics and Computational Modeling and Data Analytics);",
+                                       a(href = 'https://www.linkedin.com/in/igomez-3099/', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Statistical and Data Science).",
+                                        a(href = 'https://www.linkedin.com/in/igomez-3099/', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Statistical and Data Science)."),
+                                     p("", style = "padding-top:10px;") 
+                              ),
+                              column(6, align = "center",
+                                     h4(strong("UVA Faculty Team Members")),
+                                     img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     p(a(href = "", 'Teja Pristavec', target = '_blank'), "(Project Lead, Research Assistant Professor);",
+                                       a(href = "", 'Brandon Kramer', target = '_blank'), "(Postdoctoral Research Associate);",
+                                       a(href = '', 'Sallie Keller', target = '_blank'), "(Division Director and Distinguished Professor)."),
+                                     p("", style = "padding-top:10px;")
+                              )
+                     ),
+                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                              h4(strong("Project Stakeholders")),
+                              p(a(href = 'https://www.linkedin.com/in/nancy-bell-aa293810/', 'Nancy Bell', target = '_blank'), "(Virginia Department of Health);",
+                                a(href = 'https://www.linkedin.com/in/terri-alt-3138b4101/', 'Terri Alt', target = '_blank'), "(Virginia Cooperative Extension, Patrick County at Virginia Tech)."),
+                              p("", style = "padding-top:10px;"),
+                              h4(strong("Acknowledgments")),
+                              p("We would like to thank Healthy Patrick County, an association of concerned Patrick County residents, and Brandon Kramer for their input to this project.")
+                     )
+            ),
+            inverse = T) 
+        
+
+     
  
 
-
-
- 
-ui <- dashboardPage(
-    dashboardHeader(title = "DSPG 2021"), 
-    sidebar = sidebar, 
-    body = body
-)
 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-    demo1 <- reactive({
-        input$demo1
+    char1 <- reactive({
+        input$char1
     })
-    output$demo <- renderLeaflet({
-        if(demo1() == "home") {
+    output$demo1 <- renderLeaflet({
+        if(char1() == "home") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = home$estimate)
             
@@ -548,7 +529,7 @@ server <- function(input, output) {
             
             
             
-        }else if(demo1() == "income") {
+        }else if(char1() == "income") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = income$estimate)
             
@@ -580,7 +561,7 @@ server <- function(input, output) {
                           opacity = 1)
             
             
-        }else if (demo1() =="unemploy") {
+        }else if (char1() == "unemploy") {
             
             
             pal <- colorNumeric(palette = "viridis", 
@@ -612,7 +593,7 @@ server <- function(input, output) {
             
             
         }
-        else if (demo1() == "age") {
+        else if (char1() == "age") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = age$estimate)
             
@@ -645,7 +626,7 @@ server <- function(input, output) {
             
             
             
-        }else if (demo1() =="high") {
+        }else if (char1() =="high") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = high$estimate)
             labels <- lapply(
@@ -672,7 +653,7 @@ server <- function(input, output) {
                           title = "High School Diploma",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if (demo1() =="bach") {
+        }else if (char1() =="bach") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = bach$estimate)
             labels <- lapply(
@@ -699,7 +680,7 @@ server <- function(input, output) {
                           title = "Bachelor's Degree",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if (demo1() =="mast") {
+        }else if (char1() =="mast") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = mast$estimate)
             labels <- lapply(
@@ -726,7 +707,7 @@ server <- function(input, output) {
                           title = "Master's Degree",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if(demo1() == "doct") {
+        }else if(char1() == "doct") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = doct$estimate)
             labels <- lapply(
@@ -753,7 +734,7 @@ server <- function(input, output) {
                           title = "Doctorate Degree",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if (demo1() == "commute"){
+        }else if (char1() == "commute"){
             
             pal <- colorNumeric(palette = "viridis", 
                                 domain = new$average)
@@ -782,7 +763,7 @@ server <- function(input, output) {
                           labFormat = labelFormat(suffix = " mins"),
                           opacity = .7)
         }
-        else if(demo1() == "food") {
+        else if(char1() == "food") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = food$estimate)
             labels <- lapply(
@@ -809,7 +790,7 @@ server <- function(input, output) {
                           title = "Received Food Stamps/SNAP",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if(demo1() == "poverty") {
+        }else if(char1() == "poverty") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = poverty$estimate)
             labels <- lapply(
@@ -836,7 +817,7 @@ server <- function(input, output) {
                           title = "Population Income below Poverty",
                           labFormat = labelFormat(suffix = ""),
                           opacity = .7)
-        }else if (demo1() == "block") {
+        }else if (char1() == "block") {
             pal <- colorNumeric(palette = "viridis", 
                                 domain = total_block$estimate)
             labels <- lapply(
