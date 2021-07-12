@@ -13,7 +13,7 @@ edges2 <- st_read(
 
 # shows 6 polygons of FLoyd 
 tract20 <- st_read(
-  "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/tl_2020_51063_tract20/tl_2020_51063_tract20.shp")
+  "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/tl_2020_51063_tract20/tl_2020_51063_tract20.shp")
 
 faces <- st_read(
   "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/data/tl_2020_51063_faces/tl_2020_51063_faces.shp")

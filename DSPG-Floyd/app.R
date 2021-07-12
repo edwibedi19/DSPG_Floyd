@@ -119,50 +119,22 @@ new$average <- c(f_average, f2_average, f3_average)
 
 
 # County
+va_counties <- counties(state = "VA", cb = TRUE)
+floyd <- va_counties %>%
+    filter(NAME == "Floyd")
+
 virginiaCounty <- st_read(
     "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
 f <- virginiaCounty[5,] 
 areawater2 <- st_read(
     "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/tl_2020_51063_areawater/tl_2020_51063_areawater.shp")
+
 mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/AbandonedMineralMineLands.txt")
 
 # Filter the mine data for only those within Floyd County
 mines_Floyd <- mines %>%
     filter(County == "Floyd")
 
-# floyd <- left_join(countydata, counties, by = "county_fips" , copy =T) %>%
-#     filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County"))
-# 
-# floyd_df <- as.data.frame(floyd)
-# points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS())
-# # Streams
-# water <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/virginia_water/virginia_water.shp")
-# water_df <- fortify(water)
-# flo_w <- water_df %>%
-#     filter(water_df$long > -80.6 & water_df$long < -80.1
-#            & water_df$lat < 37.2 & water_df$lat > 36.7)
-# flo_w$group <- 1
-# pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2])
-# 
-# new_shape_w <- pts_w[points_poly,]
-# new_shape_df_w <- as.data.frame(new_shape_w)
-# # Springs
-# nhdp <- readOGR("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/NHDPoint.shp")
-# nhdp_df <- as(nhdp, "data.frame")
-# pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11])
-# new_shape_p <- pts_p[points_poly,]
-# new_shape_df_p <- as.data.frame(new_shape_p)
-# 
-# names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
-# data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
-# springs <- t(data.frame(data))
-# colnames(springs) <- names
-# water_springs <- rbind(new_shape_df_w, springs) %>%
-#     select(long, lat, group)
-# water_springs <- water_springs %>%
-#     mutate(feature = case_when(group == 1 ~ 'Water Body',
-#                                group == 3 ~ 'Spring'
-#     ))
 
 # rainfall and temperatures 
 climate <- data.frame(read_excel(paste0(getwd(),"/data/climate-floyd-county-usClimateData.xlsx"))) 
@@ -348,7 +320,20 @@ body <- dashboardBody(
                             p(), 
                             plotlyOutput("water")
 
-                        ) 
+                        ) ,
+                        box(
+                            
+                            title = "Abandoned and Active Mines",
+                            closable = FALSE,
+                            width = NULL,
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = TRUE, 
+                            p(), 
+                            
+                            
+                            leafletOutput("mines")
+                        )
                     ) 
             ), 
             ## Tab Economics--------------------------------------------
@@ -924,8 +909,37 @@ server <- function(input, output) {
             geom_sf(mapping = aes(geometry = geometry), data = areawater2,  color = "blue") + 
             labs(title = "Streams and Water bodies in Floyd")
         
+      
+            
+        
 
 
+    })
+    
+    output$mines <- renderLeaflet({
+        
+        
+        
+        total_block %>%
+            leaflet(options = leafletOptions(minzoom = 12)) %>% 
+            setView(lng = -80.4, lat = 36.95, zoom = 10) %>% 
+            addTiles()%>%
+            addPolygons(fillOpacity = 0.01,
+                        color = "black", opacity = 1.0, weight = 1,
+                        label = lapply(
+                            paste("<strong>Area: </strong>",
+                                  total_block$NAME),
+                            htmltools::HTML))   %>%
+            addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, 
+                       label = lapply(
+                           paste("<strong>Town of Floyd</strong>",
+                                 "<br />"),
+                           htmltools::HTML)) %>%
+            addCircleMarkers(lng = ~mines_Floyd$Lon,
+                             lat = ~mines_Floyd$Lat,
+                             radius = 5, fillOpacity = .2,
+                             color = "red")
+        
     })
     
     

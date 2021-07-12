@@ -460,6 +460,8 @@ library(tigris)
 library(readr)
 library(tmap)
 library(leaflet)
+library(sp)
+
 
 options(tigris_class = "sf")
 options(tigris_use_cache = TRUE)
@@ -497,6 +499,40 @@ ggplot() +
   labs(title = "Floyd County Abandon Mines and Water Areas",
        x = "",
        y = "")
+
+total_block <-  get_acs(geography = "block group",
+                        variables = "B01003_001",
+                        state = "VA",
+                        county = "Floyd County",
+                        geometry = TRUE)
+
+
+total_block %>%
+leaflet(options = leafletOptions(minzoom = 12)) %>% 
+  setView(lng = -80.4, lat = 36.95, zoom = 10) %>% 
+  addTiles()%>%
+  addPolygons(fillOpacity = 0.01,
+              color = "black", opacity = 1.0, weight = 1,
+              label = lapply(
+                paste("<strong>Area: </strong>",
+                      total_block$NAME),
+                htmltools::HTML))   %>%
+  addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, 
+             label = lapply(
+               paste("<strong>Town of Floyd</strong>",
+                     "<br />"),
+               htmltools::HTML)) %>%
+  addCircleMarkers(lng = ~mines_Floyd$Lon,
+                   lat = ~mines_Floyd$Lat,
+                   radius = 5, fillOpacity = .2,
+                    color = "red")
+
+
+
+
+
+
+
 
 
 
