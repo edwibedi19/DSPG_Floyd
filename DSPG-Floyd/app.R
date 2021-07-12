@@ -385,6 +385,23 @@ ui <- navbarPage(title = "DSPG 2021",
                             ) 
                      ) 
             ), 
+            ## Tab Water Usage--------------------------------------------
+            tabPanel("Water Usage", value = "usage",
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Land Parcels"), align = "center"),
+                              p("", style = "padding-top:10px;"), 
+                              tabsetPanel(
+                                  tabPanel("Public and Private Wells"
+                                           
+                                  ),
+                                  tabPanel("NDWI"
+                                           
+                                  )
+                              ) 
+                     ) 
+                     
+                     
+            ), 
             ## Tab Economics--------------------------------------------
             tabPanel("Economics", value = "economics",
                      fluidRow(style = "margin: 6px;",
@@ -423,7 +440,12 @@ ui <- navbarPage(title = "DSPG 2021",
                                   tabPanel("Contamination",
                                            h1(strong("Potential Sources of Contamination"), align = "center"),
                                            p("", style = "padding-top:10px;"), 
-                                           withSpinner(leafletOutput("mines")) 
+                                           p(strong("Percent Common Contaiminations")),
+                                           withSpinner(tableOutput("allwifitable")),
+                                           p(strong("Map of Abandoned Mines")),
+                                           withSpinner(leafletOutput("mines")),
+                                           p(tags$small("Data Sources: "))
+                                           
                                            
                                   )
                               ) 
@@ -1081,6 +1103,12 @@ server <- function(input, output) {
         
         
     }) 
+    
+    output$sources <- renderTable({
+        
+        
+        
+    })
     
     
 }
