@@ -224,19 +224,57 @@ body <- dashboardBody(
         tabItems(
             ## Tab Overview--------------------------------------------
             tabItem(tabName = "overview",
-                    fluidRow(
-                        box(
-                            title = "Project Overview",
-                            closable = FALSE,
-                            width = NULL,
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,
-                            h1("Water Management And Industry And Residential Growth In Floyd County"),
-                            h2("Project Description"),
-                            p(""),
-                            img(src = 'floyd-map.png', height = "150", width = "400", align = "center", style="display: block; margin-left: auto; margin-right: auto;")
-                        ) 
+                    fluidRow(style = "margin: 2px;",
+                             align = "center",
+                             br(""),
+                             h1(strong("Water Management And Industry And Residential Growth In Floyd County, VA"),
+                                br(""),
+                                h4("Data Science for the Public Good Program"),
+                                h4("Virginia Tech"),
+                                br()
+                             ), 
+                            column(4,
+                                   h2(strong("Project Background")),
+                                   p(strong("The problem."), "" ),
+                                   p(),
+                                   p(strong("The setting."), ""),
+                                   p(),
+                                   p(strong("The project."), "This University of Virginia", a(href = "https://biocomplexity.virginia.edu/social-decision-analytics", "Biocomplexity Institute", target = "_blank"),
+                                     "Data Science for Public Good (DSPG) project aimed to build local capacity, leverage social and data science to address current and future resident well-being, and enhance
+                                             data-driven decision making about rural health in Patrick County, Virginia.")
+                            ),
+                            column(4,
+                                   h2(strong("Our Work")),
+                                   p("Our research team worked closely with Patrick County Extension Office, Virginia Department of Health, and Healthy Patrick County coalition stakeholders
+                                            to identify the county’s priority challenges in the area of health. The research team reviewed a prior", a(href = "https://www.vdh.virginia.gov/west-piedmont/2020/05/27/patrick-county-health-needs-improvement-plan-completed/",
+                                                                                                                                                       "community health assessment,", target = "blank"), a(href = "https://www.pubs.ext.vt.edu/VCE/VCE-596/VCE-596-75/VCE-1002-75.html", "situation analysis", target = "_blank"),
+                                     "relevant funding applications, and held a listening meeting with stakeholders to identify these challenges. Lack of
+                                            data on health care access, food access as related to diabetes and heart disease prevalence, older adult health, and digital connectivity that would facilitate
+                                            access to telemedicine emerged as key problems where providing actionable insights could address barriers to Patrick County residents’ health."),
+                                   p(),
+                                   p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
+                                            publicly available data to provide Patrick County with data-driven resources in each of the four priority areas. We:"),
+                                   tags$li("Provided census tract- and census block group-level maps of Patrick County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                   tags$li("Created census tract-level maps on", strong("older adult health"), "to show the geographic distribution of older adults in the county by gender and
+                                                  type of disability, identifying areas where providing telehealth or travelling preventive care services may be particularly important."),
+                                   tags$li("Mapped residents'", strong("computing device and internet access"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
+                                                  wifi hotspots to highlight internet gaps that could suggest where new wi-fi hotspots could be optimally placed to provide internet access to more residents."),
+                                   tags$li("Calculated and mapped", strong("emergency medical service (EMS) station coverage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
+                                                   standard EMS travel thresholds."),
+                                   tags$li("Constructed", strong("food access"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
+                                                highlighting food deserts and areas that could benefit from programs facilitating access to fresh produce."),
+                                   p(),
+                                   p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively.")
+                            ),
+                            column(4,
+                                   h2(strong("Dashboard Aims")),
+                                   p("Our dashboard is aimed at:"),
+                                   p(strong("Floyd County extension professionals and the communities they serve."), ""),
+                                   p(strong("Local health-related agencies and departments seeking data insights to inform their decision-making."), ""),
+                                   p(strong("State government representatives in the Virginia Department of Health and the State Office of Rural Health."), ".")
+                            )
+                        
+                        
                     ) 
             ), 
             ## Tab Introduction--------------------------------------------
@@ -248,9 +286,20 @@ body <- dashboardBody(
                             width = NULL,
                             status = "primary",
                             solidHeader = TRUE,
-                            collapsible = TRUE,
-                            h2("Demographics of Floyd County by Census Tract or Block Group"), 
-                            p(),
+                            collapsible = TRUE,                            
+                            br(),
+                            column(4, 
+                                   h4(strong("Who does Patrick County Serve?")),
+                            p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
+                            
+                             p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. A
+                              CS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. We used the most recently available 5-year estimates from 2014/18 to compute percent Patrick County residents in a given block group or tract by age, race, ethnicity, 
+                              employment, health insurance coverage, and other relevant characteristics."), 
+                            
+                              p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents.")) ,
+                            br(), 
+                            column(8,
+                                   h4(strong("Map of Resident Socioeconomic Characteristics by Census Tract or Block Group")),
                             selectInput("demo1", "Select Variable:", width = "100%", choices = c(
                                 "Population Median Household Income" = "income",
                                 "Population Median Home Value" = "home", 
@@ -268,7 +317,8 @@ body <- dashboardBody(
                                 )
                             ), 
                             leafletOutput("demo"), 
-                            p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))
+                            p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))) 
+                            
                         ) 
                     ) 
             ), 
