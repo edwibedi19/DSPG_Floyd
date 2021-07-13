@@ -156,11 +156,8 @@ water_springs <- water_springs %>%
   ))
 
 
-
-
 mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/ShinyApp/data/AbandonedMineralMineLands.txt")
 
-# Filter the mine data for only those within Floyd County
 mines_Floyd <- mines %>%
     filter(County == "Floyd")
 
@@ -380,39 +377,71 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Water Retention"), align = "center"),
                               p("", style = "padding-top:10px;"), 
-                              tabsetPanel(
-                                  tabPanel("Precipitation",
-                                           p(""),
-                                           selectInput("var1", "Select Variable:", width = "100%", choices = c(
-                                               "Rainfall" = "rainfall",
-                                               "Minimum Temeprature" = "min", 
-                                               "Maximum Temeprature" = "max")
-                                           ),
-                                           p(strong("Precipitation")),
-                                           plotlyOutput("precipitation"),
-                                           p(tags$small("Data Source: US Climate"))
-                                  ),
-                                  tabPanel("Water Features",
-                                           p(""),
-                                           p(strong("Streams")),
-                                           leafletOutput("water"),
-                                           p(tags$small("Data Source: USGS National Hydrography Dataset"))
-                                           
+                              column(4, 
+                                     h4(strong("Floyd County")),
+                                     p("Floyd County's climate is characterized by moderately mild winters and warm summers.Average low temperatures range from 19 degrees Fahrenheit in January to 58 degrees
+                                        Fahrenheit in July. Average high temperatures range from 41 degrees Fahrenheit in January to 83 degrees Fahrenheit in July. Precipitation patterns in Floyd County are determined
+                                        generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
+                                        comes from storms spawned over the Atlantic Ocean. The average annual rainfall is 40.79 inches, though this varies
+                                        within the County. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
+                                       the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
+                                     br(),
+                                     p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of
+                                        non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
+                                        Province which extends from New York to northwestern Georgia. Elevations in the County generally range from 2,000 to
+                                        3,000 feet, significantly higher neighboring counties to the north, south, and east. The physiography of the County is characterized by gently rolling
+                                        land. Most of the land is more suited to grazing and forestry than to large-scale cultivation and urban types of development. Nearly half
+                                        of the County's total acreage is forested. "), 
+                                     br(), 
+                                     p("Almost all of Floyd County is underlain by Pre-Cambrian igneous and metamorphic rocks. They are complex, vary in age, and include the granites, gneisses and schists of the
+                                      Leatherwood granite and Wissachickon and Lynchburg gneiss formations. "), 
+                                     br(), 
+                                     p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
+                                      Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
+                                      the Mississippi River system. "),
+                                     ), 
+                              column(8, 
+                                    tabsetPanel(
+                                        tabPanel("Precipitation",
+                                                 selectInput("var1", "Select Variable:", width = "100%", choices = c(
+                                                     "Rainfall" = "rainfall",
+                                                     "Minimum Temeprature" = "min", 
+                                                     "Maximum Temeprature" = "max")
+                                                 ),
+                                                 p(strong("Precipitation")),
+                                                 plotlyOutput("precipitation"),
+                                                 p(tags$small("Data Source: US Climate"))
+                                        ),
+                                        tabPanel("Water Features",
+                                                 p(""),
+                                                 p(strong("Streams")),
+                                                 leafletOutput("water"),
+                                                 p(tags$small("Data Source: USGS National Hydrography Dataset"))
+                                                 
+                                    )
+                                  ) 
                               )
-                            ) 
+                        
                      ) 
             ), 
             ## Tab Water Usage--------------------------------------------
             tabPanel("Water Usage", value = "usage",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Land Parcels"), align = "center"),
-                              p("", style = "padding-top:10px;"), 
-                              tabsetPanel(
-                                  tabPanel("Public and Private Wells"
-                                           
-                                  ),
-                                  tabPanel("NDWI"
-                                           
+                              p("", style = "padding-top:10px;"),
+                              column(4, 
+                                     h4(strong("Land and Water Usage"))
+                                     
+                                     ), 
+                              column(8, 
+                                     
+                                  tabsetPanel(
+                                      tabPanel("Public and Private Wells"
+                                               
+                                      ),
+                                      tabPanel("NDWI"
+                                               
+                                      )
                                   )
                               ) 
                      ) 
@@ -423,16 +452,25 @@ ui <- navbarPage(title = "DSPG 2021",
             tabPanel("Economics", value = "economics",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Resident and Commerical Development"), align = "center"),
-                              p("", style = "padding-top:10px;"), 
-                              selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                  "Employment by Industry" = "industry",
-                                  "Projected Population Change" = "pop", 
-                                  "Population by Age" = "age", 
-                                  "Number of Commuters" = "commute", 
-                                  "New Business Growth" = "business")
-                              ),
-                              plotlyOutput("trend1"),
-                              p(tags$small("Data Source: Virginia Employment Commission"))
+                              column(4, 
+                                     
+                                     
+                                     
+                                     ), 
+                              column(8, 
+                                     
+                                  p("", style = "padding-top:10px;"), 
+                                  selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                      "Employment by Industry" = "industry",
+                                      "Projected Population Change" = "pop", 
+                                      "Population by Age" = "age", 
+                                      "Number of Commuters" = "commute", 
+                                      "New Business Growth" = "business")
+                                  ),
+                                  plotlyOutput("trend1"),
+                                  p(tags$small("Data Source: Virginia Employment Commission"))
+                              
+                              )
                     )
                      
                     
@@ -441,42 +479,68 @@ ui <- navbarPage(title = "DSPG 2021",
             tabPanel("Water Quality", tabName = "wells",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Water Quality"), align = "center"),
-                              p("", style = "padding-top:10px;"), 
-                              tabsetPanel(
-                                  tabPanel("Public and Private Wells",
-                                           p(""),
-                                           selectInput("var2", "Select Variable:", width = "100%", choices = c(
-                                               "Average Daily Withdrawals (GPD)" = "gpd",
-                                               "Well Depth with Percent of Usage" = "depth", 
-                                               "Maximum Daily Withdrawals" = "max")
-                                           ),
-                                           p(strong("Wells")),
-                                           plotlyOutput("wells"),
-                                           p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
-                                  ),
-                                  tabPanel("Contamination",
-                                           h1(strong("Potential Sources of Contamination"), align = "center"),
-                                           p("", style = "padding-top:10px;"), 
-                                           p(strong("Percent Common Contaiminations")),
-                                           withSpinner(tableOutput("sources")),
-                                           p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
-                                           p(strong("Map of Abandoned Mines")),
-                                           withSpinner(leafletOutput("mines")),
-                                           p(tags$small("Data Sources: "))
-                                           
-                                           
-                                  )
-                              ) 
+                              p("", style = "padding-top:10px;"),
+                              column(4, 
+                                     h4(strong("Potential Sources of Contamination")),
+                                     p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
+                                       (1) Geoglogically, from streams, rivers, run off, etc., (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
+                                   p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
+                                              septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. Fifty-nine percent of
+                                              respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
+                                              was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
+                                              The two most common pipe materials were plastic (63%) and copper (25%).") , 
+                                   p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
+                                            these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
+                                   p(" If coliform bacteria are present in a water supply, possible pathways or sources include: (1) improper well location or inadequate
+                                            construction or maintenance, (2) contamination of the household plumbing system (e.g. contaminated faucet, water heater),and (3) contamination of the groundwater itself. ") 
+                                     ),
+                              column(8, 
+                                     
+                                  tabsetPanel(
+                                      tabPanel("Public and Private Wells",
+                                               p(""),
+                                               selectInput("var2", "Select Variable:", width = "100%", choices = c(
+                                                   "Average Daily Withdrawals (GPD)" = "gpd",
+                                                   "Well Depth with Percent of Usage" = "depth", 
+                                                   "Maximum Daily Withdrawals" = "max")
+                                               ),
+                                               p(strong("Wells")),
+                                               plotlyOutput("wells"),
+                                               p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
+                                      ),
+                                      tabPanel("Contamination",
+                                               p("", style = "padding-top:10px;"), 
+                                               p(strong("Percent Common Contaiminations")),
+                                               withSpinner(tableOutput("sources")),
+                                               p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
+                                                p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
+                                               br(), 
+                                               p(strong("Map of Abandoned Mines")),
+                                               withSpinner(leafletOutput("mines")),
+                                               p(tags$small("Data Sources: "))
+                                               
+                                               
+                                      )
+                                  ) 
+                              )
                      ) 
                      
             ),
             ## Tab Conclusion --------------------------------------------
-            tabPanel("Conclusion", value = "conclusion"
+            tabPanel("Conclusion", value = "conclusion", 
+                     fluidRow(style = "margin-left: 100px; margin-right: 100px;",
+                              h1(strong("Water Management Plan"), align = "center"),
+                               h4(strong("Protecting Water from Agricultural Runoff")) , 
+                                  p(),
+                                  
+                                h4(strong("Maintaining Domestic Pipeline")),
+                                p() 
+                     )
                      
             ), 
             ## Tab Team --------------------------------------------
             tabPanel("Team", value = "team",
-                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                     fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               h1(strong("Team"), align = "center"),
                               br(),
                               h4(strong("VT Data Science for the Public Good")),
