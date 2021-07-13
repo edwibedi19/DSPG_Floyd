@@ -17,6 +17,7 @@ library(shinythemes)
 library(stringr)
 library(shinyjs)
 
+
 # data -----------------------------------------------------------
 # Demographics 
 total_pop <- 15074 
@@ -120,18 +121,44 @@ new <- new[c(1,10,19),]
 new$average <- c(f_average, f2_average, f3_average)
 
 
-# County
-va_counties <- counties(state = "VA", cb = TRUE)
-floyd <- va_counties %>%
-    filter(NAME == "Floyd")
+# Water Features 
+floyd <- left_join(countydata, counties, by = "county_fips") %>% 
+  filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
 
-virginiaCounty <- st_read(
-    "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
-f <- virginiaCounty[5,] 
-areawater2 <- st_read(
-    "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/tl_2020_51063_areawater/tl_2020_51063_areawater.shp")
+pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
+floyd_df <- as.data.frame(floyd) 
+points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS()) 
+new_shape_w <- pts_w[points_poly,]
+new_shape_df_w <- as.data.frame(new_shape_w)
+# Springs
+nhdp <- readOGR( 
+  dsn= "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/Shape" , 
+  layer="NHDPoint"
+)
 
-mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/AbandonedMineralMineLands.txt")
+nhdp_df <- as(nhdp, "data.frame")
+pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
+
+#Springs only 1 in Floyd 
+new_shape_p <- pts_p[points_poly,]
+new_shape_df_p <- as.data.frame(new_shape_p)
+
+names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
+data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
+springs <- t(data.frame(data)) 
+colnames(springs) <- names
+water_springs <- rbind(new_shape_df_w, springs) %>%
+  select(long, lat, group)
+
+water_springs <- water_springs %>%
+  mutate(feature = case_when(group == 1 ~ 'Water Body', 
+                             group == 3 ~ 'Spring'
+  ))
+
+
+
+
+mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/ShinyApp/data/AbandonedMineralMineLands.txt")
 
 # Filter the mine data for only those within Floyd County
 mines_Floyd <- mines %>%
@@ -310,49 +337,38 @@ ui <- navbarPage(title = "DSPG 2021",
                               h1(strong("Data and Methodology"), align = "center"),
                               br(),
                               column(4,
-                                     img(src = "data-hifld.png", style = "display: inline; float: left;", width = "100px"),
-                                     p(strong("Homeland Infrastructure Foundation-Level Data."), "Homeland Infrastructure Foundation-Level Data (HIFLD) is a collection of public
-                                              source datasets at property level provided by the Department of Homeland Security. Since 2002, this HIFLD has provided quarterly
-                                              updated layers on topics from education to energy, including on health care facilities. We used HIFLD emergency medical services
-                                              station data at the latitude and longitude geographic level in our analyses."),
+                                     img(src = "data-dmme.png", style = "display: inline; float: left;", width = "200px"),
+                                     p(strong("Department of Mines, Minerals and Energy."), ""),
                                      br(""),
-                                     img(src = "data-gmaps.png", style = "display: inline; float: left;", width = "130px"),
-                                     p(strong("Google Maps."), "Google Maps is a comprehensive web mapping service created by Google. Its goal is to provide an interactive map
-                                              of all the geographical contents of the world. This resource has a variety of uses, ranging from examining all service locations within
-                                              a city to finding the quickest route between locations. It provides data at latitude and longitude level. We used Google Maps to locate
-                                              all supermarkets, convenience stores, and farmers’ markets in Patrick County, and subsequently employed the information in calculating
-                                              grocery access and coverage isochrones.")
+                                     img(src = "data-nrv.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("New River Valley Regional Commission."), "New River Valley Regional Commission is ")
                               ),
                               column(4,
                                      img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
                                      p(strong("American Community Survey."), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census
                                             Bureau. ACS samples households to compile 1-year and 5-year datasets providing information on population sociodemographic and
-                                            socioeconomic characteristics including employment, disability, and health insurance coverage. We used AC 2014/18 5-year
-                                            estimates to obtain census tract and census block group-level to explore Patrick County resident characteristics."),
+                                            socioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
+                                            estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
                                      br(""),
-                                     img(src = "data-connect.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("CommonwealthConnect."), "The Virginia Tech CommonwealthConnect Wi-Fi Hotspot Map is an interactive map of free, publicly
-                                           available wi-fi hotspots in Virginia. Its goal is to provide an easily accessible map of areas where individuals can connect to the
-                                           internet for free, decreasing the constraints placed on families that do not have internet access at home. We used the 2020 wi-fi
-                                           hotspot map data to retrieve hotspot locations in Patrick County and subsequently employed the information in calculating hotspot
-                                           coverage isochrones."),
+                                     img(src = "data-usClimate.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("US Climate Data."), "US Climate Data "),
                                      br(""),
-                                     img(src = "data-corelogic.png", style = "display: inline; float: left;", width = "120px"),
-                                     p(strong("CoreLogic."), "CoreLogic is a supplier of proprietary US real estate and specialized business data at the property level.
-                                           This company provides data spanning over 50 years at the latitude and longitude level. Information available in the dataset includes
-                                           property characteristics, mortgage, foreclosures and performance. We used 2019 CoreLogic data to obtain the locations of all residential
+                                     img(src = "data-usgsnhd.jpeg", style = "display: inline; float: left;", width = "200px"),
+                                     p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is a... We used 2019 CoreLogic data to obtain the locations of all residential
                                            properties in Patrick County.")
                               ),
                               column(4,
-                                     img(src = "data-traveltime.png", style = "display: inline; float: left;", width = "140px"),
-                                     p(strong("TravelTime."), "TravelTime Application Programming Interface (API) aggregates data from OpenStreetMap, transport timetables and
-                                           speed profiles to generate isochrones. An isochrone is a shape covering all locations that can be reached within the same timeframe
-                                           given a start location, departure time, and a mode of transportation. We used the TravelTime API to produce isochrones of 10- and
-                                           15-minute drive time interval from supermarkets, farmers' markets, and free wi-fi hotspots, and of 8-, 10-, and 12-minute drive
-                                           time intervals from all emergency medical service stations in Patrick County."),
+                                     img(src = "data-vce.jpeg", style = "display: inline; float: left;", width = "100px"),
+                                     p(strong("Virginia Cooperative Extension. "), "Virginia Cooperative Extension is "),
                                      br(""),
-                                     img(src = "data-ers.png", style = "display: inline; float: left;", width = "120px"),
-                                     p(strong("Food Access Research Atlas."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
+                                     img(src = "data-vec.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("Virginia Employment Commission."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
+                                          created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
+                                          individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
+                                          Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics."),
+                                     br(""), 
+                                     img(src = "", style = "display: inline; float: left;", width = "120px"),
+                                     p(strong("Virginia Employment Commission."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
                                           created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
                                           individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
                                           Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics.")
@@ -374,12 +390,13 @@ ui <- navbarPage(title = "DSPG 2021",
                                            ),
                                            p(strong("Precipitation")),
                                            plotlyOutput("precipitation"),
-                                           p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
+                                           p(tags$small("Data Source: US Climate"))
                                   ),
                                   tabPanel("Water Features",
                                            p(""),
                                            p(strong("Streams")),
-                                           plotlyOutput("water")
+                                           leafletOutput("water"),
+                                           p(tags$small("Data Source: USGS National Hydrography Dataset"))
                                            
                               )
                             ) 
@@ -441,7 +458,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                            h1(strong("Potential Sources of Contamination"), align = "center"),
                                            p("", style = "padding-top:10px;"), 
                                            p(strong("Percent Common Contaiminations")),
-                                           withSpinner(tableOutput("allwifitable")),
+                                           withSpinner(tableOutput("sources")),
+                                           p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
                                            p(strong("Map of Abandoned Mines")),
                                            withSpinner(leafletOutput("mines")),
                                            p(tags$small("Data Sources: "))
@@ -479,25 +497,25 @@ ui <- navbarPage(title = "DSPG 2021",
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      p(a(href = 'https://www.linkedin.com/in/morgan-stockham/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Applied Microeconomics);",
-                                       a(href = 'https://www.linkedin.com/in/tasfia-chowdhury-89005a1b2/', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Economics and Computational Modeling and Data Analytics);",
+                                       a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Economics and Computational Modeling and Data Analytics);",
                                        a(href = 'https://www.linkedin.com/in/igomez-3099/', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Statistical and Data Science).",
                                         a(href = 'https://www.linkedin.com/in/igomez-3099/', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Statistical and Data Science)."),
                                      p("", style = "padding-top:10px;") 
                               ),
                               column(6, align = "center",
-                                     h4(strong("UVA Faculty Team Members")),
+                                     h4(strong("VT Faculty Team Members")),
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     p(a(href = "", 'Teja Pristavec', target = '_blank'), "(Project Lead, Research Assistant Professor);",
-                                       a(href = "", 'Brandon Kramer', target = '_blank'), "(Postdoctoral Research Associate);",
-                                       a(href = '', 'Sallie Keller', target = '_blank'), "(Division Director and Distinguished Professor)."),
+                                     p(a(href = "", 'Susna Chen', target = '_blank'), "(Project Lead, Research Assistant Professor);",
+                                       a(href = "", 'Brianna Posadas', target = '_blank'), "(VT, Postdoctoral Research Associate);",
+                                       a(href = '', 'Sarah M. Witiak', target = '_blank'), "(VSU, Division Director and Distinguished Professor)."),
                                      p("", style = "padding-top:10px;")
                               )
                      ),
                      fluidRow(style = "margin-left: 300px; margin-right: 300px;",
                               h4(strong("Project Stakeholders")),
-                              p(a(href = 'https://www.linkedin.com/in/nancy-bell-aa293810/', 'Nancy Bell', target = '_blank'), "(Virginia Department of Health);",
+                              p(a(href = 'https://www.linkedin.com/in/nancy-bell-aa293810/', 'Dawn Barnes', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech);",
                                 a(href = 'https://www.linkedin.com/in/terri-alt-3138b4101/', 'Terri Alt', target = '_blank'), "(Virginia Cooperative Extension, Patrick County at Virginia Tech)."),
                               p("", style = "padding-top:10px;"),
                               h4(strong("Acknowledgments")),
@@ -908,9 +926,8 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb)+ 
-                labs(title = "Average Monthly Ranfall from 3 surrounding counties in Virginia",
+                labs(title = "Average Monthly Rainfall from Floyd, Christiansburg, Pulaski", 
                      caption = "Data Source: US Climate Data",
-                     subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on groundwater.", 
                      y="Rainfall (in)")+ theme( 
                          plot.subtitle = element_text(size = 9, color = "blue"))
         
@@ -920,9 +937,8 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) +
-                labs(title = "Minimum Tempature from 3 surrounding counties in Virginia",
+                labs(title = "Minimum Tempature from Floyd, Christiansburg, Pulaski",
                      caption = "Data Source: US Climate Data",
-                     subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater freezes and melts during the Winter",
                      y = "Temperature (F)") + theme( 
                          plot.subtitle = element_text(size = 6, color = "blue"))
             
@@ -932,12 +948,10 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) + 
-                labs(title = "Maximum Tempature from 3 surrounding counties in Virginia",
+                labs(title = "Maximum Tempature from Floyd, Christiansburg, Pulaski",
                      caption = "Data Source: US Climate Data",
-                     subtitle = "*This can be used to see how Floyd County comapres to its surrounding counties based on if the groundwater is getting evaporated",
                      y = "Temperature (F) ")+ theme( 
                          plot.subtitle = element_text(size = 7, color = "blue"))
-            
             
         }
         
@@ -947,20 +961,36 @@ server <- function(input, output) {
     })
     
     # Census tract plot 
-    output$water <- renderPlotly({
+    output$water <- renderLeaflet({
 
 
-        # features <- unique(water_springs$feature)
-        # Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'),
-        #                           levels = features)
-
-        ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry
-        # floyd_map <- water_springs %>%
-            
-        ggplot() + 
-            geom_sf(mapping = aes(geometry = geometry), data = f) + 
-            geom_sf(mapping = aes(geometry = geometry), data = areawater2,  color = "blue") + 
-            labs(title = "Streams and Water bodies in Floyd")
+        features <- unique(water_springs$feature)
+        Pillar_pal <- colorFactor(pal = c('deepskyblue3', 'magenta2'),
+                                  levels = features)
+        total_block %>% 
+          leaflet(options = leafletOptions(minzoom = 12)) %>% 
+          setView(lng = -80.4, lat = 36.95, zoom = 10) %>% 
+          addTiles()%>%
+          addPolygons(fillOpacity = 0.01,
+                      color = "black", opacity = 1.0, weight = 1,
+                      label = lapply(
+                        paste("<strong>Area: </strong>",
+                              total_block$NAME),
+                        htmltools::HTML))   %>%
+          addCircleMarkers(lng = ~water_springs$long, lat = ~water_springs$lat,  radius = 1, color = ~Pillar_pal(water_springs$feature)) %>% 
+          addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, 
+                     label = lapply(
+                       paste("<strong>Town of Floyd</strong>",
+                             "<br />"),
+                       htmltools::HTML)) %>%
+          addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
+                     label = lapply(
+                       paste("<strong>Floyd Quarry</strong>",
+                             "<br />"),
+                       htmltools::HTML)) %>% 
+          addLegend(title = "Feature", position = "bottomleft", pal = Pillar_pal, values = features,
+                    )
+  
         
       
             
@@ -970,8 +1000,6 @@ server <- function(input, output) {
     })
     
     output$mines <- renderLeaflet({
-        
-        
         
         total_block %>%
             leaflet(options = leafletOptions(minzoom = 12)) %>% 
@@ -988,6 +1016,11 @@ server <- function(input, output) {
                            paste("<strong>Town of Floyd</strong>",
                                  "<br />"),
                            htmltools::HTML)) %>%
+           addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
+                     label = lapply(
+                       paste("<strong>Floyd Quarry</strong>",
+                             "<br />"),
+                       htmltools::HTML)) %>% 
             addCircleMarkers(lng = ~mines_Floyd$Lon,
                              lat = ~mines_Floyd$Lat,
                              radius = 5, fillOpacity = .2,
@@ -1029,7 +1062,6 @@ server <- function(input, output) {
             
             
         }else {
-            
             wells %>% 
                 ggplot(aes(x = Names, y = Max_GPD)) + 
                 geom_bar(stat = "identity", position = "dodge",fill = rgb(0.9,0.4,0.4,0.9))+ 
@@ -1105,10 +1137,11 @@ server <- function(input, output) {
     }) 
     
     output$sources <- renderTable({
-        
-        
-        
-    })
+      table <- read.csv("data/table-sources.csv")
+      table$`X..Exceeding.Standard` <- paste0(table$`X..Exceeding.Standard`, " %")
+      colnames(table) <- c("Test", "EPA Standard", "Average", "Maximum Value", "% Exceeding Standard")
+      table
+    }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "r", colnames = T, digits = 2)
     
     
 }

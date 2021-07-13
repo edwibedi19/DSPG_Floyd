@@ -19,10 +19,11 @@ water <- readOGR(
   layer="virginia_water"
 )
 
-natural <- readOGR( 
-  dsn= "virginia_natural/" , 
-  layer="virginia_natural"
+water <- readOGR( 
+  dsn= "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/DSPG-Floyd/data/virginia_water" , 
+  layer="virginia_water"
 )
+
 
 ## Water bodies, lakes 
 water_df <- fortify(water)
@@ -32,31 +33,35 @@ flo_w <- water_df %>%
 flo_w$group <- 1 
 
 ## Forests, lakes, wetlands 
-natural_df <- fortify(natural)
-flo_n <- natural_df %>% 
-  filter(natural_df$long > -80.6 & natural_df$long < -80.1 & 
-           natural_df$lat < 37.2 & natural_df$lat > 36.7) 
-flo_n$group <- 2 
+# natural_df <- fortify(natural)
+# flo_n <- natural_df %>% 
+#   filter(natural_df$long > -80.6 & natural_df$long < -80.1 & 
+#            natural_df$lat < 37.2 & natural_df$lat > 36.7) 
+# flo_n$group <- 2 
 
 
 ## simple point plots 
-ggplot(flo_n, aes(x = long, y = lat)) +
-  geom_point() + 
-  ggtitle("Floyd County Forests, Lakes, Wetlands ")
-
-
-ggplot(flo_w, aes(x = long, y = lat)) +
-  geom_point() + 
-  ggtitle("Floyd County Water bodies, Lakes, Ponds")
+# ggplot(flo_n, aes(x = long, y = lat)) +
+#   geom_point() + 
+#   ggtitle("Floyd County Forests, Lakes, Wetlands ")
+# 
+# 
+# ggplot(flo_w, aes(x = long, y = lat)) +
+#   geom_point() + 
+#   ggtitle("Floyd County Water bodies, Lakes, Ponds")
 
 
 ## getting county data for just floyd 
+va_counties <- counties(state = "VA", cb = TRUE)
+floyd <- va_counties %>%
+  filter(NAME == "Floyd")
+
 floyd <- left_join(countydata, counties, by = "county_fips") %>% 
   filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
 
 # turning into SpatialPointsDF 
 pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
-pts_n <- SpatialPointsDataFrame(flo_n, coords = flo_n[,1:2]) 
+# pts_n <- SpatialPointsDataFrame(flo_n, coords = flo_n[,1:2]) 
 
 floyd_df <- as.data.frame(floyd) 
 
@@ -69,8 +74,8 @@ new_shape_w <- pts_w[points_poly,]
 new_shape_df_w <- as.data.frame(new_shape_w)
 
 # this is filtering the points 
-new_shape_n <- pts_n[points_poly,]
-new_shape_df_n <- as.data.frame(new_shape_n)
+# new_shape_n <- pts_n[points_poly,]
+# new_shape_df_n <- as.data.frame(new_shape_n)
 
 map <- ggplot(floyd, aes(long, lat)) +
   geom_polygon(color = "white", size = 0.05, fill = "grey") +
@@ -128,7 +133,7 @@ nhdp_df <- as(nhdp, "data.frame")
 pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
 
 #Springs only 1 in Floyd 
-new_shape_p <- pts_p[poin, ts_poly,]
+new_shape_p <- pts_p[points_poly,]
 new_shape_df_p <- as.data.frame(new_shape_p)
 
 names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
@@ -151,7 +156,6 @@ library(leaflet.extras)
 features <- unique(water_springs$feature)
 Pillar_pal <- colorFactor(pal = c('blue', 'red'), 
                           levels = features)
-
 ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry 
 floyd_map <- water_springs %>% 
   leaflet(options = leafletOptions(minzoom = 19)) %>% 
