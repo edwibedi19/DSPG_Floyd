@@ -210,8 +210,7 @@ ui <- navbarPage(title = "DSPG 2021",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
                
-                 
-                 
+      
             ## Tab Overview--------------------------------------------
             tabPanel("Overview", value = "overview",
                      fluidRow(style = "margin: 2px;",
@@ -296,7 +295,7 @@ ui <- navbarPage(title = "DSPG 2021",
                              h1(strong("Floyd County Residents' Sociodemographic Characteristics"), align = "center"),
                              p("", style = "padding-top:10px;"),
                              column(4, 
-                                   h4(strong("Who does Patrick County Serve?")),
+                                   h4(strong("Who does Floyd County Serve?")),
                                     p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
                                     p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. A
                                       CS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. 
@@ -379,8 +378,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"), 
                               column(4, 
                                      h4(strong("Floyd County")),
-                                     p("Floyd County's climate is characterized by moderately mild winters and warm summers.Average low temperatures range from 19 degrees Fahrenheit in January to 58 degrees
-                                        Fahrenheit in July. Average high temperatures range from 41 degrees Fahrenheit in January to 83 degrees Fahrenheit in July. Precipitation patterns in Floyd County are determined
+                                     p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
                                         generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
                                         comes from storms spawned over the Atlantic Ocean. The average annual rainfall is 40.79 inches, though this varies
                                         within the County. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
@@ -413,7 +411,6 @@ ui <- navbarPage(title = "DSPG 2021",
                                                  p(tags$small("Data Source: US Climate"))
                                         ),
                                         tabPanel("Water Features",
-                                                 p(""),
                                                  p(strong("Streams")),
                                                  leafletOutput("water"),
                                                  p(tags$small("Data Source: USGS National Hydrography Dataset"))
@@ -430,7 +427,11 @@ ui <- navbarPage(title = "DSPG 2021",
                               h1(strong("Land Parcels"), align = "center"),
                               p("", style = "padding-top:10px;"),
                               column(4, 
-                                     h4(strong("Land and Water Usage"))
+                                     h4(strong("Land and Water Usage")),
+                                     p("Because Floyd is located on the west most rural part of Virginia, there was little data on the well water level of the public and private wells that
+                                       supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years. 
+                                      ")
+                                     
                                      
                                      ), 
                               column(8, 
@@ -453,9 +454,13 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Resident and Commerical Development"), align = "center"),
                               column(4, 
-                                     
-                                     
-                                     
+                                     h4(strong("Economic Growth")),
+                                     p("The residental and commerial businesses ahve been growing within the past 10 years in Floyd, but there is a different demographic of the new movers. 
+                                       Of the recent residents, their household income is significantly higher than those residing in Floyd for the past 10 years and their home values have
+                                       almost doubled. Because of the recent pandemic, there was a push on moving to rural areas and working from home and this is part of the reason why home values
+                                       have increased so much within the past 2 years. It seems that the new residents are moving into Floyd for its land features, natural beauty, 
+                                       and reowned for vibrant culture of music, arts, local foods and wines, and outdoor recreation, but they are working outside and not contributing to the county's economy. 
+                                       ")
                                      ), 
                               column(8, 
                                      
@@ -483,41 +488,40 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(4, 
                                      h4(strong("Potential Sources of Contamination")),
                                      p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
-                                       (1) Geoglogically, from streams, rivers, run off, etc., (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
+                                       (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
                                    p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
-                                              septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. Fifty-nine percent of
-                                              respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
-                                              was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
-                                              The two most common pipe materials were plastic (63%) and copper (25%).") , 
+                                      septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
+                                      respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
+                                      was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
+                                      The two most common pipe materials were plastic (63%) and copper (25%).") , 
                                    p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
-                                            these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
+                                      these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
                                    p(" If coliform bacteria are present in a water supply, possible pathways or sources include: (1) improper well location or inadequate
-                                            construction or maintenance, (2) contamination of the household plumbing system (e.g. contaminated faucet, water heater),and (3) contamination of the groundwater itself. ") 
+                                      construction or maintenance, (2) contamination of the household plumbing system (e.g. contaminated faucet, water heater),and (3) contamination of the groundwater itself. ") 
                                      ),
                               column(8, 
                                      
                                   tabsetPanel(
-                                      tabPanel("Public and Private Wells",
-                                               p(""),
-                                               selectInput("var2", "Select Variable:", width = "100%", choices = c(
-                                                   "Average Daily Withdrawals (GPD)" = "gpd",
-                                                   "Well Depth with Percent of Usage" = "depth", 
-                                                   "Maximum Daily Withdrawals" = "max")
-                                               ),
-                                               p(strong("Wells")),
-                                               plotlyOutput("wells"),
-                                               p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
+                                      tabPanel("Wells",
+                                               p(strong("Community Wells")),
+                                             selectInput("var2", "Select Variable:", width = "100%", choices = c(
+                                                 "Average Daily Withdrawals (GPD)" = "gpd",
+                                                 "Well Depth with Percent of Usage" = "depth", 
+                                                 "Maximum Daily Withdrawals" = "max")
+                                             ),
+                                             plotlyOutput("wells"), 
+                                             p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
                                       ),
                                       tabPanel("Contamination",
-                                               p("", style = "padding-top:10px;"), 
-                                               p(strong("Percent Common Contaiminations")),
-                                               withSpinner(tableOutput("sources")),
-                                               p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
-                                                p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
-                                               br(), 
-                                               p(strong("Map of Abandoned Mines")),
-                                               withSpinner(leafletOutput("mines")),
-                                               p(tags$small("Data Sources: "))
+                                             p("", style = "padding-top:10px;"), 
+                                             p(strong("Percent Common Contaiminations")),
+                                             withSpinner(tableOutput("sources")),
+                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
+                                             p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
+                                             br(), 
+                                             p(strong("Map of Abandoned Mines")),
+                                             withSpinner(leafletOutput("mines")),
+                                             p(tags$small("Data Sources: "))
                                                
                                                
                                       )
@@ -528,14 +532,17 @@ ui <- navbarPage(title = "DSPG 2021",
             ),
             ## Tab Conclusion --------------------------------------------
             tabPanel("Conclusion", value = "conclusion", 
-                     fluidRow(style = "margin-left: 100px; margin-right: 100px;",
-                              h1(strong("Water Management Plan"), align = "center"),
-                               h4(strong("Protecting Water from Agricultural Runoff")) , 
-                                  p(),
-                                  
-                                h4(strong("Maintaining Domestic Pipeline")),
-                                p() 
-                     )
+                     fluidRow(style = "margin: 6px;",
+                              h1(strong("Water Quality"), align = "center"),
+                              p("", style = "padding-top:10px;"),
+                              column(4, 
+                                     h4("Water Quality")), 
+                              column(4, 
+                                     h4("Water Quantity")),
+                              column(4,
+                                     h4("Overall Sustainability")) 
+                     ) 
+                     
                      
             ), 
             ## Tab Team --------------------------------------------
@@ -553,7 +560,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                 a(href = 'https://aaec.vt.edu/content/aaec_vt_edu/en/academics/undergraduate/beyond-classroom/dspg.html#select=1.html', 'the official VT DSPG website.', target = "_blank")),
                               p("", style = "padding-top:10px;")
                      ),
-                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                     fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               column(6, align = "center",
                                      h4(strong("DSPG Team Members")),
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
@@ -577,7 +584,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                      p("", style = "padding-top:10px;")
                               )
                      ),
-                     fluidRow(style = "margin-left: 300px; margin-right: 300px;",
+                     fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               h4(strong("Project Stakeholders")),
                               p(a(href = 'https://www.linkedin.com/in/nancy-bell-aa293810/', 'Dawn Barnes', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech);",
                                 a(href = 'https://www.linkedin.com/in/terri-alt-3138b4101/', 'Terri Alt', target = '_blank'), "(Virginia Cooperative Extension, Patrick County at Virginia Tech)."),
@@ -1104,13 +1111,11 @@ server <- function(input, output) {
             wells %>% 
                 ggplot(aes(x = Names, y = Withdrawl_GPD)) + 
                 geom_bar(stat = "identity", position = "dodge", fill = rgb(0.9,0.1,0.1,0.9))+ 
-                labs(title = "Average Daily Withdrawals of Public Wells", 
-                     subtitle = "*Note this data is from 2011 so the average daily withdrawal may be different now. ",
+                labs(title = "Average Daily Withdrawals of Community Wells", 
                      x = "Wells",
                      y = "Withdrawal (GPD) ") + 
                 theme(legend.position = "none", 
-                      plot.subtitle = element_text(color = "blue", size = 9), 
-                      plot.caption = element_text(color = "black", face = "italic", size = 7))
+                      plot.subtitle = element_text(color = "blue", size = 9))
             
             
         }else if (var2() == "depth") {
@@ -1120,28 +1125,21 @@ server <- function(input, output) {
                 geom_col(aes(y = Percent), fill = "darkseagreen1")  + 
                 geom_line(aes(y = Well_Depth/1000), color = "navyblue", size = 1, group = 1) +
                 scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  + 
-                labs(title = "Percent of Usage and Well Depth of Wells in Floyd County",
-                     subtitle = "*could be a potential correlation of well depth compared to the average daily withdrawal amount",x = "Wells") + theme(plot.subtitle = element_text(color = "blue", size = 7), 
-                                                                                                                                                       plot.caption = element_text(color = "black", face = "italic", size = 7))
+                labs(title = "Percent of Usage and Well Depth of Community Wells", x = "Wells") + 
+              theme(plot.subtitle = element_text(color = "blue", size = 7))
             
             
         }else {
             wells %>% 
                 ggplot(aes(x = Names, y = Max_GPD)) + 
                 geom_bar(stat = "identity", position = "dodge",fill = rgb(0.9,0.4,0.4,0.9))+ 
-                labs(title = "Maximum Daily Withdrawals of Public Wells", 
-                     subtitle = "*Note this data is from 2011 so the average daily withdrawal may be different now",
+                labs(title = "Maximum Daily Withdrawals of Community Wells", 
                      x = "Wells",
                      y = "Withdrawal (GPD)") + 
-                theme(legend.position = "none", 
-                      plot.subtitle = element_text(color = "blue", size = 9), 
-                      plot.caption = element_text(color = "black", face = "italic", size = 7))
+                theme(legend.position = "none")
             
             
         }
-        
-        
-        
         
     })
     
@@ -1193,7 +1191,6 @@ server <- function(input, output) {
                 labs(title = "New Business Growth in Floyd",
                      caption = "Data Source: Virginia Employment Commission, Economic Information & Analytics, 
                         Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")
-            
             
         }
         
