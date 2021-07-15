@@ -204,6 +204,39 @@ colnames(busgrowth_df) <- c("Time","Quantity")
 busgrowth_df$Time <- factor(busgrowth_df$Time, levels=unique(busgrowth_df$Time))
 busgrowth_df$Quantity <- as.numeric(busgrowth_df$Quantity)
 
+## Land Parcel Data
+aoi_boundary_HARV <- st_read(paste0(getwd(), "/data/parcels_with_class/Parcels_with_Class.shp")) 
+state_class_colors <- c("blue", "green", "red", "cyan", "magenta", "yellow")
+class_levels <- c("Agricultural/Undeveloped (20 – 99 acres)", "Agricultural/Undeveloped (100 acres and up)","Single-Family Residential(Suburban 0-19.99 acres)" ,
+                  "Single Family Residential(Urban)", "Commercial/Industrial", "Multi-Family")
+class_pal <- colorFactor(pal = state_class_colors, 
+                         levels = class_levels)
+# agr 
+agr <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Agricultural/Undeveloped (20 – 99 acres)")%>%
+  st_transform(crs = "+init=epsg:4326")
+# agr greater 
+agr_large <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Agricultural/Undeveloped (100 acres and up)")%>%
+  st_transform(crs = "+init=epsg:4326")
+#single household 
+single <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Single-Family Residential(Suburban 0-19.99 acres)")%>%
+  st_transform(crs = "+init=epsg:4326")
+# single urban household 
+single_urban <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Single Family Residential(Urban)")%>%
+  st_transform(crs = "+init=epsg:4326")
+# multi
+mult <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Multi-Family")%>%
+  st_transform(crs = "+init=epsg:4326")
+# commerical
+com <- aoi_boundary_HARV %>% 
+  filter(PropClass == "Commercial/Industrial")%>%
+  st_transform(crs = "+init=epsg:4326")
+
+
 # body -----------------------------------------------------------
 ui <- navbarPage(title = "DSPG 2021",
                  selected = "overview",
@@ -437,7 +470,9 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(8, 
                                      
                                   tabsetPanel(
-                                      tabPanel("Public and Private Wells"
+                                      tabPanel("Land Parcels",
+                                               withSpinner(leafletOutput("landParcel")), 
+                                               p(tags$small("Data Source: "))
                                                
                                       ),
                                       tabPanel("NDWI"
@@ -503,7 +538,6 @@ ui <- navbarPage(title = "DSPG 2021",
                                      
                                   tabsetPanel(
                                       tabPanel("Wells",
-                                               p(strong("Community Wells")),
                                              selectInput("var2", "Select Variable:", width = "100%", choices = c(
                                                  "Average Daily Withdrawals (GPD)" = "gpd",
                                                  "Well Depth with Percent of Usage" = "depth", 
@@ -514,9 +548,12 @@ ui <- navbarPage(title = "DSPG 2021",
                                       ),
                                       tabPanel("Contamination",
                                              p("", style = "padding-top:10px;"), 
-                                             p(strong("Percent Common Contaiminations")),
+                                             selectInput("contam", "Select Variable:", width = "100%", choices = c(
+                                               "Percent Common Contaminants" = "percent",
+                                               "Groups of Common Contaminants" = "group")
+                                             ),
                                              withSpinner(tableOutput("sources")),
-                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010")), 
+                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010, Town of Christainsburg 2018 Drinking Water Report")), 
                                              p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
                                              br(), 
                                              p(strong("Map of Abandoned Mines")),
@@ -1143,6 +1180,63 @@ server <- function(input, output) {
         
     })
     
+    output$landParcel <- renderLeaflet({
+      
+      
+      total_block %>%
+        st_transform(crs = "+init=epsg:4326") %>%
+        leaflet(width = "100%") %>%
+        addProviderTiles(provider = "CartoDB.Positron") %>%
+        addPolygons(data = com, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Commercial/Industrial"),
+                    group = com$PropClass) %>%
+        addPolygons(data = agr, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Agricultural/Undeveloped (20 – 99 acres)"),
+                    group = agr$PropClass) %>%
+        addPolygons(data = agr_large, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Agricultural/Undeveloped (100 acres and up)"),
+                    group = agr_large$PropClass) %>%
+        addPolygons(data = single, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Single-Family Residential(Suburban 0-19.99 acres)"),
+                    group = single$PropClass) %>%
+        addPolygons(data = single_urban, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Single Family Residential(Urban)"),
+                    group = single_urban$PropClass) %>%
+        addPolygons(data = mult, 
+                    stroke = FALSE,
+                    smoothFactor = 0,
+                    fillOpacity = 0.7,
+                    fillColor = ~class_pal("Multi-Family"),
+                    group = mult$PropClass) %>%
+        addLayersControl(
+          position = "bottomright",
+          overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
+                            "Agricultural/Undeveloped (100 acres and up)",
+                            "Single-Family Residential(Suburban 0-19.99 acres)",
+                            "Single Family Residential(Urban)",
+                            "Multi-Family",
+                            "Commercial/Industrial"), 
+          options = layersControlOptions(collapsed = FALSE))%>%
+        addLegend(title = "Land Parcel", position = "topleft", pal = class_pal, values = class_levels)
+      
+      
+    })
+    
     
     econ1 <- reactive({
         input$econ1
@@ -1197,11 +1291,26 @@ server <- function(input, output) {
         
     }) 
     
+    contam <- reactive({
+      input$contam
+    })
+    
+    
     output$sources <- renderTable({
-      table <- read.csv("data/table-sources.csv")
-      table$`X..Exceeding.Standard` <- paste0(table$`X..Exceeding.Standard`, " %")
-      colnames(table) <- c("Test", "EPA Standard", "Average", "Maximum Value", "% Exceeding Standard")
-      table
+      
+      if(contam() == "percent") {
+            table <- read.csv("data/table-sources.csv")
+            table$`X..Exceeding.Standard` <- paste0(table$`X..Exceeding.Standard`, " %")
+            colnames(table) <- c("Test", "EPA Standard", "Average", "Maximum Value", "% Exceeding Standard")
+            table
+      } 
+      else {
+        
+        table <- read.csv("data/table-contaminants.csv")
+        table
+        
+        
+      }
     }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "r", colnames = T, digits = 2)
     
     
