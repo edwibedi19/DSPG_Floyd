@@ -16,7 +16,7 @@ library(shinycssloaders)
 library(shinythemes)
 library(stringr)
 library(shinyjs)
-
+options(tigris_use_cache = TRUE)
 
 # data -----------------------------------------------------------
 # Demographics 
@@ -370,7 +370,13 @@ ui <- navbarPage(title = "DSPG 2021",
                                      p(strong("Department of Mines, Minerals and Energy."), ""),
                                      br(""),
                                      img(src = "data-nrv.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("New River Valley Regional Commission."), "New River Valley Regional Commission is ")
+                                     p(strong("New River Valley Regional Commission."), "New River Valley Regional Commission is "),
+                                     br(""),
+                                     img(src = "data-epa.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("Enviromental Protection Agency."), " "),
+                                     br(""),
+                                     img(src = "data-ngwa.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("The National Groundwater Association."), "New River Valley Regional Commission is ")
                               ),
                               column(4,
                                      img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
@@ -384,7 +390,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                      br(""),
                                      img(src = "data-usgsnhd.jpeg", style = "display: inline; float: left;", width = "200px"),
                                      p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is a... We used 2019 CoreLogic data to obtain the locations of all residential
-                                           properties in Patrick County.")
+                                           properties in Patrick County."),
+                                     br(""),
+                                     img(src = "data-vdh.png", style = "display: inline; float: left;", width = "150px"),
+                                     p(strong("Virginia Department of Health."), "New River Valley Regional Commission is ")
                               ),
                               column(4,
                                      img(src = "data-vce.jpeg", style = "display: inline; float: left;", width = "100px"),
@@ -396,18 +405,19 @@ ui <- navbarPage(title = "DSPG 2021",
                                           individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
                                           Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics."),
                                      br(""), 
-                                     img(src = "", style = "display: inline; float: left;", width = "120px"),
-                                     p(strong("Virginia Employment Commission."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
+                                     img(src = "data-vdeq.jpeg", style = "display: inline; float: left;", width = "120px"),
+                                     p(strong("Virginia Department of Enviromental Quality."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
                                           created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
                                           individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
                                           Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics.")
-                              )
+                              ),
+                              
                      )
             ),
             ## Tab Geology--------------------------------------------
-            tabPanel("Geology and Water Features" , value = "geology",
+            tabPanel("Geology" , value = "geology",
                      fluidRow(style = "margin: 6px;",
-                              h1(strong("Water Retention"), align = "center"),
+                              h1(strong("Geology of Floyd"), align = "center"),
                               p("", style = "padding-top:10px;"), 
                               column(4, 
                                      h4(strong("Floyd County")),
@@ -457,7 +467,7 @@ ui <- navbarPage(title = "DSPG 2021",
             ## Tab Water Usage--------------------------------------------
             tabPanel("Water Usage", value = "usage",
                      fluidRow(style = "margin: 6px;",
-                              h1(strong("Land Parcels"), align = "center"),
+                              h1(strong("Water Usage and Quantity" ), align = "center"),
                               p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4(strong("Land and Water Usage")),
@@ -568,9 +578,9 @@ ui <- navbarPage(title = "DSPG 2021",
                      
             ),
             ## Tab Conclusion --------------------------------------------
-            tabPanel("Conclusion", value = "conclusion", 
+            tabPanel("Recommendations", value = "conclusion", 
                      fluidRow(style = "margin: 6px;",
-                              h1(strong("Water Quality"), align = "center"),
+                              h1(strong("Recommendations"), align = "center"),
                               p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4("Water Quality")), 
