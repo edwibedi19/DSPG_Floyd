@@ -242,6 +242,8 @@ ui <- navbarPage(title = "DSPG 2021",
                  selected = "overview",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
+                 
+                 shinythemes::themeSelector(), 
                
       
             ## Tab Overview--------------------------------------------
@@ -471,6 +473,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4(strong("Land and Water Usage")),
+                                     ## maybe some valueBoxes to highlight how many people use groundwater as their main source??? 
                                      p("Because Floyd is located on the west most rural part of Virginia, there was little data on the well water level of the public and private wells that
                                        supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years. 
                                       ")
@@ -478,7 +481,6 @@ ui <- navbarPage(title = "DSPG 2021",
                                      
                                      ), 
                               column(8, 
-                                     
                                   tabsetPanel(
                                       tabPanel("Land Parcels",
                                                withSpinner(leafletOutput("landParcel")), 
@@ -532,6 +534,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4(strong("Potential Sources of Contamination")),
+                                     #3 Maybe some valueBoxes to hightlight the main contaminants?? 
                                      p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
                                        (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
                                    p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
@@ -1242,7 +1245,8 @@ server <- function(input, output) {
                             "Multi-Family",
                             "Commercial/Industrial"), 
           options = layersControlOptions(collapsed = FALSE))%>%
-        addLegend(title = "Land Parcel", position = "topleft", pal = class_pal, values = class_levels)
+        addLegend(title = "Land Parcel", position = "topleft", pal = class_pal, values = class_levels,
+                  opacity = .4)
       
       
     })
@@ -1322,6 +1326,7 @@ server <- function(input, output) {
         
       }
     }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "r", colnames = T, digits = 2)
+  
     
     
 }
