@@ -237,15 +237,66 @@ com <- aoi_boundary_HARV %>%
   st_transform(crs = "+init=epsg:4326")
 
 
+
+# CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
+jscode <- "function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+
+           function getUrlParam(parameter, defaultvalue){
+                var urlparameter = defaultvalue;
+                if(window.location.href.indexOf(parameter) > -1){
+                    urlparameter = getUrlVars()[parameter];
+                    }
+                return urlparameter;
+            }
+
+            var mytype = getUrlParam('type','Empty');
+
+            function changeLinks(parameter) {
+                links = document.getElementsByTagName(\"a\");
+
+                for(var i = 0; i < links.length; i++) {
+                   var link = links[i];
+                   var newurl = link.href + '?type=' + parameter;
+                   link.setAttribute('href', newurl);
+                 }
+            }
+
+           var x = document.getElementsByClassName('navbar-brand');
+
+           if (mytype != 'economic') {
+             x[0].innerHTML = '<div style=\"margin-top:-14px\"><a href=\"https://datascienceforthepublicgood.org/events/symposium2020/poster-sessions\">' +
+                              '<img src=\"DSPG_black-01.png\", alt=\"DSPG 2020 Symposium Proceedings\", style=\"height:42px;\">' +
+                              '</a></div>';
+
+             //changeLinks('dspg');
+           } else {
+             x[0].innerHTML = '<div style=\"margin-top:-14px\"><a href=\"https://datascienceforthepublicgood.org/economic-mobility/community-insights/case-studies\">' +
+                              '<img src=\"AEMLogoGatesColorsBlack-11.png\", alt=\"Gates Economic Mobility Case Studies\", style=\"height:42px;\">' +
+                              '</a></div>';
+
+             //changeLinks('economic'); 
+           }
+           "
+
+
+
+
+
+
+
+
 # body -----------------------------------------------------------
 ui <- navbarPage(title = "DSPG 2021",
                  selected = "overview",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
-                 
-                 shinythemes::themeSelector(), 
-               
-      
+                 useShinyjs(),
             ## Tab Overview--------------------------------------------
             tabPanel("Overview", value = "overview",
                      fluidRow(style = "margin: 2px;",
@@ -290,15 +341,15 @@ ui <- navbarPage(title = "DSPG 2021",
                                             access to telemedicine emerged as key problems where providing actionable insights could address barriers to Patrick County residents’ health."),
                                      p(),
                                      p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
-                                            publicly available data to provide Patrick County with data-driven resources in each of the four priority areas. We:"),
-                                     tags$li("Provided census tract- and census block group-level maps of Patrick County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
-                                     tags$li("Created census tract-level maps on", strong("older adult health"), "to show the geographic distribution of older adults in the county by gender and
+                                            publicly available data to provide Floyd County with data-driven resources in each of the four priority areas. We:"),
+                                     tags$li("Provided census tract- and census block group-level maps of Floyd County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                     tags$li("Created barplots of", strong("monthly temperatures and precipitation levels"), "to show the geographic distribution of older adults in the county by gender and
                                                   type of disability, identifying areas where providing telehealth or travelling preventive care services may be particularly important."),
-                                     tags$li("Mapped residents'", strong("computing device and internet access"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
+                                     tags$li("Mapped locations of", strong("streams, lakes, and mines"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
                                                   wifi hotspots to highlight internet gaps that could suggest where new wi-fi hotspots could be optimally placed to provide internet access to more residents."),
-                                     tags$li("Calculated and mapped", strong("emergency medical service (EMS) station coverage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
+                                     tags$li("Calculated and mapped", strong("water usage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
                                                    standard EMS travel thresholds."),
-                                     tags$li("Constructed", strong("food access"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
+                                     tags$li("Constructed", strong("land parcel"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
                                                 highlighting food deserts and areas that could benefit from programs facilitating access to fresh produce."),
                                      p(),
                                      p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively.")
@@ -369,43 +420,49 @@ ui <- navbarPage(title = "DSPG 2021",
                               br(),
                               column(4,
                                      img(src = "data-dmme.png", style = "display: inline; float: left;", width = "200px"),
-                                     p(strong("Department of Mines, Minerals and Energy."), ""),
+                                     p(strong("Department of Mines, Minerals and Energy."), "The Department of Mines, Minerals and Energy provides public access to information and data related to energy resources, 
+                                       mining operations, geologic features, and abandoned mines. We used DMME data for abandoned and active mines in Floyd to show where potential contamination sources were compared
+                                       to streams, lakes and other water bodies. This would give us a better idea of where and how the contaminants are coming from. "),
                                      br(""),
                                      img(src = "data-nrv.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("New River Valley Regional Commission."), "New River Valley Regional Commission is "),
+                                     p(strong("New River Valley Regional Commission."), "The New River Valley Regional Commission is an organization comprised of 13 local governments and three higher education institutions for the purpose 
+                                       of encouraging collaboration to address regionally significant issues and opportunities. Since Floyd is in the New Rivery Valley area, we used their water supply report from 2011 to get the most recent data
+                                       on their community wells' daily withdrawals, depths and usages. "),
                                      br(""),
                                      img(src = "data-epa.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("Enviromental Protection Agency."), " "),
+                                     p(strong("Enviromental Protection Agency."), "The Enviornmental Protection is an independent executive agency of the United States federal government tasked with environmental protection matters. 
+                                       We used different reports and plans in order to make recommendations on Floyd's water quality and quantity issue. "),
                                      br(""),
                                      img(src = "data-ngwa.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("The National Groundwater Association."), "New River Valley Regional Commission is ")
+                                     p(strong("The National Groundwater Association."), "The National Groundwater Association is a  community of groundwater professionals working together to advance groundwater knowledge and the success of our members through education and outreach; 
+                                     advocacy; cooperation and information exchange; and enhancement of professional practice. We researched articles and reports from NGWA in order to better make recommendations for Floyd' water quality and quantity issue. ")
                               ),
                               column(4,
                                      img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
-                                     p(strong("American Community Survey."), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census
-                                            Bureau. ACS samples households to compile 1-year and 5-year datasets providing information on population sociodemographic and
-                                            socioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
+                                     p(strong("American Community Survey."), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
+                                     providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
                                             estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
                                      br(""),
                                      img(src = "data-usClimate.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("US Climate Data."), "US Climate Data "),
+                                     p(strong("US Climate Data."), "The US Climate Data's purpose is to inform people across the U.S of the climate around them. U.S Climate reports historical temperatures, precipitation, and wind speeds daily, monthly or annually. 
+                                       We use U.S Climate to gather data on Floyd, Christiansburg, and Pulaski to compare the 3 adjacent areas in terms of available groundwater. "),
                                      br(""),
                                      img(src = "data-usgsnhd.jpeg", style = "display: inline; float: left;", width = "200px"),
-                                     p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is a... We used 2019 CoreLogic data to obtain the locations of all residential
-                                           properties in Patrick County."),
+                                     p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is represents the water drainage network of the United States with features such as rivers, streams, canals, lakes, ponds, coastline, dams, and streamgages. We used 2019 NHD data
+                                       to map out the streams, lakes, springs in Floyd County. "),
                                      br(""),
                                      img(src = "data-vdh.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("Virginia Department of Health."), "New River Valley Regional Commission is ")
+                                     p(strong("Virginia Department of Health."), "Virginia Department of Health has a mission to protect the health and promote the well-being of all people in Virginia. VDH provides information and guidance in areas such as water quality
+                                       which we used to better inform ourselves on this subject. We used those reports and articles to recommend ways to better one's water quality of well water. ")
                               ),
                               column(4,
                                      img(src = "data-vce.jpeg", style = "display: inline; float: left;", width = "100px"),
-                                     p(strong("Virginia Cooperative Extension. "), "Virginia Cooperative Extension is "),
+                                     p(strong("Virginia Cooperative Extension. "), "Virginia Cooperative Extension provides resources and educational outreach to the Commonwealth of Virginia’s more than seven million residents in the areas of agriculture and natural resources, 
+                                       family and consumer sciences, community viability, and 4-H youth development. During out literature review, we used the VCE 2010 water quality report done in Floyd County to infer the common contaminants in the area and make
+                                       recommendations on how to combat those contaminants since they are still experiencing similar issues today. "),
                                      br(""),
                                      img(src = "data-vec.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("Virginia Employment Commission."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
-                                          created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
-                                          individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
-                                          Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics."),
+                                     p(strong("Virginia Employment Commission."), "Virginia Employment Commission is a division of the Virginia state government that provides benefits and services to unemployed citizens. We used a report from "),
                                      br(""), 
                                      img(src = "data-vdeq.jpeg", style = "display: inline; float: left;", width = "120px"),
                                      p(strong("Virginia Department of Enviromental Quality."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
@@ -421,48 +478,38 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Geology of Floyd"), align = "center"),
                               p("", style = "padding-top:10px;"), 
-                              column(4, 
-                                     h4(strong("Floyd County")),
+                              column(6, 
+                                     h4(strong("Precipitation")),
                                      p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
                                         generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
-                                        comes from storms spawned over the Atlantic Ocean. The average annual rainfall is 40.79 inches, though this varies
-                                        within the County. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
+                                        comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
                                        the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
                                      br(),
+                                   
+                                     selectInput("var1", "Select Variable:", width = "100%", choices = c(
+                                       "Rainfall" = "rainfall",
+                                       "Minimum Temeprature" = "min", 
+                                       "Maximum Temeprature" = "max")
+                                     ),
+                                     p(strong("Precipitation")),
+                                     plotlyOutput("precipitation"),
+                                     p(tags$small("Data Source: US Climate"))), 
+                              column(6, 
+                                     h4(strong("Water Features")), 
                                      p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of
                                         non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
                                         Province which extends from New York to northwestern Georgia. Elevations in the County generally range from 2,000 to
                                         3,000 feet, significantly higher neighboring counties to the north, south, and east. The physiography of the County is characterized by gently rolling
                                         land. Most of the land is more suited to grazing and forestry than to large-scale cultivation and urban types of development. Nearly half
-                                        of the County's total acreage is forested. "), 
-                                     br(), 
-                                     p("Almost all of Floyd County is underlain by Pre-Cambrian igneous and metamorphic rocks. They are complex, vary in age, and include the granites, gneisses and schists of the
-                                      Leatherwood granite and Wissachickon and Lynchburg gneiss formations. "), 
+                                        of the County's total acreage is forested."), 
                                      br(), 
                                      p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
                                       Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
                                       the Mississippi River system. "),
-                                     ), 
-                              column(8, 
-                                    tabsetPanel(
-                                        tabPanel("Precipitation",
-                                                 selectInput("var1", "Select Variable:", width = "100%", choices = c(
-                                                     "Rainfall" = "rainfall",
-                                                     "Minimum Temeprature" = "min", 
-                                                     "Maximum Temeprature" = "max")
-                                                 ),
-                                                 p(strong("Precipitation")),
-                                                 plotlyOutput("precipitation"),
-                                                 p(tags$small("Data Source: US Climate"))
-                                        ),
-                                        tabPanel("Water Features",
-                                                 p(strong("Streams")),
-                                                 leafletOutput("water"),
-                                                 p(tags$small("Data Source: USGS National Hydrography Dataset"))
-                                                 
-                                    )
+                                     leafletOutput("water"),
+                                     p(tags$small("Data Source: USGS National Hydrography Dataset"))
                                   ) 
-                              )
+                      
                         
                      ) 
             ), 
@@ -477,17 +524,16 @@ ui <- navbarPage(title = "DSPG 2021",
                                      p("Because Floyd is located on the west most rural part of Virginia, there was little data on the well water level of the public and private wells that
                                        supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years. 
                                       ")
-                                     
-                                     
                                      ), 
                               column(8, 
                                   tabsetPanel(
                                       tabPanel("Land Parcels",
                                                withSpinner(leafletOutput("landParcel")), 
-                                               p(tags$small("Data Source: "))
+                                               p(tags$small("Data Source: Floyd County"))
                                                
                                       ),
-                                      tabPanel("NDWI"
+                                      tabPanel("NDWI",
+                                               p()
                                                
                                       )
                                   )
@@ -532,8 +578,8 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Water Quality"), align = "center"),
                               p("", style = "padding-top:10px;"),
-                              column(4, 
-                                     h4(strong("Potential Sources of Contamination")),
+                              column(6, 
+                                     h4(strong("Well Information")),
                                      #3 Maybe some valueBoxes to hightlight the main contaminants?? 
                                      p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
                                        (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
@@ -544,39 +590,30 @@ ui <- navbarPage(title = "DSPG 2021",
                                       The two most common pipe materials were plastic (63%) and copper (25%).") , 
                                    p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
                                       these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
-                                   p(" If coliform bacteria are present in a water supply, possible pathways or sources include: (1) improper well location or inadequate
-                                      construction or maintenance, (2) contamination of the household plumbing system (e.g. contaminated faucet, water heater),and (3) contamination of the groundwater itself. ") 
+                                   selectInput("var2", "Select Variable:", width = "100%", choices = c(
+                                     "Average Daily Withdrawals (GPD)" = "gpd",
+                                     "Well Depth with Percent of Usage" = "depth", 
+                                     "Maximum Daily Withdrawals" = "max")
+                                   ),
+                                   plotlyOutput("wells"), 
+                                   p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))) , 
+                              column(6, 
+                                     h4(strong("Sources of Contamination")), 
+                                     selectInput("contam", "Select Variable:", width = "100%", choices = c(
+                                       "Percent Common Contaminants" = "percent",
+                                       "Groups of Common Contaminants" = "group")
                                      ),
-                              column(8, 
-                                     
-                                  tabsetPanel(
-                                      tabPanel("Wells",
-                                             selectInput("var2", "Select Variable:", width = "100%", choices = c(
-                                                 "Average Daily Withdrawals (GPD)" = "gpd",
-                                                 "Well Depth with Percent of Usage" = "depth", 
-                                                 "Maximum Daily Withdrawals" = "max")
-                                             ),
-                                             plotlyOutput("wells"), 
-                                             p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))
-                                      ),
-                                      tabPanel("Contamination",
-                                             p("", style = "padding-top:10px;"), 
-                                             selectInput("contam", "Select Variable:", width = "100%", choices = c(
-                                               "Percent Common Contaminants" = "percent",
-                                               "Groups of Common Contaminants" = "group")
-                                             ),
-                                             withSpinner(tableOutput("sources")),
-                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010, Town of Christainsburg 2018 Drinking Water Report")), 
-                                             p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
-                                             br(), 
-                                             p(strong("Map of Abandoned Mines")),
-                                             withSpinner(leafletOutput("mines")),
-                                             p(tags$small("Data Sources: "))
-                                               
-                                               
-                                      )
+                                     withSpinner(tableOutput("sources")),
+                                     p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010; Town of Christainsburg 2018 Drinking Water Report")), 
+                                     p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
+                                     tags$ br(), 
+                                     tags$br(), 
+                                     p(strong("Map of Abandoned Mines")),
+                                     withSpinner(leafletOutput("mines")),
+                                     p(tags$small("Data Source: The Department of Mines, Minerals and Energy"))
+                                      
                                   ) 
-                              )
+                             
                      ) 
                      
             ),
@@ -585,12 +622,17 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Recommendations"), align = "center"),
                               p("", style = "padding-top:10px;"),
-                              column(4, 
-                                     h4("Water Quality")), 
-                              column(4, 
-                                     h4("Water Quantity")),
-                              column(4,
-                                     h4("Overall Sustainability")) 
+                              column(6, 
+                                     h4("Water Quality", align = "center"),
+                                     p(),
+                                     p(),
+                                     p(),
+                                     withSpinner(tableOutput("qualityRec"))), 
+                              column(6, 
+                                     h4("Water Quantity", align  = "center"),
+                                     p(),
+                                     p(),
+                                     p())
                      ) 
                      
                      
@@ -601,7 +643,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               h1(strong("Team"), align = "center"),
                               br(),
                               h4(strong("VT Data Science for the Public Good")),
-                              p("The", a(href = 'https://biocomplexity.virginia.edu/social-decision-analytics/dspg-program', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
+                              p("The", a(href = 'https://aaec.vt.edu/academics/undergraduate/beyond-classroom/dspg.html', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
                                 "is a summer immersive program offered by the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
                                 "In its eighth year, the program engages students from across the country to work together on projects that address state, federal, and local government challenges around
                               critical social issues relevant in the world today. DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences
@@ -617,10 +659,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                      img(src = "team-julie.png", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     p(a(href = 'https://www.linkedin.com/in/morgan-stockham/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Applied Microeconomics);",
+                                     p(a(href = '', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Applied Microeconomics);",
                                        a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Economics and Computational Modeling and Data Analytics);",
-                                       a(href = 'https://www.linkedin.com/in/igomez-3099/', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Statistical and Data Science).",
-                                        a(href = 'https://www.linkedin.com/in/igomez-3099/', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Statistical and Data Science)."),
+                                       a(href = '', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Statistical and Data Science).",
+                                        a(href = '', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Statistical and Data Science)."),
                                      p("", style = "padding-top:10px;") 
                               ),
                               column(6, align = "center",
@@ -636,11 +678,10 @@ ui <- navbarPage(title = "DSPG 2021",
                      ),
                      fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               h4(strong("Project Stakeholders")),
-                              p(a(href = 'https://www.linkedin.com/in/nancy-bell-aa293810/', 'Dawn Barnes', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech);",
-                                a(href = 'https://www.linkedin.com/in/terri-alt-3138b4101/', 'Terri Alt', target = '_blank'), "(Virginia Cooperative Extension, Patrick County at Virginia Tech)."),
+                              p(a(href = '', 'Dawn Barnes', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech);",
+                                a(href = '', 'Terri Alt', target = '_blank'), "(Virginia Cooperative Extension, Patrick County at Virginia Tech)."),
                               p("", style = "padding-top:10px;"),
-                              h4(strong("Acknowledgments")),
-                              p("We would like to thank Healthy Patrick County, an association of concerned Patrick County residents, and Brandon Kramer for their input to this project.")
+                              h4(strong("Acknowledgments"))
                      )
             ),
             inverse = T) 
@@ -651,9 +692,11 @@ ui <- navbarPage(title = "DSPG 2021",
 
 
 
-# Define server logic required to draw a histogram
+# server --------------------------------------------
 server <- function(input, output) {
-    
+  runjs(jscode)
+  
+  
     char1 <- reactive({
         input$char1
     })
@@ -1047,7 +1090,7 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb)+ 
-                labs(title = "Average Monthly Rainfall from Floyd, Christiansburg, Pulaski", 
+                labs(title = "Average Monthly Rainfall", 
                      caption = "Data Source: US Climate Data",
                      y="Rainfall (in)")+ theme( 
                          plot.subtitle = element_text(size = 9, color = "blue"))
@@ -1058,7 +1101,7 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) +
-                labs(title = "Minimum Tempature from Floyd, Christiansburg, Pulaski",
+                labs(title = "Minimum Monthly Tempature",
                      caption = "Data Source: US Climate Data",
                      y = "Temperature (F)") + theme( 
                          plot.subtitle = element_text(size = 6, color = "blue"))
@@ -1069,7 +1112,7 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) + 
-                labs(title = "Maximum Tempature from Floyd, Christiansburg, Pulaski",
+                labs(title = "Maximum Monthly Tempaturei",
                      caption = "Data Source: US Climate Data",
                      y = "Temperature (F) ")+ theme( 
                          plot.subtitle = element_text(size = 7, color = "blue"))
@@ -1083,6 +1126,20 @@ server <- function(input, output) {
     
     # Census tract plot 
     output$water <- renderLeaflet({
+      
+      icons <- awesomeIcons(
+        icon = 'ios-close',
+        iconColor = 'black',
+        library = 'ion',
+        markerColor = "green"
+      )
+      
+      icons1 <- awesomeIcons(
+        icon = 'ios-close',
+        iconColor = 'black',
+        library = 'ion',
+        markerColor = "red"
+      )
 
 
         features <- unique(water_springs$feature)
@@ -1099,16 +1156,18 @@ server <- function(input, output) {
                               total_block$NAME),
                         htmltools::HTML))   %>%
           addCircleMarkers(lng = ~water_springs$long, lat = ~water_springs$lat,  radius = 1, color = ~Pillar_pal(water_springs$feature)) %>% 
-          addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, 
+          addAwesomeMarkers(lng = -80.31891779181245, lat = 36.91313331126569, 
                      label = lapply(
                        paste("<strong>Town of Floyd</strong>",
                              "<br />"),
-                       htmltools::HTML)) %>%
-          addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
-                     label = lapply(
-                       paste("<strong>Floyd Quarry</strong>",
-                             "<br />"),
-                       htmltools::HTML)) %>% 
+                       htmltools::HTML),
+                     icon = icons1) %>%
+          addAwesomeMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
+                            label = lapply(
+                              paste("<strong>Floyd Quarry</strong>",
+                                    "<br />"),
+                              htmltools::HTML),
+                            icon=icons) %>% 
           addLegend(title = "Feature", position = "bottomleft", pal = Pillar_pal, values = features,
                     )
   
@@ -1121,6 +1180,13 @@ server <- function(input, output) {
     })
     
     output$mines <- renderLeaflet({
+      
+      icons <- awesomeIcons(
+        icon = 'ios-close',
+        iconColor = 'black',
+        library = 'ion',
+        markerColor = "green"
+      )
         
         total_block %>%
             leaflet(options = leafletOptions(minzoom = 12)) %>% 
@@ -1137,11 +1203,12 @@ server <- function(input, output) {
                            paste("<strong>Town of Floyd</strong>",
                                  "<br />"),
                            htmltools::HTML)) %>%
-           addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
+        addAwesomeMarkers(lng = -80.25908794232855, lat = 36.90665582434524, 
                      label = lapply(
                        paste("<strong>Floyd Quarry</strong>",
                              "<br />"),
-                       htmltools::HTML)) %>% 
+                       htmltools::HTML),
+                     icon=icons) %>% 
             addCircleMarkers(lng = ~mines_Floyd$Lon,
                              lat = ~mines_Floyd$Lat,
                              radius = 5, fillOpacity = .2,
@@ -1326,6 +1393,13 @@ server <- function(input, output) {
         
       }
     }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "r", colnames = T, digits = 2)
+    
+    
+    output$qualityRec <- renderTable({
+        
+        table <- read_excel("data/recommendations.xlsx")
+        table
+    }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "l", colnames = T, digits = 2)
   
     
     
