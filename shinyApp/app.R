@@ -297,12 +297,11 @@ ui <- navbarPage(title = "DSPG 2021",
                  theme = shinytheme("lumen"),
                  tags$head(tags$style('.selectize-dropdown {z-index: 10000}')), 
                  useShinyjs(),
+                 
             ## Tab Overview--------------------------------------------
             tabPanel("Overview", value = "overview",
                      fluidRow(style = "margin: 2px;",
                               align = "center",
-                              # br("", style = "padding-top:2px;"),
-                              # img(src = "uva-dspg-logo.jpg", class = "topimage", width = "20%", style = "display: block; margin-left: auto; margin-right: auto;"),
                               br(""),
                               h1(strong("Water Management And Industry And Residential Growth In Floyd County, Virginia"),
                                  br(""),
@@ -323,7 +322,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                      p(strong("The setting."), a(href = "https://www.floydcova.org/", "Floyd County", target = "_blank"), "is a rural area in Virginia’s Central Piedmont, bordering North Carolina,
                                             with a declining population of approximately 17,600 people. Like many other rural areas in the United States, Patrick County is having difficulty meeting its residents’ health and quality of life needs.
                                             The county’s", a(href = "https://www.countyhealthrankings.org/app/virginia/2019/rankings/patrick/county/outcomes/overall/snapshot", "doctor to patient ratios", target = "_blank"),
-                                       "of 3,530 to 1 for primary care providers, 8,840 to 1 for dentists, and 2,520 to 1 for mental health providers are 3-
+                                            "of 3,530 to 1 for primary care providers, 8,840 to 1 for dentists, and 2,520 to 1 for mental health providers are 3-
                                             to 8-times higher than statewide, and the county’s only hospital closed in 2017. At the same time, the median income for Patrick County residents is $42,900,
                                             46% of children living in the county are eligible for free or reduced-price school lunch, and 12% of residents are food insecure."),
                                      p(),
@@ -414,10 +413,10 @@ ui <- navbarPage(title = "DSPG 2021",
                     ) 
             ), 
             ## Tab Data and Methodology--------------------------------------------
-            tabPanel("Data and Methodology", value = "data",
+            tabPanel("Data", value = "data",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Data and Methodology"), align = "center"),
-                              br(),
+                              p("", style = "padding-top:10px;"),
                               column(4,
                                      img(src = "data-dmme.png", style = "display: inline; float: left;", width = "200px"),
                                      p(strong("Department of Mines, Minerals and Energy."), "The Department of Mines, Minerals and Energy provides public access to information and data related to energy resources, 
@@ -474,28 +473,34 @@ ui <- navbarPage(title = "DSPG 2021",
                      )
             ),
             ## Tab Geology--------------------------------------------
-            tabPanel("Geology" , value = "geology",
-                     fluidRow(style = "margin: 6px;",
-                              h1(strong("Geology of Floyd"), align = "center"),
+            # need a different name
+            navbarMenu("Water Soures" , 
+                     tabPanel("Groundwater", 
+                            fluidRow(style = "margin: 6px;",
+                                h1(strong("Groundwater"), align = "center"),
+                                p("", style = "padding-top:10px;"), 
+                                column(4, 
+                                       h4(strong("Climate, Rainfall and Temperature")),
+                                       p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
+                                          generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
+                                          comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
+                                         the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
+                                       br()) ,
+                                     column(8, 
+                                            h4(strong("Graph of Monthly Climate")),
+                                           selectInput("var1", "Select Variable:", width = "100%", choices = c(
+                                             "Rainfall" = "rainfall",
+                                             "Minimum Temeprature" = "min", 
+                                             "Maximum Temeprature" = "max")
+                                           ),
+                                           plotlyOutput("precipitation"),
+                                           p(tags$small("Data Source: US Climate"))))), 
+                     tabPanel("Surface Water", 
+                              style = "margin: 6px;",
+                              h1(strong("Surface Water"), align = "center"),
                               p("", style = "padding-top:10px;"), 
-                              column(6, 
-                                     h4(strong("Precipitation")),
-                                     p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
-                                        generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
-                                        comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
-                                       the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
-                                     br(),
-                                   
-                                     selectInput("var1", "Select Variable:", width = "100%", choices = c(
-                                       "Rainfall" = "rainfall",
-                                       "Minimum Temeprature" = "min", 
-                                       "Maximum Temeprature" = "max")
-                                     ),
-                                     p(strong("Precipitation")),
-                                     plotlyOutput("precipitation"),
-                                     p(tags$small("Data Source: US Climate"))), 
-                              column(6, 
-                                     h4(strong("Water Features")), 
+                              column(4, 
+                                     h4(strong("Streams, Lakes, and Water Bodies")), 
                                      p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of
                                         non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
                                         Province which extends from New York to northwestern Georgia. Elevations in the County generally range from 2,000 to
@@ -505,13 +510,15 @@ ui <- navbarPage(title = "DSPG 2021",
                                      br(), 
                                      p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
                                       Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
-                                      the Mississippi River system. "),
+                                      the Mississippi River system. ")),
+                              column(8, 
+                                     h4(strong("Map of Water Features by Block Group")),
                                      leafletOutput("water"),
-                                     p(tags$small("Data Source: USGS National Hydrography Dataset"))
+                                     p(tags$small("Data Source: USGS National Hydrography Dataset"))) 
                                   ) 
                       
                         
-                     ) 
+                      
             ), 
             ## Tab Water Usage--------------------------------------------
             tabPanel("Water Usage", value = "usage",
@@ -528,6 +535,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(8, 
                                   tabsetPanel(
                                       tabPanel("Land Parcels",
+                                               h4(strong("Map of Land Parcels by Type")),
                                                withSpinner(leafletOutput("landParcel")), 
                                                p(tags$small("Data Source: Floyd County"))
                                                
@@ -542,81 +550,97 @@ ui <- navbarPage(title = "DSPG 2021",
                      
                      
             ), 
+            
+            ## Tab Wells and Water Quality --------------------------------------------
+            navbarMenu("Water Quality", 
+                      tabPanel("Wells",
+                           fluidRow(style = "margin: 6px;",
+                                    h1(strong("Well Information"), align = "center"),
+                                    p("", style = "padding-top:10px;"),
+                                    column(4, 
+                                           h4(strong("Withdrawals and Depths")),
+                                           #3 Maybe some valueBoxes to hightlight the main contaminants?? 
+                                           p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
+                                             (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
+                                         p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
+                                            septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
+                                            respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
+                                            was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
+                                            The two most common pipe materials were plastic (63%) and copper (25%).") , 
+                                         p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
+                                            these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off.")
+                                         ),
+                                    column(8, 
+                                           h4(strong("Graph of Well Information")),
+                                         selectInput("var2", "Select Variable:", width = "100%", choices = c(
+                                           "Average Daily Withdrawals (GPD)" = "gpd",
+                                           "Well Depth with Percent of Usage" = "depth", 
+                                           "Maximum Daily Withdrawals" = "max")
+                                         ), 
+                                         plotlyOutput("wells"), 
+                                         p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))) 
+                             
+                     ) ) ,
+                     tabPanel("Contamination",
+                              fluidRow(style = "margin: 6px;",
+                                       h1(strong("Contamination"), align = "center"),
+                                       p("", style = "padding-top:10px;"),
+                                       column(4, 
+                                              h4(strong("Potential Sources of Contamination")), 
+                                              p(), 
+                                              p()) , 
+                                       column(8, 
+                                              h4(strong("Table of Common Contaminants")),
+                                             selectInput("contam", "Select Variable:", width = "100%", choices = c(
+                                               "Percent Common Contaminants" = "percent",
+                                               "Groups of Common Contaminants" = "group")
+                                             ),
+                                             withSpinner(tableOutput("sources")),
+                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010; Town of Christainsburg 2018 Drinking Water Report")), 
+                                             p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
+                                             tags$ br(), 
+                                             tags$br(), 
+                                             h4(strong("Map of Abandoned Mines by Block Group")),
+                                             withSpinner(leafletOutput("mines")),
+                                             p(tags$small("Data Source: The Department of Mines, Minerals and Energy"))
+                                       
+                                ) 
+                              )) 
+                     
+            ),
+            
             ## Tab Economics--------------------------------------------
             tabPanel("Economics", value = "economics",
                      fluidRow(style = "margin: 6px;",
-                              h1(strong("Resident and Commerical Development"), align = "center"),
+                              h1(strong("Residental and Commerical Development"), align = "center"),
+                              p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4(strong("Economic Growth")),
-                                     p("The residental and commerial businesses ahve been growing within the past 10 years in Floyd, but there is a different demographic of the new movers. 
+                                     p("The residental and commerial businesses have been growing within the past 10 years in Floyd, but there is a different demographic of the new movers. 
                                        Of the recent residents, their household income is significantly higher than those residing in Floyd for the past 10 years and their home values have
                                        almost doubled. Because of the recent pandemic, there was a push on moving to rural areas and working from home and this is part of the reason why home values
                                        have increased so much within the past 2 years. It seems that the new residents are moving into Floyd for its land features, natural beauty, 
                                        and reowned for vibrant culture of music, arts, local foods and wines, and outdoor recreation, but they are working outside and not contributing to the county's economy. 
                                        ")
-                                     ), 
+                              ), 
                               column(8, 
-                                     
-                                  p("", style = "padding-top:10px;"), 
-                                  selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                      "Employment by Industry" = "industry",
-                                      "Projected Population Change" = "pop", 
-                                      "Population by Age" = "age", 
-                                      "Number of Commuters" = "commute", 
-                                      "New Business Growth" = "business")
-                                  ),
-                                  plotlyOutput("trend1"),
-                                  p(tags$small("Data Source: Virginia Employment Commission"))
-                              
-                              )
-                    )
-                     
-                    
-            ), 
-            ## Tab Wells and Water Quality --------------------------------------------
-            tabPanel("Water Quality", tabName = "wells",
-                     fluidRow(style = "margin: 6px;",
-                              h1(strong("Water Quality"), align = "center"),
-                              p("", style = "padding-top:10px;"),
-                              column(6, 
-                                     h4(strong("Well Information")),
-                                     #3 Maybe some valueBoxes to hightlight the main contaminants?? 
-                                     p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
-                                       (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
-                                   p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
-                                      septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
-                                      respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
-                                      was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
-                                      The two most common pipe materials were plastic (63%) and copper (25%).") , 
-                                   p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
-                                      these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
-                                   selectInput("var2", "Select Variable:", width = "100%", choices = c(
-                                     "Average Daily Withdrawals (GPD)" = "gpd",
-                                     "Well Depth with Percent of Usage" = "depth", 
-                                     "Maximum Daily Withdrawals" = "max")
-                                   ),
-                                   plotlyOutput("wells"), 
-                                   p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))) , 
-                              column(6, 
-                                     h4(strong("Sources of Contamination")), 
-                                     selectInput("contam", "Select Variable:", width = "100%", choices = c(
-                                       "Percent Common Contaminants" = "percent",
-                                       "Groups of Common Contaminants" = "group")
+                                     h4(strong("Graph of Economic Parameters")),
+                                     selectInput("econ1", "Select Variable:", width = "100%", choices = c(
+                                       "Employment by Industry" = "industry",
+                                       "Projected Population Change" = "pop", 
+                                       "Population by Age" = "age", 
+                                       "Number of Commuters" = "commute", 
+                                       "New Business Growth" = "business")
                                      ),
-                                     withSpinner(tableOutput("sources")),
-                                     p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010; Town of Christainsburg 2018 Drinking Water Report")), 
-                                     p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
-                                     tags$ br(), 
-                                     tags$br(), 
-                                     p(strong("Map of Abandoned Mines")),
-                                     withSpinner(leafletOutput("mines")),
-                                     p(tags$small("Data Source: The Department of Mines, Minerals and Energy"))
-                                      
-                                  ) 
-                             
-                     ) 
+                                     plotlyOutput("trend1"),
+                                     p(tags$small("Data Source: Virginia Employment Commission"))
+                                     
+                              )
+                     )
                      
-            ),
+                     
+            ), 
+            
             ## Tab Conclusion --------------------------------------------
             tabPanel("Recommendations", value = "conclusion", 
                      fluidRow(style = "margin: 6px;",
@@ -638,10 +662,13 @@ ui <- navbarPage(title = "DSPG 2021",
                      
             ), 
             ## Tab Team --------------------------------------------
-            tabPanel("Team", value = "team",
+            tabPanel("Team", 
+                     
                      fluidRow(style = "margin-left: 100px; margin-right: 100px;",
-                              h1(strong("Team"), align = "center"),
-                              br(),
+                              align = "center",
+                              br(""),
+                              h1(strong("Team")),
+                              br(""), 
                               h4(strong("VT Data Science for the Public Good")),
                               p("The", a(href = 'https://aaec.vt.edu/academics/undergraduate/beyond-classroom/dspg.html', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
                                 "is a summer immersive program offered by the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
