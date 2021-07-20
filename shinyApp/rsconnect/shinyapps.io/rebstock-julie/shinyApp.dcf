@@ -1,0 +1,13 @@
+name: shinyApp
+title: shinyApp
+username:
+account: rebstock-julie
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4404943
+bundleId: 4838988
+url: https://rebstock-julie.shinyapps.io/ShinyApp/
+when: 1626811137.41052
+lastSyncTime: 1626811137.41053
+asMultiple: FALSE
+asStatic: FALSE

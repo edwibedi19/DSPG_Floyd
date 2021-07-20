@@ -18,6 +18,9 @@ library(stringr)
 library(shinyjs)
 options(tigris_use_cache = TRUE)
 
+census_api_key("6f1a78212175773dd80d1a03bd303e8d181a6096", install = TRUE, overwrite = T)
+readRenviron("~/.Renviron")
+
 # data -----------------------------------------------------------
 # Demographics 
 total_pop <- 15074 
@@ -125,6 +128,17 @@ new$average <- c(f_average, f2_average, f3_average)
 floyd <- left_join(countydata, counties, by = "county_fips") %>% 
   filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
 
+water <- readOGR( 
+  dsn= paste0(getwd(), "/data/virginia_water"), 
+  layer="virginia_water"
+)
+
+water_df <- fortify(water)
+flo_w <- water_df %>% 
+  filter(water_df$long > -80.6 & water_df$long < -80.1
+         & water_df$lat < 37.2 & water_df$lat > 36.7) 
+flo_w$group <- 1 
+
 pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
 floyd_df <- as.data.frame(floyd) 
 points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS()) 
@@ -132,7 +146,7 @@ new_shape_w <- pts_w[points_poly,]
 new_shape_df_w <- as.data.frame(new_shape_w)
 # Springs
 nhdp <- readOGR( 
-  dsn= "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/Shape" , 
+  dsn= paste0(getwd(), "/data" ) , 
   layer="NHDPoint"
 )
 
@@ -156,7 +170,7 @@ water_springs <- water_springs %>%
   ))
 
 
-mines <- read_tsv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/ShinyApp/data/AbandonedMineralMineLands.txt")
+mines <- read_tsv(paste0(getwd(), "/data/AbandonedMineralMineLands.txt")) 
 
 mines_Floyd <- mines %>%
     filter(County == "Floyd")
@@ -203,6 +217,14 @@ busgrowth_df <- industry_df[103:115,1:2]
 colnames(busgrowth_df) <- c("Time","Quantity")
 busgrowth_df$Time <- factor(busgrowth_df$Time, levels=unique(busgrowth_df$Time))
 busgrowth_df$Quantity <- as.numeric(busgrowth_df$Quantity)
+
+capita_income <- read_excel(paste0(getwd(), "/data/capita_income.xlsx"))[,1:3]
+
+retail <- read_excel(paste0(getwd(), "/data/retail-sales.xlsx"))[,1:3]
+retail$Year <- as.character(retail$Year)
+
+unempl <- read_excel(paste0(getwd(), "/data/unemployment.xlsx"))[,1:3] 
+unempl$Year <- as.character(unempl$Year)
 
 ## Land Parcel Data
 aoi_boundary_HARV <- st_read(paste0(getwd(), "/data/parcels_with_class/Parcels_with_Class.shp")) 
@@ -319,11 +341,11 @@ ui <- navbarPage(title = "DSPG 2021",
                                             behaviors. Identifying areas of high need or potential solutions may also be difficult for rural areas without adequate resources to acquire, analyze, and interpret
                                             relevant data."),
                                      p(),
-                                     p(strong("The setting."), a(href = "https://www.floydcova.org/", "Floyd County", target = "_blank"), "is a rural area in Virginia’s Central Piedmont, bordering North Carolina,
-                                            with a declining population of approximately 17,600 people. Like many other rural areas in the United States, Patrick County is having difficulty meeting its residents’ health and quality of life needs.
+                                     p(strong("The setting."), a(href = "https://www.floydcova.org/", "Floyd County", target = "_blank"), "is a rural area entirely within the Blue Ridge Major Land Resource Area,
+                                            with a increasing population of approximately 15,700 people. Like many other rural areas in the United States, Floyd County is having difficulty meeting its residents’ health and quality of life needs.
                                             The county’s", a(href = "https://www.countyhealthrankings.org/app/virginia/2019/rankings/patrick/county/outcomes/overall/snapshot", "doctor to patient ratios", target = "_blank"),
                                             "of 3,530 to 1 for primary care providers, 8,840 to 1 for dentists, and 2,520 to 1 for mental health providers are 3-
-                                            to 8-times higher than statewide, and the county’s only hospital closed in 2017. At the same time, the median income for Patrick County residents is $42,900,
+                                            to 8-times higher than statewide, and the county’s only hospital closed in 2017. At the same time, the median income for Floyd County residents is $51,500,
                                             46% of children living in the county are eligible for free or reduced-price school lunch, and 12% of residents are food insecure."),
                                      p(),
                                      p(strong("The project."), "This Virginia Tech", a(href = "https://aaec.vt.edu/index.html", "Department of Argicultural and Applied Economics", target = "_blank"),
@@ -332,24 +354,21 @@ ui <- navbarPage(title = "DSPG 2021",
                               ),
                               column(4,
                                      h2(strong("Our Work")),
-                                     p("Our research team worked closely with Floyd County Extension Office, Virginia Department of Health, and Healthy Floyd County coalition stakeholders
-                                            to identify the county’s priority challenges in the area of health. The research team reviewed a prior", a(href = "https://www.vdh.virginia.gov/west-piedmont/2020/05/27/patrick-county-health-needs-improvement-plan-completed/",
-                                                                                                                                                       "community health assessment,", target = "blank"), a(href = "https://www.pubs.ext.vt.edu/VCE/VCE-596/VCE-596-75/VCE-1002-75.html", "situation analysis", target = "_blank"),
-                                       "relevant funding applications, and held a listening meeting with stakeholders to identify these challenges. Lack of
-                                            data on health care access, food access as related to diabetes and heart disease prevalence, older adult health, and digital connectivity that would facilitate
-                                            access to telemedicine emerged as key problems where providing actionable insights could address barriers to Patrick County residents’ health."),
+                                     p("Our research team worked closely with Floyd County Extension Office, Virginia Department of Health, and Floyd County stakeholders
+                                            to identify the county’s priority challenges in the area of water quality and quantity. The research team reviewed a prior", 
+                                       a(href = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.306.9815&rep=rep1&type=pdf","water quality assessment", target = "blank"), "and", 
+                                       a(href = "http://nrvrc.org/wp-content/uploads/2015/08/NRVWSP0911_Final-Water-Supply-Plan.pdf", "water supply plan", target = "_blank"),
+                                       "and held a listening meeting with stakeholders to identify these challenges. Lack of data on private and public wells, water quality and quantity issues, out-commuter rates, and residental and commerial future development hault
+                                       emerged as key problems where providing actionable insights could address barriers to Floyd County residents’ health and lifestyles."),
                                      p(),
                                      p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
-                                            publicly available data to provide Floyd County with data-driven resources in each of the four priority areas. We:"),
-                                     tags$li("Provided census tract- and census block group-level maps of Floyd County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
-                                     tags$li("Created barplots of", strong("monthly temperatures and precipitation levels"), "to show the geographic distribution of older adults in the county by gender and
-                                                  type of disability, identifying areas where providing telehealth or travelling preventive care services may be particularly important."),
-                                     tags$li("Mapped locations of", strong("streams, lakes, and mines"), "at census block group level, and constructed 10- and 15-minute isochrones (areas of equal travel time) from households to free
-                                                  wifi hotspots to highlight internet gaps that could suggest where new wi-fi hotspots could be optimally placed to provide internet access to more residents."),
-                                     tags$li("Calculated and mapped", strong("water usage"), "of households within 8-, 10-, and 12-minute travel times, identifying areas difficult to reach within
-                                                   standard EMS travel thresholds."),
-                                     tags$li("Constructed", strong("land parcel"), "maps by census tract, 10- and 15-minute isochrones from households to grocery stores and farmers markets, and maps of food security resources in the county,
-                                                highlighting food deserts and areas that could benefit from programs facilitating access to fresh produce."),
+                                      publicly available data to provide Floyd County with data-driven resources in each of the four priority areas. We:"),
+                                     br(), 
+                                     tags$li("Provided census tract and block group-level maps of Floyd County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
+                                     tags$li("Created barplots of", strong("monthly temperatures and precipitation levels"), "to compare with surrounding towns to better determine the groundwater retention of the area. "),
+                                     tags$li("Mapped locations of", strong("streams, lakes, and mines"), "at census block group level to highlight the surface water sources and the potential contaminations sources in the county. "),
+                                     tags$li("Calculated and mapped", strong("water usage"), "of households to  "),
+                                     tags$li("Constructed", strong("land parcel"), "maps by census tract "),
                                      p(),
                                      p("This dashboard compiles our findings and allows extension professionals, stakeholders, and other users to explore the information interactively.")
                               ),
@@ -370,12 +389,10 @@ ui <- navbarPage(title = "DSPG 2021",
                      ),
                      fluidRow(align = "center",
                               p(tags$small(em('Last updated: August 2021')))
-                        
-                        
                     ) 
             ), 
             ## Tab Introduction--------------------------------------------
-            tabPanel("Sociodemographics", value = "socio",
+            tabPanel("Sociodemographics",
                     fluidRow(style = "margin: 6px;",
                              h1(strong("Floyd County Residents' Sociodemographic Characteristics"), align = "center"),
                              p("", style = "padding-top:10px;"),
@@ -413,7 +430,7 @@ ui <- navbarPage(title = "DSPG 2021",
                     ) 
             ), 
             ## Tab Data and Methodology--------------------------------------------
-            tabPanel("Data", value = "data",
+            tabPanel("Data", 
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Data and Methodology"), align = "center"),
                               p("", style = "padding-top:10px;"),
@@ -430,29 +447,30 @@ ui <- navbarPage(title = "DSPG 2021",
                                      br(""),
                                      img(src = "data-epa.png", style = "display: inline; float: left;", width = "150px"),
                                      p(strong("Enviromental Protection Agency."), "The Enviornmental Protection is an independent executive agency of the United States federal government tasked with environmental protection matters. 
-                                       We used different reports and plans in order to make recommendations on Floyd's water quality and quantity issue. "),
+                                     The standards of different minerals and contaminants were helpful in determining the quality of drinking water in prior studies. We used different reports and plans in order to make recommendations on Floyd's water quality and quantity issue. "),
                                      br(""),
                                      img(src = "data-ngwa.png", style = "display: inline; float: left;", width = "150px"),
                                      p(strong("The National Groundwater Association."), "The National Groundwater Association is a  community of groundwater professionals working together to advance groundwater knowledge and the success of our members through education and outreach; 
-                                     advocacy; cooperation and information exchange; and enhancement of professional practice. We researched articles and reports from NGWA in order to better make recommendations for Floyd' water quality and quantity issue. ")
+                                     advocacy; cooperation and information exchange; and enhancement of professional practice. It provides statistics, reports and guidance on water sustainability and quality assurance. 
+                                       We researched articles and reports from NGWA in order to better make recommendations for Floyd' water quality and quantity issue. ")
                               ),
                               column(4,
                                      img(src = "data-acs.png", style = "display: inline; float: left;", width = "200px"),
                                      p(strong("American Community Survey."), "The American Community Survey (ACS) is an ongoing yearly survey conducted by the U.S Census Bureau. ACS samples households to compile 1-year and 5-year datasets 
                                      providing information on population sociodemographic and ocioeconomic characteristics including employment, disability, and health insurance coverage. We used ACS 2014/18 5-year
-                                            estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
+                                     estimates to obtain census tract and census block group-level to explore Floyd County resident characteristics."),
                                      br(""),
                                      img(src = "data-usClimate.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("US Climate Data."), "The US Climate Data's purpose is to inform people across the U.S of the climate around them. U.S Climate reports historical temperatures, precipitation, and wind speeds daily, monthly or annually. 
-                                       We use U.S Climate to gather data on Floyd, Christiansburg, and Pulaski to compare the 3 adjacent areas in terms of available groundwater. "),
+                                     p(strong("US Climate Data."), "The US Climate Data's purpose is to inform people across the U.S of the climate around them. U.S Climate reports historical temperatures, precipitation, and wind speeds daily, monthly or annually of counties
+                                     and towns in the United States. We use U.S Climate to gather data on Floyd, Christiansburg, and Pulaski to compare the 3 adjacent areas in terms of available groundwater. "),
                                      br(""),
                                      img(src = "data-usgsnhd.jpeg", style = "display: inline; float: left;", width = "200px"),
-                                     p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is represents the water drainage network of the United States with features such as rivers, streams, canals, lakes, ponds, coastline, dams, and streamgages. We used 2019 NHD data
-                                       to map out the streams, lakes, springs in Floyd County. "),
+                                     p(strong("USGS National Hydrography Dataset. "), "USGS National Hydrography is represents the water drainage network of the United States with features such as rivers, streams, canals, lakes, ponds, coastline, dams, and streamgages. 
+                                     It provides shapefiles with latitude and longitude points. We used 2019 NHD data to plot points that represent the streams, lakes, springs in Floyd County by block group. "),
                                      br(""),
                                      img(src = "data-vdh.png", style = "display: inline; float: left;", width = "150px"),
                                      p(strong("Virginia Department of Health."), "Virginia Department of Health has a mission to protect the health and promote the well-being of all people in Virginia. VDH provides information and guidance in areas such as water quality
-                                       which we used to better inform ourselves on this subject. We used those reports and articles to recommend ways to better one's water quality of well water. ")
+                                       which we used to better inform ourselves on this subject, specifically regarding lead in drinking water. We used those reports and articles to recommend ways to better one's water quality of well water. ")
                               ),
                               column(4,
                                      img(src = "data-vce.jpeg", style = "display: inline; float: left;", width = "100px"),
@@ -461,13 +479,14 @@ ui <- navbarPage(title = "DSPG 2021",
                                        recommendations on how to combat those contaminants since they are still experiencing similar issues today. "),
                                      br(""),
                                      img(src = "data-vec.png", style = "display: inline; float: left;", width = "150px"),
-                                     p(strong("Virginia Employment Commission."), "Virginia Employment Commission is a division of the Virginia state government that provides benefits and services to unemployed citizens. We used a report from "),
+                                     p(strong("Virginia Employment Commission."), "Virginia Employment Commission is a division of the Virginia state government that provides benefits and services to unemployed citizens. We used a report from 
+                                       2019-2020 to create graphs on the county's population and business growth, industry by type and more in order to address future development plans. "),
                                      br(""), 
                                      img(src = "data-vdeq.jpeg", style = "display: inline; float: left;", width = "120px"),
                                      p(strong("Virginia Department of Enviromental Quality."), "The United State Department of Agriculture Food Access Research Atlas is a data resource
-                                          created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
-                                          individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
-                                          Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics.")
+                                    created by the Economic Research Service that provides information on food access indicators at census tract level. The data allows
+                                    individuals to understand food access in communities based on factors like age and socioeconomic status. We used the 2017 Food Access
+                                    Research Atlas to examine Patrick County residents’ food access at multiple distance thresholds and by resident characteristics.")
                               ),
                               
                      )
@@ -481,11 +500,14 @@ ui <- navbarPage(title = "DSPG 2021",
                                 p("", style = "padding-top:10px;"), 
                                 column(4, 
                                        h4(strong("Climate, Rainfall and Temperature")),
+                                       p("Globally, groundwater resources dwarf surface water supplies. But because groundwater is hidden, the resource is often forgotten or misunderstood. 
+                                         Groundwater is, in fact, vital to public health, the environment, and the economy. Scientists estimate the amount of ground water is 400 times greater than all the fresh water
+                                        in lakes, reservoirs, streams, and rivers. Groundwater feeds streams and rivers, especially during periods of drought or low flow. "),
                                        p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
                                           generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
                                           comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
                                          the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
-                                       br()) ,
+                                       ) ,
                                      column(8, 
                                             h4(strong("Graph of Monthly Climate")),
                                            selectInput("var1", "Select Variable:", width = "100%", choices = c(
@@ -501,16 +523,13 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"), 
                               column(4, 
                                      h4(strong("Streams, Lakes, and Water Bodies")), 
-                                     p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of
-                                        non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
+                                     p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
                                         Province which extends from New York to northwestern Georgia. Elevations in the County generally range from 2,000 to
                                         3,000 feet, significantly higher neighboring counties to the north, south, and east. The physiography of the County is characterized by gently rolling
-                                        land. Most of the land is more suited to grazing and forestry than to large-scale cultivation and urban types of development. Nearly half
-                                        of the County's total acreage is forested."), 
-                                     br(), 
-                                     p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
-                                      Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
-                                      the Mississippi River system. ")),
+                                        land. Most of the land is more suited to grazing and forestry than to large-scale cultivation and urban types of development. Nearly half of the County's total acreage is forested."), 
+                                       p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
+                                        Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
+                                        the Mississippi River system. ")),
                               column(8, 
                                      h4(strong("Map of Water Features by Block Group")),
                                      leafletOutput("water"),
@@ -529,8 +548,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                      h4(strong("Land and Water Usage")),
                                      ## maybe some valueBoxes to highlight how many people use groundwater as their main source??? 
                                      p("Because Floyd is located on the west most rural part of Virginia, there was little data on the well water level of the public and private wells that
-                                       supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years. 
-                                      ")
+                                       supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years which is why we were looking at two different
+                                       metrics to use to estimate the water quantity. "),
+                                     p("First, Floyd County PSA provided us with data on land usage throughout the county seperated by type. Based on our research and short trip out to Floyd, the majority of the county is farmland and agriculture 
+                                       with the Town of Floyd in the southeast area. The town itself is very tiny and flat but the area is surrounded by the Blue Ridge Mountain Range. ")
                                      ), 
                               column(8, 
                                   tabsetPanel(
@@ -544,12 +565,11 @@ ui <- navbarPage(title = "DSPG 2021",
                                                p()
                                                
                                       )
-                                  )
                               ) 
                      ) 
                      
                      
-            ), 
+            )), 
             
             ## Tab Wells and Water Quality --------------------------------------------
             navbarMenu("Water Quality", 
@@ -559,17 +579,12 @@ ui <- navbarPage(title = "DSPG 2021",
                                     p("", style = "padding-top:10px;"),
                                     column(4, 
                                            h4(strong("Withdrawals and Depths")),
-                                           #3 Maybe some valueBoxes to hightlight the main contaminants?? 
-                                           p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
-                                             (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
-                                         p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
-                                            septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
-                                            respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
-                                            was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
-                                            The two most common pipe materials were plastic (63%) and copper (25%).") , 
-                                         p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
-                                            these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off.")
-                                         ),
+                                           p("About 8 of every 10 Virginians use ground water from public water supplies, private wells, or springs for at least part of their daily water supply. 
+                                            Dependable ground water supplies for private wells are available at depths of less than 300 feet in most areas of the state. A well yield of at least 6 gallons per minute is usually needed for home use, 
+                                            though 10 gallons per minute is more desirable. Low-yield wells (less than 4 gallons per minute) require a properly sized storage tank and pumping system to supply an adequate amount of water for domestic use. 
+                                            If you use a low-yield well, you should buy a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person). "),
+                                           p("From the New River Valley Water Supply Plan in 2011, there are 5 community wells that we have data on. Each of these wells have a different depth and a different maximum daily withdrawal. 
+                                             We attempted to make an inference on the correlation between the well depth and the water yield.  ")), 
                                     column(8, 
                                            h4(strong("Graph of Well Information")),
                                          selectInput("var2", "Select Variable:", width = "100%", choices = c(
@@ -587,8 +602,17 @@ ui <- navbarPage(title = "DSPG 2021",
                                        p("", style = "padding-top:10px;"),
                                        column(4, 
                                               h4(strong("Potential Sources of Contamination")), 
-                                              p(), 
-                                              p()) , 
+                                              p("Based on our research within the past 8 weeks and a couple of meetings with stakeholders, we can conclude that contaminants of well water can fall into 3 categories: 
+                                              (1) Geologically non point source, runoff from farmland, streams, lawns, driveways, (2) Domestic, from house pipelines or faucets, (3) Surface, from well construction and maintenice. "), 
+                                              p("Major sources of potential contamination near the home (within 100 feet of the well) were identified as streams (19%), oil tanks (13%) and
+                                              septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
+                                              respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
+                                              was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
+                                              The two most common pipe materials were plastic (63%) and copper (25%).") , 
+                                                p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
+                                              these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off.")
+                                       ),
+                                      
                                        column(8, 
                                               h4(strong("Table of Common Contaminants")),
                                              selectInput("contam", "Select Variable:", width = "100%", choices = c(
@@ -602,10 +626,9 @@ ui <- navbarPage(title = "DSPG 2021",
                                              tags$br(), 
                                              h4(strong("Map of Abandoned Mines by Block Group")),
                                              withSpinner(leafletOutput("mines")),
-                                             p(tags$small("Data Source: The Department of Mines, Minerals and Energy"))
-                                       
-                                ) 
-                              )) 
+                                             p(tags$small("Data Source: The Department of Mines, Minerals and Energy")))  
+                              )
+                     ) 
                      
             ),
             
@@ -627,13 +650,16 @@ ui <- navbarPage(title = "DSPG 2021",
                                      h4(strong("Graph of Economic Parameters")),
                                      selectInput("econ1", "Select Variable:", width = "100%", choices = c(
                                        "Employment by Industry" = "industry",
-                                       "Projected Population Change" = "pop", 
+                                       "Projected Population Change" = "pop",
+                                       "Income per Capita compared to NRV and VA" = "capita", 
                                        "Population by Age" = "age", 
                                        "Number of Commuters" = "commute", 
-                                       "New Business Growth" = "business")
+                                       "New Business Growth" = "business",
+                                       "Retail Sales by Type" = "retail",
+                                       "Unemployment Rate compared with VA and US" = "unemplo")
                                      ),
                                      plotlyOutput("trend1"),
-                                     p(tags$small("Data Source: Virginia Employment Commission"))
+                                     p(tags$small("Data Sources: Virginia Employment Commission, Virginia Department of Taxation and Weldon Cooper Center, U.S. Census Bureau 2019"))
                                      
                               )
                      )
@@ -663,7 +689,6 @@ ui <- navbarPage(title = "DSPG 2021",
             ), 
             ## Tab Team --------------------------------------------
             tabPanel("Team", 
-                     
                      fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               align = "center",
                               br(""),
@@ -683,23 +708,23 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(6, align = "center",
                                      h4(strong("DSPG Team Members")),
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "team-julie.png", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-julie.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-ryan.JPG", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     p(a(href = '', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Applied Microeconomics);",
-                                       a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Economics and Computational Modeling and Data Analytics);",
-                                       a(href = '', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Statistical and Data Science).",
-                                        a(href = '', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Statistical and Data Science)."),
+                                     p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Graduate in Economics);",
+                                       a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Undergraduate in Economics and Computational Modeling and Data Analytics);",
+                                       a(href = 'https://www.linkedin.com/in/ryan-jacobs-bb5727174/', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Undergraduate in Environmental Economics, Management, and Policy, and Minoring in Industrial Design).",
+                                        a(href = 'https://www.linkedin.com/in/john-wright-9a13621a0/', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Undergraduate in Statistical and Data Science)."),
                                      p("", style = "padding-top:10px;") 
                               ),
                               column(6, align = "center",
                                      h4(strong("VT Faculty Team Members")),
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-posadas.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     p(a(href = "", 'Susna Chen', target = '_blank'), "(Project Lead, Research Assistant Professor);",
-                                       a(href = "", 'Brianna Posadas', target = '_blank'), "(VT, Postdoctoral Research Associate);",
-                                       a(href = '', 'Sarah M. Witiak', target = '_blank'), "(VSU, Division Director and Distinguished Professor)."),
+                                     p(a(href = "https://www.linkedin.com/in/susanchenja/", 'Susna Chen', target = '_blank'), "(Project Lead, Research Assistant Professor);",
+                                       a(href = "https://www.linkedin.com/in/briannaposadas/", 'Brianna Posadas', target = '_blank'), "(VT Faculty, );",
+                                       a(href = '', 'Sarah M. Witiak', target = '_blank'), "(VSU Faculty, Division Director and Distinguished Professor)."),
                                      p("", style = "padding-top:10px;")
                               )
                      ),
@@ -710,7 +735,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"),
                               h4(strong("Acknowledgments"))
                      )
-            ),
+            ) ,
             inverse = T) 
         
 
@@ -1386,6 +1411,30 @@ server <- function(input, output) {
             
             
             
+        }else if (econ1() == "retail"){
+          ggplot(retail, aes(fill = Year, x = Retail, y = Sales/100000)) + 
+            geom_bar(position="dodge", stat="identity") + 
+            labs(title = "Retail Sales by Group", 
+                 caption = "Data Source: Virginia Department of Taxation and Weldon Cooper Center" ,
+                 y="Sales (100,000) ", x= "Retail Group")+ coord_flip() 
+          
+        }else if (econ1() == "capita"){
+          
+          ggplot(capita_income, aes(fill = Area, x = Year, y = Amount)) + 
+            geom_bar(position="dodge", stat="identity") + 
+            labs(title = "Income per Capita", 
+                 caption = "Data Source: U.S Census Bureau",
+                 y="Dollar ($) ")
+          
+        }else if (econ1() == "unemplo"){
+          
+          ggplot(unempl, aes(group = Area, x = Year, y = Rate*100, color = Area)) + 
+            geom_line(linetype = "dotted", size = 2) + 
+            labs(title = "Unemployment Rate", 
+                 caption = "Data Source: Virginia Employment Commission" ,
+                 y="Sales (100,000) ", x= "Retail Group")+ 
+            theme( plot.subtitle = element_text(size = 9, color = "blue"))
+          
         }else {
             
             ggplot(busgrowth_df, aes(x=Time,y=Quantity,group=1)) +

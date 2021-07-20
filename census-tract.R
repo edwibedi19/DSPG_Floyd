@@ -58,10 +58,46 @@ ggplot() + geom_sf(mapping = aes(geometry = geometry), data = tract20, fill = co
                                               "border-color" = "rgba(0,0,0,0.5)",
                                               direction = "auto"
                                             )))
-                
   
   
   
+  
+  
+  
+  ## Economics Data 
+  capita_income <- read_excel("shinyApp/data/capita_income.xlsx")[,1:3]
+
+  ggplot(capita_income, aes(fill = Area, x = Year, y = Amount)) + 
+    geom_bar(position="dodge", stat="identity") + 
+    labs(title = "Income per Capita", 
+         caption = "Data Source: U.S Census Bureau",
+         y="Dollar ($) ")
+  
+  
+  
+  
+  retail <- read_excel("shinyApp/data/retail-sales.xlsx")[,1:3]
+  retail$Year <- as.character(retail$Year)
+  
+  ggplot(retail, aes(fill = Year, x = Retail, y = Sales/100000)) + 
+    geom_bar(position="dodge", stat="identity") + 
+    labs(title = "Retail Sales by Group", 
+         caption = "Data Source: Virginia Department of Taxation and Weldon Cooper Center" ,
+         y="Sales (100,000) ", x= "Retail Group")+ coord_flip() + 
+    theme( plot.subtitle = element_text(size = 9, color = "blue"))
+  
+  
+  
+  
+  unempl <- read_excel("shinyApp/data/unemployment.xlsx")[,1:3] 
+  unempl$Year <- as.character(unempl$Year)
+
+  ggplot(unempl, aes(group = Area, x = Year, y = Rate*100, color = Area)) + 
+    geom_line(linetype = "dotted", size = 2) + 
+    labs(title = "Unemployment Rate", 
+         caption = "Data Source: Virginia Employment Commission" ,
+         y="Sales (100,000) ", x= "Retail Group")+ 
+    theme( plot.subtitle = element_text(size = 9, color = "blue"))
   
   
   
