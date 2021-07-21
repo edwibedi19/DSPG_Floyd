@@ -118,7 +118,7 @@ f3_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4
                    f[9,4]$estimate*60) /sum(f$estimate)
 
 new <- commute%>%
-    select(NAME, geometry)
+    dplyr::select(NAME, geometry)
 
 new <- new[c(1,10,19),]
 new$average <- c(f_average, f2_average, f3_average)
@@ -162,7 +162,7 @@ data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
 springs <- t(data.frame(data)) 
 colnames(springs) <- names
 water_springs <- rbind(new_shape_df_w, springs) %>%
-  select(long, lat, group)
+  dplyr::select(long, lat, group)
 
 water_springs <- water_springs %>%
   mutate(feature = case_when(group == 1 ~ 'Water Body', 
@@ -231,6 +231,7 @@ aoi_boundary_HARV <- st_read(paste0(getwd(), "/data/parcels_with_class/Parcels_w
 state_class_colors <- c("blue", "green", "red", "cyan", "magenta", "yellow")
 class_levels <- c("Agricultural/Undeveloped (20 – 99 acres)", "Agricultural/Undeveloped (100 acres and up)","Single-Family Residential(Suburban 0-19.99 acres)" ,
                   "Single Family Residential(Urban)", "Commercial/Industrial", "Multi-Family")
+
 class_pal <- colorFactor(pal = state_class_colors, 
                          levels = class_levels)
 # agr 
@@ -721,34 +722,41 @@ ui <- navbarPage(title = "DSPG 2021",
                                          fluidRow(style = "margin: 6px;",
                                                   p("", style = "padding-top:10px;"),
                                          column(4, 
-                                                p("1. Here is what the first item in the kit looks like. This kit was being "), 
-                                                img(src = "front-page.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
-                                                br(), 
-                                                p("4. Here are the instructions to follow when getting your water for the vial. This process only takes a couple of minutes and again, it is so simple that even your kids
-                                                    could follow along and get invovled. "), 
-                                                img(src = "instructions.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
+                                                p("1. Here is what the first item in the kit looks like. "), 
+                                                img(src = "front-page.jpeg", style="display: block; margin-left: auto; margin-right: auto;", width = "300px")
                                          ), 
                                          column(4,
                                                 p("2. Once you open the kit, you'll see a clear vial where you want to put the water sample in
                                                   and an envelope. "), 
-                                                img(src = "front-page-2.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"), 
-                                                br(), 
-                                                p("5. In order to get the results back, you will need to fill out this survey that includes why you're getting your water tested, address, name, etc. No information
-                                                  is shared publicly about your water sources. "), 
-                                                img(src = "survey.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
+                                                img(src = "front-page-2.jpeg", style="display: block; margin-left: auto; margin-right: auto;", width = "300px")
                                                ), 
                                          
                                          column(4, 
                                                 p("3. Third, you will see a styrofoam square with a cutoff where you will put your vial filled with water. The styrofoam is there to ensure your sample gets
                                                   to the lab safely."),
-                                                img(src = "styrofoam.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
-                                                br(), 
-                                                p("6. Here is the front of the envelope and provided address you will send it to once it goes into the mail. Notice there is no need for a stamp. All you need to do 
-                                                  is seal the envelope and drop it in your mail box or nearest post office. "), 
-                                                img(src = "address.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
+                                                img(src = "styrofoam.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
                                           ) 
-                                         
-                                         
+                                      ),
+                                      fluidRow(style = "margin: 6px;",
+                                               p("", style = "padding-top:10px;"),
+                                               column(4, 
+                                                      p("4. Here are the instructions to follow when getting your water for the vial. This process only takes a couple of minutes and again, it is so simple that even your kids
+                                                    could follow along and get invovled. "), 
+                                                      img(src = "instructions.jpeg", style="display: block; margin-left: auto; margin-right: auto;", width = "300px")
+                                               ), 
+                                               column(4,
+                                                      p("5. In order to get the results back, you will need to fill out this survey that includes why you're getting your water tested, address, name, etc. No information
+                                                  is shared publicly about your water sources. "), 
+                                                      img(src = "survey.jpeg", style="display: block; margin-left: auto; margin-right: auto;", width = "300px"),
+                                               ), 
+                                               
+                                               column(4, 
+                                                      p("6. Here is the front of the envelope and provided address you will send it to once it goes into the mail. Notice there is no need for a stamp. All you need to do 
+                                                  is seal the envelope and drop it in your mail box or nearest post office. "), 
+                                                      img(src = "address.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
+                                               ) 
+                                               
+                                               
                                       )) ,
                                 tabPanel("Water Quantity",
                                          p()
