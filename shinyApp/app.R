@@ -672,40 +672,89 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Recommendations"), align = "center"),
                               p("", style = "padding-top:10px;"),
-                              column(6, 
-                                     h3(strong("Water Quality")) ,
-                                     p("Based on research from Environmental Protection Agency, Virginia Department of Health, and the Virginia Cooperative Exension 2010 report, 
-                                       we have several recommendations that could prevent bacteria and minerals from getting into the drinking water in Floyd county. The most common contaminants found in drinking water surrounding the New Rivery Valley Area 
-                                       included total coliform bacteria, low levels of pH, sodium and chloride, lead and copper and manganese. "),
-                                     br(), 
-                                     tags$li("Disinfect", strong(" total coliform bacteria, "), "the Virginia Department of Health recommends the use of Shock Chlorination to clean and sanitize
-                                      the well and entire plumbing system."), 
-                                     tags$li("Combatting", strong("manganese: "), " it is recomended to get a distillation or filtration system because it is secondary maximum contaminant level, maximum 0.05 mg/L"),
-                                     tags$li("Raising ", strong("low pH levels (<7):"), " is installing an acid neutralizing filter that passes through calcite that raises the pH."),
-                                     tags$li("Protecting water from ", strong("lead and copper: "), "leeching into the water, regularly clean your faucet’s screen (also known as an aerator). Sediment, debris, and lead particles can collect in your aerator. 
-                                             Make sure to run your water for at least a minute and use only cold water. If not hot water, use cold and boil on stove. "),
-                                     tags$li("For eliminating ", strong("chloride and sodium: "), " activated carbon filters are the most common devices used to dechlorinate
-                                    water, remove objectionable chlorine tastes, and reduce corrosion of plumbing systems"),
-                                     tags$li("Dealing with", strong("hard water: "), " use water softeners which exchange the minerals (iron, magnesium, and calcium) for sodium. To avoid potential risks, one could
-                                             only soften the the hot water supply to take showers and baths and clean around the house and leave the cold water available for consumption. "),
-                                    tags$li("To condition well water for ", strong("safer and cleaner water: "), " many use water softening, iron removal, neutralization of acid water, reverse
-                                    osmosis, turbidity control, removal of objectionable tastes and odors, and aeration"),
-                                    br(),
-                                    tags$li("The issue with ", strong("water softeners ,"), " when used in conjuction with filters causes the water to smell rotten. Also, the addition of sodium into the water
-                                             can be a health risk and should talk to their physican. "),
-                                    br() , 
-                                    p("Protecting water from", strong("agricultural runoff"), "like sediments, animal feeding operations, livestock grazing, irrigation and pesticides can include measures like",  
-                                      strong("applying management practices that control the volume and flow rate"),  "of runoff water, keep the soil in place, and reduce soil transport;", 
-                                      strong("adjusting grazing intensity, keeping livestock out of sensitive areas,"), " providing alternative sources of water and shade, and promoting revegetation of ranges, pastures, and riparian zones; ", strong("applying only the amount of water required for crops,"), " 
-                                      converting irrigation systems to higher efficiency equipment; and following ", strong("Integrated Pest Management Technology"), "to use natural barriers and limit pesticide uses. "), 
-                                    br(), 
-                                    h4(strong("Table of Common Recommendations for Water Quality")), 
-                                     withSpinner(tableOutput("qualityRec"))), 
-                              column(6, 
-                                     h3(strong("Water Quantity")),
-                                     p(),
-                                     p(),
-                                     p())
+                              tabsetPanel(
+                                tabPanel("Water Quality",
+                                         column(6, 
+                                                p("", style = "padding-top:10px;"),
+                                                 p("Based on research from Environmental Protection Agency, Virginia Department of Health, and the Virginia Cooperative Exension 2010 report, 
+                                                 we have several recommendations that could prevent bacteria and minerals from getting into the drinking water in Floyd county. "),
+                                                
+                                                 p("The most important action for having clean and safe water is getting your well water tests by the county. The county provides a kit that includes a vial, instructions on how to get the sample and where to mail it. 
+                                                 After getting the water sample, place the vial into the styrofoam and into the envelope, then place it in the mail. 
+                                                 This kit is so simple that even your ",strong("kids")," can get involved and learn more about the water quality that is flowing through the county. 
+                                                 Testing your well water every year or two years is one of the best ways to ensure your water is safe and clean for you and your family. "), 
+                                                 br(),
+                                                h4(strong("Table of Common Recommendations for Water Quality")), 
+                                                withSpinner(tableOutput("qualityRec"))
+                                               
+                                         ) , 
+                                         column(6, 
+                                                p("", style = "padding-top:10px;"),
+                                                p("The most common contaminants found in drinking water surrounding the New Rivery Valley Area 
+                                                 included total coliform bacteria, low levels of pH, sodium and chloride, lead and copper and manganese. "),
+                                                br(), 
+                                                tags$li("Disinfect", strong(" total coliform bacteria, "), "the Virginia Department of Health recommends the use of Shock Chlorination to clean and sanitize
+                                                  the well and entire plumbing system."), 
+                                                tags$li("Combatting", strong("manganese: "), " it is recomended to get a distillation or filtration system because it is secondary maximum contaminant level, maximum 0.05 mg/L"),
+                                                tags$li("Raising ", strong("low pH levels (<7):"), " is installing an acid neutralizing filter that passes through calcite that raises the pH."),
+                                                tags$li("Protecting water from ", strong("lead and copper: "), "leeching into the water, regularly clean your faucet’s screen (also known as an aerator). Sediment, debris, and lead particles can collect in your aerator. 
+                                                     Make sure to run your water for at least a minute and use only cold water. If not hot water, use cold and boil on stove. "),
+                                                tags$li("For eliminating ", strong("chloride and sodium: "), " activated carbon filters are the most common devices used to dechlorinate
+                                                water, remove objectionable chlorine tastes, and reduce corrosion of plumbing systems"),
+                                                tags$li("Dealing with", strong("hard water: "), " use water softeners which exchange the minerals (iron, magnesium, and calcium) for sodium. To avoid potential risks, one could
+                                                     only soften the the hot water supply to take showers and baths and clean around the house and leave the cold water available for consumption. "),
+                                                tags$li("To condition well water for ", strong("safer and cleaner water: "), " many use water softening, iron removal, neutralization of acid water, reverse
+                                                osmosis, turbidity control, removal of objectionable tastes and odors, and aeration"),
+                                                tags$li("The issue with ", strong("water softeners ,"), " when used in conjuction with filters causes the water to smell rotten. Also, the addition of sodium into the water
+                                                     can be a health risk and should talk to their physican. "),
+                                                br(), 
+                                                p("Protecting water from", strong("agricultural runoff"), "like sediments, animal feeding operations, livestock grazing, irrigation and pesticides can include measures like",  
+                                                  strong("applying management practices that control the volume and flow rate"),  "of runoff water, keep the soil in place, and reduce soil transport;", 
+                                                  strong("adjusting grazing intensity, keeping livestock out of sensitive areas,"), " providing alternative sources of water and shade, and promoting revegetation of ranges, pastures, and riparian zones; ", strong("applying only the amount of water required for crops,"), " 
+                                                  converting irrigation systems to higher efficiency equipment; and following ", strong("Integrated Pest Management Technology"), "to use natural barriers and limit pesticide uses. "), 
+                                                br()) 
+                                                
+                                              
+                                         
+                                ), 
+                                tabPanel("Well Testing Kit",
+                                         fluidRow(style = "margin: 6px;",
+                                                  p("", style = "padding-top:10px;"),
+                                         column(4, 
+                                                p("1. Here is what the first item in the kit looks like. This kit was being "), 
+                                                img(src = "front-page.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
+                                                br(), 
+                                                p("4. Here are the instructions to follow when getting your water for the vial. This process only takes a couple of minutes and again, it is so simple that even your kids
+                                                    could follow along and get invovled. "), 
+                                                img(src = "instructions.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
+                                         ), 
+                                         column(4,
+                                                p("2. Once you open the kit, you'll see a clear vial where you want to put the water sample in
+                                                  and an envelope. "), 
+                                                img(src = "front-page-2.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"), 
+                                                br(), 
+                                                p("5. In order to get the results back, you will need to fill out this survey that includes why you're getting your water tested, address, name, etc. No information
+                                                  is shared publicly about your water sources. "), 
+                                                img(src = "survey.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
+                                               ), 
+                                         
+                                         column(4, 
+                                                p("3. Third, you will see a styrofoam square with a cutoff where you will put your vial filled with water. The styrofoam is there to ensure your sample gets
+                                                  to the lab safely."),
+                                                img(src = "styrofoam.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px"),
+                                                br(), 
+                                                p("6. Here is the front of the envelope and provided address you will send it to once it goes into the mail. Notice there is no need for a stamp. All you need to do 
+                                                  is seal the envelope and drop it in your mail box or nearest post office. "), 
+                                                img(src = "address.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
+                                          ) 
+                                         
+                                         
+                                      )) ,
+                                tabPanel("Water Quantity",
+                                         p()
+                                         
+                                )
+                              ) 
                      ) 
                      
                      
