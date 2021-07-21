@@ -399,9 +399,9 @@ ui <- navbarPage(title = "DSPG 2021",
                              column(4, 
                                    h4(strong("Who does Floyd County Serve?")),
                                     p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
-                                    p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. A
-                                      CS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. 
-                                      We used the most recently available 5-year estimates from 2014/18 to compute percent Patrick County residents in a given block group or tract by age, race, ethnicity, 
+                                    p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. 
+                                      ACS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. 
+                                      We used the most recently available 5-year estimates from 2014/18 to compute percent Floyd County residents in a given block group or tract by age, race, ethnicity, 
                                       employment, health insurance coverage, and other relevant characteristics."), 
                                      p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents.")
                             ) ,
@@ -651,12 +651,12 @@ ui <- navbarPage(title = "DSPG 2021",
                                      selectInput("econ1", "Select Variable:", width = "100%", choices = c(
                                        "Employment by Industry" = "industry",
                                        "Projected Population Change" = "pop",
-                                       "Income per Capita compared to NRV and VA" = "capita", 
+                                       "Income per Capita" = "capita", 
                                        "Population by Age" = "age", 
                                        "Number of Commuters" = "commute", 
                                        "New Business Growth" = "business",
                                        "Retail Sales by Type" = "retail",
-                                       "Unemployment Rate compared with VA and US" = "unemplo")
+                                       "Unemployment Rate Timeseries" = "unemplo")
                                      ),
                                      plotlyOutput("trend1"),
                                      p(tags$small("Data Sources: Virginia Employment Commission, Virginia Department of Taxation and Weldon Cooper Center, U.S. Census Bureau 2019"))
@@ -673,13 +673,36 @@ ui <- navbarPage(title = "DSPG 2021",
                               h1(strong("Recommendations"), align = "center"),
                               p("", style = "padding-top:10px;"),
                               column(6, 
-                                     h4("Water Quality", align = "center"),
-                                     p(),
-                                     p(),
-                                     p(),
+                                     h3(strong("Water Quality")) ,
+                                     p("Based on research from Environmental Protection Agency, Virginia Department of Health, and the Virginia Cooperative Exension 2010 report, 
+                                       we have several recommendations that could prevent bacteria and minerals from getting into the drinking water in Floyd county. The most common contaminants found in drinking water surrounding the New Rivery Valley Area 
+                                       included total coliform bacteria, low levels of pH, sodium and chloride, lead and copper and manganese. "),
+                                     br(), 
+                                     tags$li("Disinfect", strong(" total coliform bacteria, "), "the Virginia Department of Health recommends the use of Shock Chlorination to clean and sanitize
+                                      the well and entire plumbing system."), 
+                                     tags$li("Combatting", strong("manganese: "), " it is recomended to get a distillation or filtration system because it is secondary maximum contaminant level, maximum 0.05 mg/L"),
+                                     tags$li("Raising ", strong("low pH levels (<7):"), " is installing an acid neutralizing filter that passes through calcite that raises the pH."),
+                                     tags$li("Protecting water from ", strong("lead and copper: "), "leeching into the water, regularly clean your faucet’s screen (also known as an aerator). Sediment, debris, and lead particles can collect in your aerator. 
+                                             Make sure to run your water for at least a minute and use only cold water. If not hot water, use cold and boil on stove. "),
+                                     tags$li("For eliminating ", strong("chloride and sodium: "), " activated carbon filters are the most common devices used to dechlorinate
+                                    water, remove objectionable chlorine tastes, and reduce corrosion of plumbing systems"),
+                                     tags$li("Dealing with", strong("hard water: "), " use water softeners which exchange the minerals (iron, magnesium, and calcium) for sodium. To avoid potential risks, one could
+                                             only soften the the hot water supply to take showers and baths and clean around the house and leave the cold water available for consumption. "),
+                                    tags$li("To condition well water for ", strong("safer and cleaner water: "), " many use water softening, iron removal, neutralization of acid water, reverse
+                                    osmosis, turbidity control, removal of objectionable tastes and odors, and aeration"),
+                                    br(),
+                                    tags$li("The issue with ", strong("water softeners ,"), " when used in conjuction with filters causes the water to smell rotten. Also, the addition of sodium into the water
+                                             can be a health risk and should talk to their physican. "),
+                                    br() , 
+                                    p("Protecting water from", strong("agricultural runoff"), "like sediments, animal feeding operations, livestock grazing, irrigation and pesticides can include measures like",  
+                                      strong("applying management practices that control the volume and flow rate"),  "of runoff water, keep the soil in place, and reduce soil transport;", 
+                                      strong("adjusting grazing intensity, keeping livestock out of sensitive areas,"), " providing alternative sources of water and shade, and promoting revegetation of ranges, pastures, and riparian zones; ", strong("applying only the amount of water required for crops,"), " 
+                                      converting irrigation systems to higher efficiency equipment; and following ", strong("Integrated Pest Management Technology"), "to use natural barriers and limit pesticide uses. "), 
+                                    br(), 
+                                    h4(strong("Table of Common Recommendations for Water Quality")), 
                                      withSpinner(tableOutput("qualityRec"))), 
                               column(6, 
-                                     h4("Water Quantity", align  = "center"),
+                                     h3(strong("Water Quantity")),
                                      p(),
                                      p(),
                                      p())
@@ -1323,37 +1346,37 @@ server <- function(input, output) {
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Commercial/Industrial"),
+                    fillColor = ~class_pal(com$PropClass),
                     group = com$PropClass) %>%
         addPolygons(data = agr, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Agricultural/Undeveloped (20 – 99 acres)"),
+                    fillColor = ~class_pal(agr$PropClass) ,
                     group = agr$PropClass) %>%
         addPolygons(data = agr_large, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Agricultural/Undeveloped (100 acres and up)"),
+                    fillColor = ~class_pal(agr_large$PropClass),
                     group = agr_large$PropClass) %>%
         addPolygons(data = single, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Single-Family Residential(Suburban 0-19.99 acres)"),
+                    fillColor = ~class_pal(single$PropClass),
                     group = single$PropClass) %>%
         addPolygons(data = single_urban, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Single Family Residential(Urban)"),
+                    fillColor = ~class_pal(single_urban$PropClass),
                     group = single_urban$PropClass) %>%
         addPolygons(data = mult, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal("Multi-Family"),
+                    fillColor = ~class_pal(mult$PropClass),
                     group = mult$PropClass) %>%
         addLayersControl(
           position = "bottomright",
@@ -1363,7 +1386,7 @@ server <- function(input, output) {
                             "Single Family Residential(Urban)",
                             "Multi-Family",
                             "Commercial/Industrial"), 
-          options = layersControlOptions(collapsed = FALSE))%>%
+          options = layersControlOptions(collapsed = FALSE)) %>%
         addLegend(title = "Land Parcel", position = "topleft", pal = class_pal, values = class_levels,
                   opacity = .4)
       
@@ -1441,7 +1464,8 @@ server <- function(input, output) {
                 geom_line()+geom_point()+
                 labs(title = "New Business Growth in Floyd",
                      caption = "Data Source: Virginia Employment Commission, Economic Information & Analytics, 
-                        Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")
+                        Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")+
+            theme(axis.text.x = element_text(angle = 45, vjust = .5, color = "black"))
             
         }
         
