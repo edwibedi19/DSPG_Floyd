@@ -100,6 +100,18 @@ ggplot() + geom_sf(mapping = aes(geometry = geometry), data = tract20, fill = co
     theme( plot.subtitle = element_text(size = 9, color = "blue"))
   
   
+  library(readxl)
+  library(ggplot2)
+  industry_overtime <- read_excel("shinyApp/data/industry-overtime.xlsx")
+  industry_overtime$Estimate <- as.numeric(industry_overtime$Estimate)
+  industry_overtime$Year <- as.character(industry_overtime$Year)
+  
+  ggplot(industry_overtime, aes(fill = Year, x = Label, y = Estimate)) + 
+    geom_bar(position="dodge", stat="identity") + 
+    labs(title = "Industry Sector ", 
+         caption = "Data Source: ACS 5-year Estimates" ,
+         y="Persons ", x= "Sector")+ coord_flip() 
+  
   
   
   

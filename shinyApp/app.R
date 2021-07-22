@@ -24,151 +24,49 @@ readRenviron("~/.Renviron")
 # data -----------------------------------------------------------
 # Demographics 
 total_pop <- 15074 
-home <- get_acs(geography = "block group", 
-                variables = "B25077_001", 
-                state = "VA",
-                county = "Floyd County",
-                geometry = TRUE)
+home <- readRDS(paste0(getwd(), "/data/home.rds")) 
+home <- st_transform(home, '+proj=longlat +datum=WGS84')
 
-income <- get_acs(geography = "block group",
-                  variables = "B19013_001",
-                  state = "VA",
-                  county = "Floyd County",
-                  geometry = T) 
+income <- readRDS(paste0(getwd(), "/data/income.rds")) 
+income <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-age <- get_acs(geography = "block group", 
-               variables = "B01002_001", 
-               state = "VA",
-               county = "Floyd County",
-               geometry = TRUE)
+age <- readRDS(paste0(getwd(), "/data/age.rds")) 
+age <- st_transform(age, '+proj=longlat +datum=WGS84')
 
-employment_status <- get_acs(geography = "block group",
-                             variables = "B23025_005" ,
-                             state = "VA",
-                             county = "Floyd County",
-                             geometry = TRUE, 
-                             summary_var = "B23025_003")
+employment_status <- readRDS(paste0(getwd(), "/data/employment_status.rds")) 
+employment_status <- st_transform(employment_status, '+proj=longlat +datum=WGS84')
 
-employment_status <-employment_status %>%
-    mutate(rate = as.numeric(estimate)/as.numeric(summary_est)*100)
+high <- readRDS(paste0(getwd(), "/data/high.rds")) 
+high <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-education <- get_acs(geography = "block group",
-                     variables = c("B15003_017", "B15003_022","B15003_023","B15003_025"),
-                     state = "VA",
-                     county = "Floyd County",
-                     geometry = TRUE)
-high <- education%>%
-    filter(variable == "B15003_017")
-bach <- education%>%
-    filter(variable == "B15003_022")
-mast <- education%>%
-    filter(variable == "B15003_023")
-doct <- education%>%
-    filter(variable == "B15003_025")
+bach <- readRDS(paste0(getwd(), "/data/bach.rds")) 
+bach <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-food <-  get_acs(geography = "tract",
-                 variables = "B22007_002",
-                 state = "VA",
-                 county = "Floyd County",
-                 geometry = TRUE)
+mast <- readRDS(paste0(getwd(), "/data/mast.rds")) 
+mast <- st_transform(mast, '+proj=longlat +datum=WGS84')
 
-poverty <- get_acs(geography = "tract",
-                   variables = "B17020_002",
-                   state = "VA",
-                   county = "Floyd County",
-                   geometry = TRUE)
+doct <- readRDS(paste0(getwd(), "/data/doct.rds")) 
+doct <- st_transform(doct, '+proj=longlat +datum=WGS84')
 
-total_block <-  get_acs(geography = "block group",
-                        variables = "B01003_001",
-                        state = "VA",
-                        county = "Floyd County",
-                        geometry = TRUE)
+food <- readRDS(paste0(getwd(), "/data/food.rds")) 
+food <- st_transform(food, '+proj=longlat +datum=WGS84')
 
-total_census <-  get_acs(geography = "tract",
-                         variables = "B01003_001",
-                         state = "VA",
-                         county = "Floyd County",
-                         geometry = TRUE)
+poverty <- readRDS(paste0(getwd(), "/data/poverty.rds")) 
+poverty <- st_transform(poverty, '+proj=longlat +datum=WGS84')
 
-commute <- get_acs(geography = "tract",
-                   variables = c("B08135_002", "B08135_003",
-                                 "B08135_004","B08135_005",
-                                 "B08135_006","B08135_007","B08135_008",
-                                 "B08135_009","B08135_010"),
-                   state = "VA",
-                   county = "Floyd County",
-                   geometry = TRUE
-)
-f <- commute %>%
-    filter(NAME =="Census Tract 9202, Floyd County, Virginia")
-f_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
-                  f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
-                  f[9,4]$estimate*60) /sum(f$estimate)
+total_block <- readRDS(paste0(getwd(), "/data/total_block.rds")) 
+total_block <- st_transform(total_block, '+proj=longlat +datum=WGS84')
 
-f <- commute %>%
-    filter(NAME =="Census Tract 9201.01, Floyd County, Virginia")
-f2_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
-                   f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
-                   f[9,4]$estimate*60) /sum(f$estimate)
+total_census <- readRDS(paste0(getwd(), "/data/total_census.rds")) 
+total_census <- st_transform(total_census, '+proj=longlat +datum=WGS84')
 
-f <- commute %>%
-    filter(NAME =="Census Tract 9201.02, Floyd County, Virginia")
-f3_average <- (f[1,4]$estimate*5 + f[2,4]$estimate*12+  f[3,4]$estimate*17 + f[4,4]$estimate*22 + 
-                   f[5,4]$estimate*27 + f[6,4]$estimate*32 + f[7,4]$estimate*40 + f[8,4]$estimate*51+  
-                   f[9,4]$estimate*60) /sum(f$estimate)
-
-new <- commute%>%
-    dplyr::select(NAME, geometry)
-
-new <- new[c(1,10,19),]
-new$average <- c(f_average, f2_average, f3_average)
+new <- readRDS(paste0(getwd(), "/data/new.rds")) 
+new <- st_transform(new, '+proj=longlat +datum=WGS84')
 
 
 # Water Features 
-floyd <- left_join(countydata, counties, by = "county_fips") %>% 
-  filter(state_name %in% c("Virginia"), county_name %in% c("Floyd County")) 
-
-water <- readOGR( 
-  dsn= paste0(getwd(), "/data/virginia_water"), 
-  layer="virginia_water"
-)
-
-water_df <- fortify(water)
-flo_w <- water_df %>% 
-  filter(water_df$long > -80.6 & water_df$long < -80.1
-         & water_df$lat < 37.2 & water_df$lat > 36.7) 
-flo_w$group <- 1 
-
-pts_w <- SpatialPointsDataFrame(flo_w, coords = flo_w[,1:2]) 
-floyd_df <- as.data.frame(floyd) 
-points_poly <- df_to_SpatialPolygons(floyd_df, key = "group", coords = c("long","lat"), proj = CRS()) 
-new_shape_w <- pts_w[points_poly,]
-new_shape_df_w <- as.data.frame(new_shape_w)
-# Springs
-nhdp <- readOGR( 
-  dsn= paste0(getwd(), "/data" ) , 
-  layer="NHDPoint"
-)
-
-nhdp_df <- as(nhdp, "data.frame")
-pts_p <- SpatialPointsDataFrame(nhdp_df, coords = nhdp_df[,10:11]) 
-
-#Springs only 1 in Floyd 
-new_shape_p <- pts_p[points_poly,]
-new_shape_df_p <- as.data.frame(new_shape_p)
-
-names <- c("long", "lat", "order", "hole", "piece", "id", "group", "long.1", "lat.1")
-data <- c(-80.26592, 37.08154, 1, FALSE, 1, 300, 3, -80.26592, 37.08154)
-springs <- t(data.frame(data)) 
-colnames(springs) <- names
-water_springs <- rbind(new_shape_df_w, springs) %>%
-  dplyr::select(long, lat, group)
-
-water_springs <- water_springs %>%
-  mutate(feature = case_when(group == 1 ~ 'Water Body', 
-                             group == 3 ~ 'Spring'
-  ))
-
+water_springs <- readRDS(paste0(getwd(),"/data/water_springs.rds")) 
+water_springs <- st_as_sf(water_springs, coords = c("long", "lat"))
 
 mines <- read_tsv(paste0(getwd(), "/data/AbandonedMineralMineLands.txt")) 
 
@@ -184,19 +82,14 @@ colnames(wells) = c("Number_Wells", "Well_Depth", "Casing_Depth" , "Diameter", "
 wells <- wells[-1,]
 wells$Names <- c("Christie", "Shortt", "Howard", "Rec.Park", "Comm. Cntr")
 
-tract20 <- st_read(paste0(getwd(),"/data/tl_2020_51063_tract20/tl_2020_51063_tract20.shp")) 
-st_transform(tract20, crs = st_crs("+proj=longlat +datum=WGS84"))
-
 ## Labor Market (Ryan)
 industry <- read_excel(paste0(getwd(),"/data/Floyd Labor Market Statistics.xlsx")) 
 industry_df <- as.data.frame(industry)
 
-## Floyd County Employment by Industry
-emp_df <- industry_df[1:24,1:2]
-colnames(emp_df) <- c("Employment_by_Industry","Quantity")
-emp_df$Quantity <- as.numeric(emp_df$Quantity)
-emp_df[2,2] <- 0
-emp_df[9,2] <- 0
+## Floyd County Employment by Industry Sector
+industry_overtime <- read_excel(paste0(getwd(),"/data/industry-overtime.xlsx")) 
+industry_overtime$Estimate <- as.numeric(industry_overtime$Estimate)
+industry_overtime$Year <- as.character(industry_overtime$Year)
 ## Floyd Population Change 
 popch_df <- industry_df[34:38,1:3]
 colnames(popch_df) <- c("Year","Population","percent_Change")
@@ -224,40 +117,26 @@ retail <- read_excel(paste0(getwd(), "/data/retail-sales.xlsx"))[,1:3]
 retail$Year <- as.character(retail$Year)
 
 unempl <- read_excel(paste0(getwd(), "/data/unemployment.xlsx"))[,1:3] 
-unempl$Year <- as.character(unempl$Year)
+unempl$Year <- as.character(unempl$Year) 
 
 ## Land Parcel Data
-aoi_boundary_HARV <- st_read(paste0(getwd(), "/data/parcels_with_class/Parcels_with_Class.shp")) 
-state_class_colors <- c("blue", "green", "red", "cyan", "magenta", "yellow")
-class_levels <- c("Agricultural/Undeveloped (20 – 99 acres)", "Agricultural/Undeveloped (100 acres and up)","Single-Family Residential(Suburban 0-19.99 acres)" ,
-                  "Single Family Residential(Urban)", "Commercial/Industrial", "Multi-Family")
+agr <- readRDS(paste0(getwd(), "/data/agr.rds")) 
+agr <- st_transform(agr, '+proj=longlat +datum=WGS84')
 
-class_pal <- colorFactor(pal = state_class_colors, 
-                         levels = class_levels)
-# agr 
-agr <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Agricultural/Undeveloped (20 – 99 acres)")%>%
-  st_transform(crs = "+init=epsg:4326")
-# agr greater 
-agr_large <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Agricultural/Undeveloped (100 acres and up)")%>%
-  st_transform(crs = "+init=epsg:4326")
-#single household 
-single <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Single-Family Residential(Suburban 0-19.99 acres)")%>%
-  st_transform(crs = "+init=epsg:4326")
-# single urban household 
-single_urban <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Single Family Residential(Urban)")%>%
-  st_transform(crs = "+init=epsg:4326")
-# multi
-mult <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Multi-Family")%>%
-  st_transform(crs = "+init=epsg:4326")
-# commerical
-com <- aoi_boundary_HARV %>% 
-  filter(PropClass == "Commercial/Industrial")%>%
-  st_transform(crs = "+init=epsg:4326")
+agr_large <- readRDS(paste0(getwd(), "/data/agr_large.rds")) 
+agr_large <- st_transform(agr_large, '+proj=longlat +datum=WGS84')
+
+single <- readRDS(paste0(getwd(), "/data/single.rds")) 
+single <- st_transform(single, '+proj=longlat +datum=WGS84')
+
+single_urban <- readRDS(paste0(getwd(), "/data/single_urban.rds")) 
+single_urban <- st_transform(single_urban, '+proj=longlat +datum=WGS84')
+
+mult <- readRDS(paste0(getwd(), "/data/mult.rds")) 
+mult <- st_transform(mult, '+proj=longlat +datum=WGS84')
+
+com <- readRDS(paste0(getwd(), "/data/com.rds")) 
+com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
 
 
@@ -847,7 +726,6 @@ server <- function(input, output) {
             )
             
             home %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -880,7 +758,6 @@ server <- function(input, output) {
             
             
             income %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -911,7 +788,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             employment_status %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -944,7 +820,6 @@ server <- function(input, output) {
             
             
             age %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -974,7 +849,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             high %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1001,7 +875,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             bach %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1028,7 +901,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             mast %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1055,7 +927,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             doct %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1083,7 +954,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             new %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1111,7 +981,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             food %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1138,7 +1007,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             poverty %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1165,7 +1033,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             total_block %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1192,7 +1059,6 @@ server <- function(input, output) {
                 htmltools::HTML
             )
             total_census %>%
-                st_transform(crs = "+init=epsg:4326") %>%
                 leaflet(width = "100%") %>%
                 addProviderTiles(provider = "CartoDB.Positron") %>%
                 addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -1394,47 +1260,46 @@ server <- function(input, output) {
     
     output$landParcel <- renderLeaflet({
       
+      state_class_colors <- c("#9dfef8","#00cc00","#2621ff","#ffa500","#ffff19","#ff0000" )
       
-      total_block %>%
-        st_transform(crs = "+init=epsg:4326") %>%
-        leaflet(width = "100%") %>%
+      leaflet(options = leafletOptions(minZoom = 10)) %>%
         addProviderTiles(provider = "CartoDB.Positron") %>%
         addPolygons(data = com, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(com$PropClass),
-                    group = com$PropClass) %>%
+                    fillColor = state_class_colors[1],
+                    group = "Commercial/Industrial") %>%
         addPolygons(data = agr, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(agr$PropClass) ,
-                    group = agr$PropClass) %>%
+                    fillColor = state_class_colors[2] ,
+                    group = "Agricultural/Undeveloped (20 – 99 acres)") %>%
         addPolygons(data = agr_large, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(agr_large$PropClass),
-                    group = agr_large$PropClass) %>%
+                    fillColor = state_class_colors[3],
+                    group = "Agricultural/Undeveloped (100 acres and up)") %>%
         addPolygons(data = single, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(single$PropClass),
-                    group = single$PropClass) %>%
+                    fillColor = state_class_colors[4],
+                    group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
         addPolygons(data = single_urban, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(single_urban$PropClass),
-                    group = single_urban$PropClass) %>%
+                    fillColor = state_class_colors[5],
+                    group = "Single Family Residential(Urban)") %>%
         addPolygons(data = mult, 
                     stroke = FALSE,
                     smoothFactor = 0,
                     fillOpacity = 0.7,
-                    fillColor = ~class_pal(mult$PropClass),
-                    group = mult$PropClass) %>%
+                    fillColor = state_class_colors[6],
+                    group = "Multi-Family") %>%
         addLayersControl(
           position = "bottomright",
           overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
@@ -1443,9 +1308,7 @@ server <- function(input, output) {
                             "Single Family Residential(Urban)",
                             "Multi-Family",
                             "Commercial/Industrial"), 
-          options = layersControlOptions(collapsed = FALSE)) %>%
-        addLegend(title = "Land Parcel", position = "topleft", pal = class_pal, values = class_levels,
-                  opacity = .4)
+          options = layersControlOptions(collapsed = FALSE)) 
       
       
     })
@@ -1459,12 +1322,11 @@ server <- function(input, output) {
         
         if(econ1() == "industry") {
             
-            ggplot(data = emp_df,mapping = aes(Employment_by_Industry,Quantity))+geom_bar(stat = "identity",fill="steelblue2")+
-                labs(title = "Floyd County Employment by Industry", 
-                     subtitle = "* indicates non-disclosable data",
-                     caption = "Data Source: Virginia Employment Commission, Economic Information & Analytics,
-                        Quarterly Census of Employment and Wages (QCEW), 4th", 
-                     x="Industry") + coord_flip()
+          ggplot(industry_overtime, aes(fill = Year, x = Label, y = Estimate)) + 
+            geom_bar(position="dodge", stat="identity") + 
+            labs(title = "Industry Sector ", 
+                 caption = "Data Source: ACS 5-year Estimates" ,
+                 y="Persons ", x= "Sector")+ coord_flip() 
             
             
         }else if (econ1() == "commute") {
@@ -1510,10 +1372,8 @@ server <- function(input, output) {
           
           ggplot(unempl, aes(group = Area, x = Year, y = Rate*100, color = Area)) + 
             geom_line(linetype = "dotted", size = 2) + 
-            labs(title = "Unemployment Rate", 
-                 caption = "Data Source: Virginia Employment Commission" ,
-                 y="Sales (100,000) ", x= "Retail Group")+ 
-            theme( plot.subtitle = element_text(size = 9, color = "blue"))
+            labs(title = "Unemployment Rate",
+                 y="Rate %", x= "Year" )
           
         }else {
             
