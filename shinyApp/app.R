@@ -65,8 +65,8 @@ new <- st_transform(new, '+proj=longlat +datum=WGS84')
 
 
 # Water Features 
-water_springs <- readRDS(paste0(getwd(),"/data/water_springs.rds")) 
-water_springs <- st_as_sf(water_springs, coords = c("long", "lat"))
+water_springs <- read.csv(paste0(getwd(), "/data/water_springs.csv")) 
+
 
 mines <- read_tsv(paste0(getwd(), "/data/AbandonedMineralMineLands.txt")) 
 
@@ -278,12 +278,13 @@ ui <- navbarPage(title = "DSPG 2021",
                              p("", style = "padding-top:10px;"),
                              column(4, 
                                    h4(strong("Who does Floyd County Serve?")),
-                                    p("We examined Floyd County population sociodemographic and socioeconomic characteristics to better understand the residents that the county serves. ") ,
-                                    p("We retrieved American Community Survey (ACS) data to calculate this information at census block group and census tract levels. 
-                                      ACS is an ongoing yearly survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets. 
-                                      We used the most recently available 5-year estimates from 2014/18 to compute percent Floyd County residents in a given block group or tract by age, race, ethnicity, 
-                                      employment, health insurance coverage, and other relevant characteristics."), 
-                                     p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents.")
+                                   p("We examined Floyd County’s population of 15,704 residents to better understand the diverse sociodemographic and socioeconomic characteristics that the county serves."),
+                                    p("Utlizing American Community Survey (ACS) data, we calculated this information at census block group and census tract levels. The ACS is an ongoing yearly
+                                      survey conducted by the U.S Census Bureau that samples households to compile 1-year and 5-year datasets to help local officials, community leaders, and businesses 
+                                      understand the changes taking place in their communities. We used the most recently available 5-year estimates from 2014/18 to compute percent Floyd County residents 
+                                      in each block group or tract level by age, race, ethnicity, employment, health insurance coverage, and other relevant characteristics."), 
+                                     p("Our interactive plots visualize census block-group level sociodemographic characteristics of Floyd County residents. 
+                                       This format allows for easy digestion and comparison of factors to help us best understand who the residents of Floyd County really are on a statistical level.")
                             ) ,
                              column(8,
                                    h4(strong("Map of Resident Socioeconomic Characteristics by Census Tract or Block Group")),
@@ -381,12 +382,17 @@ ui <- navbarPage(title = "DSPG 2021",
                                 column(4, 
                                        h4(strong("Climate, Rainfall and Temperature")),
                                        p("Globally, groundwater resources dwarf surface water supplies. But because groundwater is hidden, the resource is often forgotten or misunderstood. 
-                                         Groundwater is, in fact, vital to public health, the environment, and the economy. Scientists estimate the amount of ground water is 400 times greater than all the fresh water
-                                        in lakes, reservoirs, streams, and rivers. Groundwater feeds streams and rivers, especially during periods of drought or low flow. "),
-                                       p("Floyd County's climate is characterized by moderately mild winters and warm summers.Precipitation patterns in Floyd County are determined
-                                          generally by prevailing westerly winds which have a southerly component during fall and winter. Most moisture
-                                          comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of Christainsburg and Pulaski, we can try to picture 
-                                         the groundwater quantity in Floyd and determine how much more residental or commerical development the county can withstand. "),
+                                         Groundwater is, in fact, vital to public health, the environment, and the economy. Supplying drinking water to over 50% of the total U.S. population and 99% 
+                                         of the rural population, including Floyd County, as well as being a major supply for the irrigation of crops, the protection and regular surveillance of the 
+                                         quantity and quality of our groundwater is a key aspect we focused on when assessing Floyd County. Scientists estimate the amount of ground water is 400 times 
+                                         greater than all the fresh water in lakes, reservoirs, streams, and rivers. Groundwater feeds streams and rivers, especially during periods of drought or low flow. 
+                                         Additionally, groundwater is an important component in many industrial processes."),
+                                       
+                                       p("Floyd County's climate is characterized by mild to cold winters and hot, humid summers. 
+                                         Precipitation patterns in Floyd County are determined generally by prevailing westerly winds which have a southerly component during 
+                                         fall and winter. Most moisture comes from storms spawned over the Atlantic Ocean. Using this information and data from the surrounding towns of 
+                                         Christiansburg and Pulaski, we can try to picture the groundwater quantity in Floyd and determine how much more residential or commercial development 
+                                         the county can withstand." ),
                                        ) ,
                                      column(8, 
                                             h4(strong("Graph of Monthly Climate")),
@@ -403,13 +409,14 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"), 
                               column(4, 
                                      h4(strong("Streams, Lakes, and Water Bodies")), 
-                                     p("Floyd County consists of 382 square miles; 143,873 acres of forest land and 100,108 acres of non-forest land. Floyd County is situated in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic
-                                        Province which extends from New York to northwestern Georgia. Elevations in the County generally range from 2,000 to
-                                        3,000 feet, significantly higher neighboring counties to the north, south, and east. The physiography of the County is characterized by gently rolling
-                                        land. Most of the land is more suited to grazing and forestry than to large-scale cultivation and urban types of development. Nearly half of the County's total acreage is forested."), 
-                                       p("A number of streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) and headwater streams of the Dan, Smith, Pigg,
-                                        Backwater and Roanoke Rivers. Most of the drainage ultimately Snowmelt atop Buffalo Mountain goes to the Gulf of Mexico via the New River, Kanawha and Ohio into
-                                        the Mississippi River system. ")),
+                                     p("Floyd County consists of 382 square miles: 143,873 acres of forest land, 100,108 acres of non-forest land, and 576 acres of surface water. 
+                                       Floyd County is situated on a plateau in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic Province which extends from New York to northwestern
+                                       Georgia. Elevations in the County generally range from 2,000 to 3,000 feet, significantly higher neighboring counties to the north, south, and east.
+                                       The physiography of the County is characterized by gently rolling land. Most of the land is more suited to grazing and forestry than to 
+                                       large-scale cultivation and urban types of development. Nearly half of the County's total acreage is forested."), 
+                                       p("Several streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) 
+                                         and headwater streams of the Dan, Smith, Pigg, Backwater and Roanoke Rivers. Most of the drainage, primarily snowmelt atop Buffalo 
+                                         Mountain, goes to the Gulf of Mexico via the New River, Kanawha and Ohio into the Mississippi River system.")),
                               column(8, 
                                      h4(strong("Map of Water Features by Block Group")),
                                      leafletOutput("water"),
@@ -427,9 +434,9 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(4, 
                                      h4(strong("Land and Water Usage")),
                                      ## maybe some valueBoxes to highlight how many people use groundwater as their main source??? 
-                                     p("Because Floyd is located on the west most rural part of Virginia, there was little data on the well water level of the public and private wells that
-                                       supports the county's water system. Simiarly, there was little recent data on the water quality issue they have been facing for the past 20 years which is why we were looking at two different
-                                       metrics to use to estimate the water quantity. "),
+                                     p("Floyd’s location on the western most rural part of Virginia is a major factor as to why there was little data on the well water level of the public
+                                       and private wells that supports the county's water system. Similarly, there is little recent data on the water quality issues they have been facing for 
+                                       the past 20 years which is why we were looking at two different metrics to use to estimate the water quantity."),
                                      p("First, Floyd County PSA provided us with data on land usage throughout the county seperated by type. Based on our research and short trip out to Floyd, the majority of the county is farmland and agriculture 
                                        with the Town of Floyd in the southeast area. The town itself is very tiny and flat but the area is surrounded by the Blue Ridge Mountain Range. ")
                                      ), 
@@ -460,9 +467,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                     column(4, 
                                            h4(strong("Withdrawals and Depths")),
                                            p("About 8 of every 10 Virginians use ground water from public water supplies, private wells, or springs for at least part of their daily water supply. 
-                                            Dependable ground water supplies for private wells are available at depths of less than 300 feet in most areas of the state. A well yield of at least 6 gallons per minute is usually needed for home use, 
-                                            though 10 gallons per minute is more desirable. Low-yield wells (less than 4 gallons per minute) require a properly sized storage tank and pumping system to supply an adequate amount of water for domestic use. 
-                                            If you use a low-yield well, you should buy a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person). "),
+                                             Dependable ground water supplies for private wells are available at depths of less than 300 feet in most areas of the state. A well yield of at 
+                                             least 6 gallons per minute is usually needed for home use, though 10 gallons per minute is more desirable. Low-yield wells (less than
+                                             4 gallons per minute) require a properly sized storage tank and pumping system to supply an adequate amount of water for domestic use. If you use 
+                                             a low yield well, a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person) is recommended by experts."),
                                            p("From the New River Valley Water Supply Plan in 2011, there are 5 community wells that we have data on. Each of these wells have a different depth and a different maximum daily withdrawal. 
                                              We attempted to make an inference on the correlation between the well depth and the water yield.  ")), 
                                     column(8, 
@@ -519,12 +527,12 @@ ui <- navbarPage(title = "DSPG 2021",
                               p("", style = "padding-top:10px;"),
                               column(4, 
                                      h4(strong("Economic Growth")),
-                                     p("The residental and commerial businesses have been growing within the past 10 years in Floyd, but there is a different demographic of the new movers. 
-                                       Of the recent residents, their household income is significantly higher than those residing in Floyd for the past 10 years and their home values have
-                                       almost doubled. Because of the recent pandemic, there was a push on moving to rural areas and working from home and this is part of the reason why home values
-                                       have increased so much within the past 2 years. It seems that the new residents are moving into Floyd for its land features, natural beauty, 
-                                       and reowned for vibrant culture of music, arts, local foods and wines, and outdoor recreation, but they are working outside and not contributing to the county's economy. 
-                                       ")
+                                     p("The residential and commercial businesses have seen growth in the past 10 years in Floyd, 
+                                       however there is a different demographic of the new movers. The recent residents, share a household income that is significantly
+                                       higher than those residing in Floyd for the past 10 years and their home values have almost doubled. Due to the recent pandemic, 
+                                       there was a push on moving to rural areas and working from home resulting in home values increasing in the past two years. Many new 
+                                       residents are moving into Floyd for its land features, natural beauty, and vibrant culture of music, arts, local foods and wines, 
+                                       and outdoor recreation. However, these same residents work outside the county and contribute less to the county's economy.")
                               ), 
                               column(8, 
                                      h4(strong("Graph of Economic Parameters")),
@@ -539,7 +547,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                        "Unemployment Rate Timeseries" = "unemplo")
                                      ),
                                      plotlyOutput("trend1"),
-                                     p(tags$small("Data Sources: Virginia Employment Commission, Virginia Department of Taxation and Weldon Cooper Center, U.S. Census Bureau 2019"))
+                                     p(tags$small("Various data sources listed on Data Tab"))
                                      
                               )
                      )
@@ -601,7 +609,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          fluidRow(style = "margin: 6px;",
                                                   p("", style = "padding-top:10px;"),
                                          column(4, 
-                                                p("1. Here is what the first item in the kit looks like. "), 
+                                                p("1. Here are pictures of what the kit looks like. All of the kits are ", strong("handed out FREE by the county. ")), 
                                                 img(src = "front-page.jpeg", style="display: block; margin-left: auto; margin-right: auto;", width = "300px")
                                          ), 
                                          column(4,
@@ -630,7 +638,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                                ), 
                                                
                                                column(4, 
-                                                      p("6. Here is the front of the envelope and provided address you will send it to once it goes into the mail. Notice there is no need for a stamp. All you need to do 
+                                                      p("6. Here is the front of the envelope and provided address you will send it to once it goes into the mail. ", strong("Notice there is no need for a stamp. "), "All you need to do 
                                                   is seal the envelope and drop it in your mail box or nearest post office. "), 
                                                       img(src = "address.jpeg", style = "display: inline; border: 1px solid #C0C0C0;", width = "300px")
                                                ) 
