@@ -24,70 +24,70 @@ readRenviron("~/.Renviron")
 # data -----------------------------------------------------------
 # Demographics 
 total_pop <- 15074 
-home <- readRDS(paste0(getwd(), "/data/home.rds")) 
+home <- readRDS(paste0(getwd(), "/data/demographics/home.rds")) 
 home <- st_transform(home, '+proj=longlat +datum=WGS84')
 
-income <- readRDS(paste0(getwd(), "/data/income.rds")) 
+income <- readRDS(paste0(getwd(), "/data/demographics/income.rds")) 
 income <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-age <- readRDS(paste0(getwd(), "/data/age.rds")) 
+age <- readRDS(paste0(getwd(), "/data/demographics/age.rds")) 
 age <- st_transform(age, '+proj=longlat +datum=WGS84')
 
-employment_status <- readRDS(paste0(getwd(), "/data/employment_status.rds")) 
+employment_status <- readRDS(paste0(getwd(), "/data/demographics/employment_status.rds")) 
 employment_status <- st_transform(employment_status, '+proj=longlat +datum=WGS84')
 
-high <- readRDS(paste0(getwd(), "/data/high.rds")) 
+high <- readRDS(paste0(getwd(), "/data/demographics/high.rds")) 
 high <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-bach <- readRDS(paste0(getwd(), "/data/bach.rds")) 
+bach <- readRDS(paste0(getwd(), "/data/demographics/bach.rds")) 
 bach <- st_transform(income, '+proj=longlat +datum=WGS84')
 
-mast <- readRDS(paste0(getwd(), "/data/mast.rds")) 
+mast <- readRDS(paste0(getwd(), "/data/demographics/mast.rds")) 
 mast <- st_transform(mast, '+proj=longlat +datum=WGS84')
 
-doct <- readRDS(paste0(getwd(), "/data/doct.rds")) 
+doct <- readRDS(paste0(getwd(), "/data/demographics/doct.rds")) 
 doct <- st_transform(doct, '+proj=longlat +datum=WGS84')
 
-food <- readRDS(paste0(getwd(), "/data/food.rds")) 
+food <- readRDS(paste0(getwd(), "/data/demographics/food.rds")) 
 food <- st_transform(food, '+proj=longlat +datum=WGS84')
 
-poverty <- readRDS(paste0(getwd(), "/data/poverty.rds")) 
+poverty <- readRDS(paste0(getwd(), "/data/demographics/poverty.rds")) 
 poverty <- st_transform(poverty, '+proj=longlat +datum=WGS84')
 
-total_block <- readRDS(paste0(getwd(), "/data/total_block.rds")) 
+total_block <- readRDS(paste0(getwd(), "/data/demographics/total_block.rds")) 
 total_block <- st_transform(total_block, '+proj=longlat +datum=WGS84')
 
-total_census <- readRDS(paste0(getwd(), "/data/total_census.rds")) 
+total_census <- readRDS(paste0(getwd(), "/data/demographics/total_census.rds")) 
 total_census <- st_transform(total_census, '+proj=longlat +datum=WGS84')
 
-new <- readRDS(paste0(getwd(), "/data/new.rds")) 
+new <- readRDS(paste0(getwd(), "/data/demographics/new.rds")) 
 new <- st_transform(new, '+proj=longlat +datum=WGS84')
 
 
 # Water Features 
-water_springs <- read.csv(paste0(getwd(), "/data/water_springs.csv")) 
+water_springs <- read.csv(paste0(getwd(), "/data/water/water_springs.csv")) 
 
 
-mines <- read_tsv(paste0(getwd(), "/data/AbandonedMineralMineLands.txt")) 
+mines <- read_tsv(paste0(getwd(), "/data/water/AbandonedMineralMineLands.txt")) 
 
 mines_Floyd <- mines %>%
     filter(County == "Floyd")
 
 
 # rainfall and temperatures 
-climate <- data.frame(read_excel(paste0(getwd(),"/data/climate-floyd-county-usClimateData.xlsx"))) 
-wells <- data.frame(t(read_excel(paste0(getwd(),"/data/NRV-wells-floyd-county-2011.xlsx"), col_types = "numeric")))  
+climate <- data.frame(read_excel(paste0(getwd(),"/data/water/climate-floyd-county-usClimateData.xlsx"))) 
+wells <- data.frame(t(read_excel(paste0(getwd(),"/data/water/NRV-wells-floyd-county-2011.xlsx"), col_types = "numeric")))  
 
 colnames(wells) = c("Number_Wells", "Well_Depth", "Casing_Depth" , "Diameter", "Withdrawl_MGD", "Withdrawl_GPD", "Max_MGD", "Max_GPD", "Permitted")
 wells <- wells[-1,]
 wells$Names <- c("Christie", "Shortt", "Howard", "Rec.Park", "Comm. Cntr")
 
 ## Labor Market (Ryan)
-industry <- read_excel(paste0(getwd(),"/data/Floyd Labor Market Statistics.xlsx")) 
+industry <- read_excel(paste0(getwd(),"/data/economics/Floyd Labor Market Statistics.xlsx")) 
 industry_df <- as.data.frame(industry)
 
 ## Floyd County Employment by Industry Sector
-industry_overtime <- read_excel(paste0(getwd(),"/data/industry-overtime.xlsx")) 
+industry_overtime <- read_excel(paste0(getwd(),"/data/economics/industry-overtime.xlsx")) 
 industry_overtime$Estimate <- as.numeric(industry_overtime$Estimate)
 industry_overtime$Year <- as.character(industry_overtime$Year)
 ## Floyd Population Change 
@@ -111,31 +111,31 @@ colnames(busgrowth_df) <- c("Time","Quantity")
 busgrowth_df$Time <- factor(busgrowth_df$Time, levels=unique(busgrowth_df$Time))
 busgrowth_df$Quantity <- as.numeric(busgrowth_df$Quantity)
 
-capita_income <- read_excel(paste0(getwd(), "/data/capita_income.xlsx"))[,1:3]
+capita_income <- read_excel(paste0(getwd(), "/data/economics/capita_income.xlsx"))[,1:3]
 
-retail <- read_excel(paste0(getwd(), "/data/retail-sales.xlsx"))[,1:3]
+retail <- read_excel(paste0(getwd(), "/data/economics/retail-sales.xlsx"))[,1:3]
 retail$Year <- as.character(retail$Year)
 
-unempl <- read_excel(paste0(getwd(), "/data/unemployment.xlsx"))[,1:3] 
+unempl <- read_excel(paste0(getwd(), "/data/economics/unemployment.xlsx"))[,1:3] 
 unempl$Year <- as.character(unempl$Year) 
 
 ## Land Parcel Data
-agr <- readRDS(paste0(getwd(), "/data/agr.rds")) 
+agr <- readRDS(paste0(getwd(), "/data/land_parcel/agr.rds")) 
 agr <- st_transform(agr, '+proj=longlat +datum=WGS84')
 
-agr_large <- readRDS(paste0(getwd(), "/data/agr_large.rds")) 
+agr_large <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large.rds")) 
 agr_large <- st_transform(agr_large, '+proj=longlat +datum=WGS84')
 
-single <- readRDS(paste0(getwd(), "/data/single.rds")) 
+single <- readRDS(paste0(getwd(), "/data/land_parcel/single.rds")) 
 single <- st_transform(single, '+proj=longlat +datum=WGS84')
 
-single_urban <- readRDS(paste0(getwd(), "/data/single_urban.rds")) 
+single_urban <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban.rds")) 
 single_urban <- st_transform(single_urban, '+proj=longlat +datum=WGS84')
 
-mult <- readRDS(paste0(getwd(), "/data/mult.rds")) 
+mult <- readRDS(paste0(getwd(), "/data/land_parcel/mult.rds")) 
 mult <- st_transform(mult, '+proj=longlat +datum=WGS84')
 
-com <- readRDS(paste0(getwd(), "/data/com.rds")) 
+com <- readRDS(paste0(getwd(), "/data/land_parcel/com.rds")) 
 com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
 
@@ -1405,14 +1405,14 @@ server <- function(input, output) {
     output$sources <- renderTable({
       
       if(contam() == "percent") {
-            table <- read.csv("data/table-sources.csv")
+            table <- read.csv("data/water/table-sources.csv")
             table$`X..Exceeding.Standard` <- paste0(table$`X..Exceeding.Standard`, " %")
             colnames(table) <- c("Test", "EPA Standard", "Average", "Maximum Value", "% Exceeding Standard")
             table
       } 
       else {
         
-        table <- read.csv("data/table-contaminants.csv")
+        table <- read.csv("data/water/table-contaminants.csv")
         table
         
         
@@ -1422,7 +1422,7 @@ server <- function(input, output) {
     
     output$qualityRec <- renderTable({
         
-        table <- read_excel("data/recommendations.xlsx")
+        table <- read_excel("data/water/recommendations.xlsx")
         table
     }, striped = TRUE, hover = TRUE, bordered = TRUE, width = "100%", align = "l", colnames = T, digits = 2)
   
