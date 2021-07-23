@@ -374,7 +374,7 @@ ui <- navbarPage(title = "DSPG 2021",
             ),
             ## Tab Geology--------------------------------------------
             # need a different name
-            navbarMenu("Water Soures" , 
+            navbarMenu("Water Sources" , 
                      tabPanel("Groundwater", 
                             fluidRow(style = "margin: 6px;",
                                 h1(strong("Groundwater"), align = "center"),
