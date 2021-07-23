@@ -521,7 +521,7 @@ ui <- navbarPage(title = "DSPG 2021",
             ),
             
             ## Tab Economics--------------------------------------------
-            tabPanel("Economics", value = "economics",
+            tabPanel("Economy", value = "economy",
                      fluidRow(style = "margin: 6px;",
                               h1(strong("Residental and Commerical Development"), align = "center"),
                               p("", style = "padding-top:10px;"),
@@ -676,8 +676,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                      img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "team-julie.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "team-ryan.JPG", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
-                                     p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, Graduate in Economics);",
+                                     img(src = "team-john.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, PHD in Economics);",
                                        a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Undergraduate in Economics and Computational Modeling and Data Analytics);",
                                        a(href = 'https://www.linkedin.com/in/ryan-jacobs-bb5727174/', 'Ryan Jacobs', target = '_blank'), "(Virginia Tech, Undergraduate in Environmental Economics, Management, and Policy, and Minoring in Industrial Design).",
                                         a(href = 'https://www.linkedin.com/in/john-wright-9a13621a0/', 'John Wright', target = '_blank'), "(Virginia State Univeristy, Undergraduate in Statistical and Data Science)."),
@@ -1321,12 +1321,13 @@ server <- function(input, output) {
         
         if(econ1() == "industry") {
             
-          ggplot(industry_overtime, aes(fill = Year, x = Label, y = Estimate)) + 
-            geom_bar(position="dodge", stat="identity") + 
+          plot <- ggplot(industry_overtime, aes(group = Label, x = Year, y = Estimate, color = Label)) + 
+            geom_line() + 
             labs(title = "Industry Sector ", 
                  caption = "Data Source: ACS 5-year Estimates" ,
-                 y="Persons ", x= "Sector")+
-            theme(axis.text.x = element_text(angle = 50, vjust = 2, color = "black",size = 7))
+                 y="Persons ", x= "Sector")+ theme(legend.position="bottom")
+          
+          ggplotly(plot) %>% layout(legend = list(orientation = "h", y=-0.2))
             
             
         }else if (econ1() == "commute") {
@@ -1353,12 +1354,15 @@ server <- function(input, output) {
             
             
         }else if (econ1() == "retail"){
-          ggplot(retail, aes(fill = Year, x = Retail, y = Sales/100000)) + 
-            geom_bar(position="dodge", stat="identity") + 
+          
+          plot <- ggplot(retail, aes(group = Retail, x = Year, y = Sales/1000, color = Retail)) + 
+            geom_line() + 
             labs(title = "Retail Sales by Group", 
-                 caption = "Data Source: Virginia Department of Taxation and Weldon Cooper Center" ,
-                 y="Sales (100,000) ", x= "Retail Group")+
-            theme(axis.text.x = element_text(angle = 50, vjust = 3, color = "black",size = 7))
+                 caption = "Data Source: ACS 5-year Estimates" ,
+                 y="Sales (100,000) ", x= "Retail Group")+ theme(legend.position="bottom")
+          
+          ggplotly(plot) %>% layout(legend = list(orientation = "h", y=-0.2))
+         
           
         }else if (econ1() == "capita"){
           
