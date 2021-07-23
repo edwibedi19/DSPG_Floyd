@@ -546,8 +546,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                        "Retail Sales by Type" = "retail",
                                        "Unemployment Rate Timeseries" = "unemplo")
                                      ),
-                                     plotlyOutput("trend1"),
-                                     p(tags$small("Various data sources listed on Data Tab"))
+                                     plotlyOutput("trend1", height = "600px")
                                      
                               )
                      )
@@ -1097,9 +1096,7 @@ server <- function(input, output) {
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb)+ 
                 labs(title = "Average Monthly Rainfall", 
-                     caption = "Data Source: US Climate Data",
-                     y="Rainfall (in)")+ theme( 
-                         plot.subtitle = element_text(size = 9, color = "blue"))
+                     y="Rainfall (in)")
         
             
         }else if (var1() == "min") {
@@ -1108,9 +1105,7 @@ server <- function(input, output) {
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) +
                 labs(title = "Minimum Monthly Tempature",
-                     caption = "Data Source: US Climate Data",
-                     y = "Temperature (F)") + theme( 
-                         plot.subtitle = element_text(size = 6, color = "blue"))
+                     y = "Temperature (F)") 
             
             
         }else {
@@ -1118,10 +1113,8 @@ server <- function(input, output) {
             ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
                 geom_bar(position="dodge", stat="identity") + 
                 scale_x_discrete(limits = month.abb) + 
-                labs(title = "Maximum Monthly Tempaturei",
-                     caption = "Data Source: US Climate Data",
-                     y = "Temperature (F) ")+ theme( 
-                         plot.subtitle = element_text(size = 7, color = "blue"))
+                labs(title = "Maximum Monthly Tempature",
+                     y = "Temperature (F) ")
             
         }
         
@@ -1237,8 +1230,7 @@ server <- function(input, output) {
                 labs(title = "Average Daily Withdrawals of Community Wells", 
                      x = "Wells",
                      y = "Withdrawal (GPD) ") + 
-                theme(legend.position = "none", 
-                      plot.subtitle = element_text(color = "blue", size = 9))
+                theme(legend.position = "none")
             
             
         }else if (var2() == "depth") {
@@ -1248,8 +1240,7 @@ server <- function(input, output) {
                 geom_col(aes(y = Percent), fill = "darkseagreen1")  + 
                 geom_line(aes(y = Well_Depth/1000), color = "navyblue", size = 1, group = 1) +
                 scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  + 
-                labs(title = "Percent of Usage and Well Depth of Community Wells", x = "Wells") + 
-              theme(plot.subtitle = element_text(color = "blue", size = 7))
+                labs(title = "Percent of Usage and Well Depth of Community Wells", x = "Wells")
             
             
         }else {
@@ -1334,15 +1325,15 @@ server <- function(input, output) {
             geom_bar(position="dodge", stat="identity") + 
             labs(title = "Industry Sector ", 
                  caption = "Data Source: ACS 5-year Estimates" ,
-                 y="Persons ", x= "Sector")+ coord_flip() 
+                 y="Persons ", x= "Sector")+
+            theme(axis.text.x = element_text(angle = 50, vjust = 2, color = "black",size = 7))
             
             
         }else if (econ1() == "commute") {
             ggplot(data = commute_df,mapping = aes(Type,Quantity))+geom_bar(stat = "identity",fill="powderblue")+
                 labs(title = "Floyd County Commuting",
                      caption = "Data Source: U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination 
-                        Employment Statistics, 2014") + 
-                coord_flip()
+                        Employment Statistics, 2014") 
             
         }else if (econ1() == "pop"){ 
             
@@ -1366,7 +1357,8 @@ server <- function(input, output) {
             geom_bar(position="dodge", stat="identity") + 
             labs(title = "Retail Sales by Group", 
                  caption = "Data Source: Virginia Department of Taxation and Weldon Cooper Center" ,
-                 y="Sales (100,000) ", x= "Retail Group")+ coord_flip() 
+                 y="Sales (100,000) ", x= "Retail Group")+
+            theme(axis.text.x = element_text(angle = 50, vjust = 3, color = "black",size = 7))
           
         }else if (econ1() == "capita"){
           
