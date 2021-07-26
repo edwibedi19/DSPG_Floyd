@@ -16,6 +16,7 @@ library(shinycssloaders)
 library(shinythemes)
 library(stringr)
 library(shinyjs)
+library(viridis)
 options(tigris_use_cache = TRUE)
 
 census_api_key("6f1a78212175773dd80d1a03bd303e8d181a6096", install = TRUE, overwrite = T)
@@ -305,7 +306,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                         )
                                     ), 
                                    withSpinner(leafletOutput("demo1")) , 
-                                   p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019"))
+                                   p(tags$small("Data Source: American Community Survey 5-year estimate 2015/2019")),
                                  ) 
                           
                     ) 
@@ -445,7 +446,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                       tabPanel("Land Parcels",
                                                h4(strong("Map of Land Parcels by Type")),
                                                withSpinner(leafletOutput("landParcel")), 
-                                               p(tags$small("Data Source: Floyd County"))
+                                               p(tags$small("Data Source: Floyd County VCE"))
                                                
                                       ),
                                       tabPanel("NDWI",
@@ -504,13 +505,14 @@ ui <- navbarPage(title = "DSPG 2021",
                                        column(8, 
                                               h4(strong("Table of Common Contaminants")),
                                              selectInput("contam", "Select Variable:", width = "100%", choices = c(
-                                               "Percent Common Contaminants" = "percent",
-                                               "Groups of Common Contaminants" = "group")
+                                               "Percent Common Contaminants [1]" = "percent",
+                                               "Groups of Common Contaminants [2]" = "group")
                                              ),
                                              withSpinner(tableOutput("sources")),
-                                             p(tags$small("Data Sources: Virginia Cooperative Extension, Virginia Household Water Quality Program 2010; Town of Christainsburg 2018 Drinking Water Report")), 
                                              p(tags$small("All water testing: The Water Quality Laboratory of the Department of Biological Systems Engineering and Soils Testing Laboratory of the Department of Crop and Soil Environmental Sciences at Virginia Tech")), 
-                                             tags$ br(), 
+                                             
+                                             p(tags$small("[1] V. (n.d.). Evaluation of Household Water Quality in Floyd County, Virginia APRIL 2010 (pp. 1-6, Rep.). Virginia Polytechnic Institute and State University. doi:Virginia Cooperative Extension")),
+                                             p(tags$small("[2] T. (n.d.). 2018 DRINKING WATER QUALITY REPORT (pp. 1-7, Rep.). Town of Christiansburg.")), 
                                              tags$br(), 
                                              h4(strong("Map of Abandoned Mines by Block Group")),
                                              withSpinner(leafletOutput("mines")),
@@ -537,18 +539,31 @@ ui <- navbarPage(title = "DSPG 2021",
                               column(8, 
                                      h4(strong("Graph of Economic Parameters")),
                                      selectInput("econ1", "Select Variable:", width = "100%", choices = c(
-                                       "Employment by Industry" = "industry",
-                                       "Projected Population Change" = "pop",
-                                       "Income per Capita" = "capita", 
-                                       "Population by Age" = "age", 
-                                       "Number of Commuters" = "commute", 
-                                       "New Business Growth" = "business",
-                                       "Retail Sales by Type" = "retail",
-                                       "Unemployment Rate Timeseries" = "unemplo")
+                                       "Employment by Industry [1]" = "industry",
+                                       "Projected Population Change [2]" = "pop",
+                                       "Income per Capita [3]" = "capita", 
+                                       "Population by Age [4]" = "age", 
+                                       "Number of Commuters [5]" = "commute", 
+                                       "New Business Growth [6]" = "business",
+                                       "Retail Sales by Type [7]" = "retail",
+                                       "Unemployment Rate Timeseries [8]" = "unemplo")
                                      ),
                                      plotlyOutput("trend1", height = "600px")
                                      
-                              )
+                              ),
+                              
+                              h4("References", align = "center") , 
+                              p("[1] American Community Survey 5-year Estimates 2014/2019"), 
+                              p("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service"), 
+                              p("[3] U.S Census Bureau"), 
+                              p("[4]  2010 Census"), 
+                              p("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination 
+                            Employment Statistics, 2014"), 
+                              p("[6] Virginia Employment Commission, Economic Information & Analytics, 
+                            Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020."), 
+                              p("[7] American Community Survey 5-year Estimates 2014/2019"), 
+                              p("[8]  Virginia Employment Commission")
+                              
                      )
                      
                      
@@ -571,9 +586,9 @@ ui <- navbarPage(title = "DSPG 2021",
                                                  This kit is so simple that even your ",strong("kids")," can get involved and learn more about the water quality that is flowing through the county. 
                                                  Testing your well water every year or two years is one of the best ways to ensure your water is safe and clean for you and your family. "), 
                                                  br(),
-                                                h4(strong("Table of Common Recommendations for Water Quality")), 
-                                                withSpinner(tableOutput("qualityRec"))
-                                               
+                                                h4(strong("Table of Common Recommendations for Water Quality [2]")), 
+                                                withSpinner(tableOutput("qualityRec")) 
+
                                          ) , 
                                          column(6, 
                                                 p("", style = "padding-top:10px;"),
@@ -581,27 +596,33 @@ ui <- navbarPage(title = "DSPG 2021",
                                                  included total coliform bacteria, low levels of pH, sodium and chloride, lead and copper and manganese. "),
                                                 br(), 
                                                 tags$li("Disinfect", strong(" total coliform bacteria, "), "the Virginia Department of Health recommends the use of Shock Chlorination to clean and sanitize
-                                                  the well and entire plumbing system."), 
-                                                tags$li("Combatting", strong("manganese: "), " it is recomended to get a distillation or filtration system because it is secondary maximum contaminant level, maximum 0.05 mg/L"),
-                                                tags$li("Raising ", strong("low pH levels (<7):"), " is installing an acid neutralizing filter that passes through calcite that raises the pH."),
+                                                  the well and entire plumbing system [7]"), 
+                                                tags$li("Combatting", strong("manganese: "), " it is recomended to get a distillation or filtration system because it is secondary maximum contaminant level, maximum 0.05 mg/L [3]"),
+                                                tags$li("Raising ", strong("low pH levels (<7):"), " is installing an acid neutralizing filter that passes through calcite that raises the pH [4]"),
                                                 tags$li("Protecting water from ", strong("lead and copper: "), "leeching into the water, regularly clean your faucet’s screen (also known as an aerator). Sediment, debris, and lead particles can collect in your aerator. 
-                                                     Make sure to run your water for at least a minute and use only cold water. If not hot water, use cold and boil on stove. "),
+                                                     Make sure to run your water for at least a minute and use only cold water. If not hot water, use cold and boil on stove. [5]"),
                                                 tags$li("For eliminating ", strong("chloride and sodium: "), " activated carbon filters are the most common devices used to dechlorinate
-                                                water, remove objectionable chlorine tastes, and reduce corrosion of plumbing systems"),
+                                                water, remove objectionable chlorine tastes, and reduce corrosion of plumbing systems [6]"),
                                                 tags$li("Dealing with", strong("hard water: "), " use water softeners which exchange the minerals (iron, magnesium, and calcium) for sodium. To avoid potential risks, one could
-                                                     only soften the the hot water supply to take showers and baths and clean around the house and leave the cold water available for consumption. "),
+                                                     only soften the the hot water supply to take showers and baths and clean around the house and leave the cold water available for consumption. [6]"),
                                                 tags$li("To condition well water for ", strong("safer and cleaner water: "), " many use water softening, iron removal, neutralization of acid water, reverse
-                                                osmosis, turbidity control, removal of objectionable tastes and odors, and aeration"),
+                                                osmosis, turbidity control, removal of objectionable tastes and odors, and aeration [7]"),
                                                 tags$li("The issue with ", strong("water softeners ,"), " when used in conjuction with filters causes the water to smell rotten. Also, the addition of sodium into the water
-                                                     can be a health risk and should talk to their physican. "),
+                                                     can be a health risk and should talk to their physican. [6]"),
                                                 br(), 
                                                 p("Protecting water from", strong("agricultural runoff"), "like sediments, animal feeding operations, livestock grazing, irrigation and pesticides can include measures like",  
                                                   strong("applying management practices that control the volume and flow rate"),  "of runoff water, keep the soil in place, and reduce soil transport;", 
                                                   strong("adjusting grazing intensity, keeping livestock out of sensitive areas,"), " providing alternative sources of water and shade, and promoting revegetation of ranges, pastures, and riparian zones; ", strong("applying only the amount of water required for crops,"), " 
-                                                  converting irrigation systems to higher efficiency equipment; and following ", strong("Integrated Pest Management Technology"), "to use natural barriers and limit pesticide uses. "), 
-                                                br()) 
-                                                
-                                              
+                                                  converting irrigation systems to higher efficiency equipment; and following ", strong("Integrated Pest Management Technology"), "to use natural barriers and limit pesticide uses [1]. "), 
+                                                br()),
+                                         h4("References: ", algin = "ceneter"),
+                                         p("[1] Protecting Water Quality from Agricultural Runoff [PDF]. (2005, March). Washington, DC: United States Environmental Protection Agency."), 
+                                         p("[2] V. (n.d.). Evaluation of Household Water Quality in Floyd County, Virginia APRIL 2010 (pp. 1-6, Rep.). Virginia Polytechnic Institute and State University. doi:Virginia Cooperative Extension"),
+                                         p("[3] Learn about water. (n.d.). Retrieved July 26, 2021, from https://www.wqa.org/learn-about-water/water-q-a/manganese"),
+                                         p("[4] University of Massachusetts Amherst. (2018, March 22). Ph – acidity of private drinking water wells. Retrieved July 26, 2021, from https://ag.umass.edu/cafe/fact-sheets/ph-acidity-of-private-drinking-water-wells"), 
+                                         p("[5] General Information about Lead in Drinking Water. (n.d.). Retrieved July 26, 2021, from https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water#reducehome"), 
+                                         p("[6] Benham, B., Ling, E. J., Scott, J. P., Haering, K., &amp; Wright, B. (2011). Virginia Household Water Quality Program: Sodium and Chloride in Household Drinking Water (pp. 1-4, Publication No. 442-661). Communications and Marketing, College of Agriculture and Life Sciences, Virginia Polytechnic Institute and State University."),
+                                         p("[7] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")
                                          
                                 ), 
                                 tabPanel("Well Testing Kit",
@@ -673,9 +694,9 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               column(6, align = "center",
                                      h4(strong("DSPG Team Members")),
-                                     img(src = "", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-esha.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "team-julie.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "team-ryan.JPG", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-ryan.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "team-john.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, PHD in Economics);",
                                        a(href = 'https://www.linkedin.com/in/julie-rebstock', 'Julie Rebstock', target = '_blank'), "(Virgina Tech, Undergraduate in Economics and Computational Modeling and Data Analytics);",
@@ -1093,7 +1114,7 @@ server <- function(input, output) {
         if(var1() == "rainfall") {
             
             ggplot(climate, aes(fill = County, x = Month, y = Rainfall)) + 
-                geom_bar(position="dodge", stat="identity") + 
+                geom_bar(position="dodge", stat="identity") + scale_fill_viridis_d() + 
                 scale_x_discrete(limits = month.abb)+ 
                 labs(title = "Average Monthly Rainfall", 
                      y="Rainfall (in)")
@@ -1102,7 +1123,7 @@ server <- function(input, output) {
         }else if (var1() == "min") {
             
             ggplot(climate, aes(fill = County, x = Month, y = Min_Temp)) + 
-                geom_bar(position="dodge", stat="identity") + 
+                geom_bar(position="dodge", stat="identity") + scale_fill_viridis_d() + 
                 scale_x_discrete(limits = month.abb) +
                 labs(title = "Minimum Monthly Tempature",
                      y = "Temperature (F)") 
@@ -1111,7 +1132,7 @@ server <- function(input, output) {
         }else {
             
             ggplot(climate, aes(fill = County, x = Month, y = Max_Temp)) + 
-                geom_bar(position="dodge", stat="identity") + 
+                geom_bar(position="dodge", stat="identity") + scale_fill_viridis_d() + 
                 scale_x_discrete(limits = month.abb) + 
                 labs(title = "Maximum Monthly Tempature",
                      y = "Temperature (F) ")
@@ -1225,31 +1246,32 @@ server <- function(input, output) {
         if(var2() == "gpd") {
             
             wells %>% 
-                ggplot(aes(x = Names, y = Withdrawl_GPD)) + 
-                geom_bar(stat = "identity", position = "dodge", fill = rgb(0.9,0.1,0.1,0.9))+ 
+                ggplot(aes(x = Names, y = Withdrawl_GPD, fill = Names)) + 
+                geom_bar(stat = "identity", position = "dodge")+ 
                 labs(title = "Average Daily Withdrawals of Community Wells", 
                      x = "Wells",
-                     y = "Withdrawal (GPD) ") + 
-                theme(legend.position = "none")
+                     y = "Withdrawal (GPD) ") + scale_fill_viridis_d() + 
+                theme(legend.position = "none") 
             
             
         }else if (var2() == "depth") {
             wells$Percent <- wells$Withdrawl_GPD/wells$Max_GPD
             
-            ggplot(wells, aes(x = Names)) + 
-                geom_col(aes(y = Percent), fill = "darkseagreen1")  + 
-                geom_line(aes(y = Well_Depth/1000), color = "navyblue", size = 1, group = 1) +
-                scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  + 
-                labs(title = "Percent of Usage and Well Depth of Community Wells", x = "Wells")
+            ggplot(wells, aes(x = Names, fill = Names)) + 
+                geom_col(aes(y = Percent))+ scale_fill_viridis_d() +
+                geom_line(aes(y = Well_Depth/1000), color = "blue", size = 4, group = 1) +
+                scale_y_continuous("Percent", sec.axis = sec_axis(~.*1000, name = "Depth (ft)"))  +  
+                labs(title = "Percent of Usage and Well Depth of Community Wells", x = "Wells")+
+              theme(legend.position = "none") 
             
             
         }else {
             wells %>% 
-                ggplot(aes(x = Names, y = Max_GPD)) + 
-                geom_bar(stat = "identity", position = "dodge",fill = rgb(0.9,0.4,0.4,0.9))+ 
+                ggplot(aes(x = Names, y = Max_GPD, fill = Names)) + 
+                geom_bar(stat = "identity", position = "dodge")+ 
                 labs(title = "Maximum Daily Withdrawals of Community Wells", 
                      x = "Wells",
-                     y = "Withdrawal (GPD)") + 
+                     y = "Withdrawal (GPD)") + scale_fill_viridis_d() + 
                 theme(legend.position = "none")
             
             
@@ -1323,33 +1345,35 @@ server <- function(input, output) {
             
           plot <- ggplot(industry_overtime, aes(group = Label, x = Year, y = Estimate, color = Label)) + 
             geom_line() + 
-            labs(title = "Industry Sector ", 
-                 caption = "Data Source: ACS 5-year Estimates" ,
+            labs(title = "Industry Sector ",
                  y="Persons ", x= "Sector")+ theme(legend.position="bottom")
           
-          ggplotly(plot) %>% layout(legend = list(orientation = "h", y=-0.2))
-            
+          ggplotly(plot) %>% layout(legend = list(orientation = "h", y=-0.2)) 
+                                    
+          
+         
             
         }else if (econ1() == "commute") {
-            ggplot(data = commute_df,mapping = aes(Type,Quantity))+geom_bar(stat = "identity",fill="powderblue")+
-                labs(title = "Floyd County Commuting",
-                     caption = "Data Source: U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination 
-                        Employment Statistics, 2014") 
+            plot <- ggplot(data = commute_df,mapping = aes(Type,Quantity, fill = Type))+geom_bar(stat = "identity")+
+              scale_fill_viridis_d() + 
+                labs(title = "Floyd County Commuting") 
+            
+            
+            
             
         }else if (econ1() == "pop"){ 
             
             ggplot(popch_df, aes(x=Year,y=Population,group=1)) +
                 geom_line()+geom_point()+
-                labs(title = "Projected Floyd Population Change",
-                     caption = "Data Source: U.S. Census Bureau, Weldon Cooper Center for Public Service")
+                labs(title = "Projected Floyd Population Change")
             
             
             
         }else if (econ1() == "age") {
             
-            ggplot(data = popage_df,mapping = aes(Age,Quantity))+geom_bar(stat = "identity",fill="dodgerblue2")+
-                labs(title = "Floyd County Population by Age",
-                     caption = "Data Source: 2010 Census") + coord_flip()
+            ggplot(data = popage_df,mapping = aes(Age,Quantity, fill = Age))+geom_bar(stat = "identity")+
+            scale_fill_viridis_d() + 
+                labs(title = "Floyd County Population by Age") + coord_flip()
             
             
             
@@ -1358,7 +1382,6 @@ server <- function(input, output) {
           plot <- ggplot(retail, aes(group = Retail, x = Year, y = Sales/1000, color = Retail)) + 
             geom_line() + 
             labs(title = "Retail Sales by Group", 
-                 caption = "Data Source: ACS 5-year Estimates" ,
                  y="Sales (100,000) ", x= "Retail Group")+ theme(legend.position="bottom")
           
           ggplotly(plot) %>% layout(legend = list(orientation = "h", y=-0.2))
@@ -1367,9 +1390,8 @@ server <- function(input, output) {
         }else if (econ1() == "capita"){
           
           ggplot(capita_income, aes(fill = Area, x = Year, y = Amount)) + 
-            geom_bar(position="dodge", stat="identity") + 
+            geom_bar(position="dodge", stat="identity") + scale_fill_viridis_d() + 
             labs(title = "Income per Capita", 
-                 caption = "Data Source: U.S Census Bureau",
                  y="Dollar ($) ")
           
         }else if (econ1() == "unemplo"){
@@ -1383,9 +1405,7 @@ server <- function(input, output) {
             
             ggplot(busgrowth_df, aes(x=Time,y=Quantity,group=1)) +
                 geom_line()+geom_point()+
-                labs(title = "New Business Growth in Floyd",
-                     caption = "Data Source: Virginia Employment Commission, Economic Information & Analytics, 
-                        Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020.")+
+                labs(title = "New Business Growth in Floyd")+
             theme(axis.text.x = element_text(angle = 45, vjust = .5, color = "black"))
             
         }
