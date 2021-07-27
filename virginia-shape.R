@@ -157,26 +157,19 @@ features <- unique(water_springs$feature)
 Pillar_pal <- colorFactor(pal = c('blue', 'red'), 
                           levels = features)
 ## interavtive map of springs and streams in Floyd with two points for Town of Floyd and Floyd Quarry 
-floyd_map <- water_springs %>% 
+
   leaflet(options = leafletOptions(minzoom = 19)) %>% 
   setView(lng = -80.3, lat = 36.91, zoom = 9.5) %>% 
   addProviderTiles("CartoDB") %>% 
-  addCircleMarkers(lng = ~long, lat = ~lat,  radius = 1, color = ~Pillar_pal(feature)) %>% 
-  addMarkers(lng = -80.31891779181245, lat = 36.91313331126569, popup = "Town of Floyd") %>% 
-  addMarkers(lng = -80.25908794232855, lat = 36.90665582434524, popup = "Floyd Quarry") %>% 
-  addLegend(title = "Feature", position = "bottomleft", pal = Pillar_pal, values = features) %>%
   addPolygons(data = f,
-              fillColor = "black",
-              fillOpacity = .5,
               stroke = FALSE) 
 floyd_map
 
 
 
 ## outline of Floyd
-virginiaCounty <- st_read(
-  "/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
-f <- virginiaCounty[5,]
+virginiaCounty <- st_read("/Users/julierebstock/Desktop/VirginiaAdministrativeBoundary.shp/VirginiaCounty.shp")
+f <- virginiaCounty[5,]%>%st_transform(crs = "+init=epsg:4326") %>%
 
 library(dplyr)
 library(tidyverse)

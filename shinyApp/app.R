@@ -387,7 +387,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          of the rural population, including Floyd County, as well as being a major supply for the irrigation of crops, the protection and regular surveillance of the 
                                          quantity and quality of our groundwater is a key aspect we focused on when assessing Floyd County. Scientists estimate the amount of ground water is 400 times 
                                          greater than all the fresh water in lakes, reservoirs, streams, and rivers. Groundwater feeds streams and rivers, especially during periods of drought or low flow. 
-                                         Additionally, groundwater is an important component in many industrial processes."),
+                                         Additionally, groundwater is an important component in many industrial processes. [1]"),
                                        
                                        p("Floyd County's climate is characterized by mild to cold winters and hot, humid summers. 
                                          Precipitation patterns in Floyd County are determined generally by prevailing westerly winds which have a southerly component during 
@@ -403,7 +403,11 @@ ui <- navbarPage(title = "DSPG 2021",
                                              "Maximum Temeprature" = "max")
                                            ),
                                            plotlyOutput("precipitation"),
-                                           p(tags$small("Data Source: US Climate"))))), 
+                                           p(tags$small("Data Source: US Climate"))),
+                                tags$br(), 
+                                h4("References: "), 
+                                p("[1] Groundwater: Groundwater sustainability. (2021). Retrieved July 27, 2021, from https://www.ngwa.org/what-is-groundwater/groundwater-issues/groundwater-sustainability")
+                                )), 
                      tabPanel("Surface Water", 
                               style = "margin: 6px;",
                               h1(strong("Surface Water"), align = "center"),
@@ -414,15 +418,19 @@ ui <- navbarPage(title = "DSPG 2021",
                                        Floyd County is situated on a plateau in the Blue Ridge Uplands, a part of the Blue Ridge Physiographic Province which extends from New York to northwestern
                                        Georgia. Elevations in the County generally range from 2,000 to 3,000 feet, significantly higher neighboring counties to the north, south, and east.
                                        The physiography of the County is characterized by gently rolling land. Most of the land is more suited to grazing and forestry than to 
-                                       large-scale cultivation and urban types of development. Nearly half of the County's total acreage is forested."), 
+                                       large-scale cultivation and urban types of development. Nearly half of the County's total acreage is forested [1]."), 
                                        p("Several streams originate in the County. These include major tributaries of the New River (Big Reed Island Creek and Little River) 
                                          and headwater streams of the Dan, Smith, Pigg, Backwater and Roanoke Rivers. Most of the drainage, primarily snowmelt atop Buffalo 
                                          Mountain, goes to the Gulf of Mexico via the New River, Kanawha and Ohio into the Mississippi River system.")),
                               column(8, 
                                      h4(strong("Map of Water Features by Block Group")),
                                      leafletOutput("water"),
-                                     p(tags$small("Data Source: USGS National Hydrography Dataset"))) 
-                                  ) 
+                                     p(tags$small("Data Source: USGS National Hydrography Dataset"))) ,
+                              tags$br(), 
+                              h4("References"),
+                              p("[1] Martin, L., Turman, K., &amp; Hodge, T. (2009). What are our Natural Resources? (pp. 13-27, Publication No. 3). VA: Floyd County.")
+                              
+                        ) 
                       
                         
                       
@@ -449,7 +457,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                                p(tags$small("Data Source: Floyd County VCE"))
                                                
                                       ),
-                                      tabPanel("NDWI",
+                                      tabPanel("Remote Sensing Data",
+                                               #NDWI and GRACE-CSR
                                                p()
                                                
                                       )
@@ -471,7 +480,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                              Dependable ground water supplies for private wells are available at depths of less than 300 feet in most areas of the state. A well yield of at 
                                              least 6 gallons per minute is usually needed for home use, though 10 gallons per minute is more desirable. Low-yield wells (less than
                                              4 gallons per minute) require a properly sized storage tank and pumping system to supply an adequate amount of water for domestic use. If you use 
-                                             a low yield well, a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person) is recommended by experts."),
+                                             a low yield well, a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person) is recommended by experts. [1]"),
                                            p("From the New River Valley Water Supply Plan in 2011, there are 5 community wells that we have data on. Each of these wells have a different depth and a different maximum daily withdrawal. 
                                              We attempted to make an inference on the correlation between the well depth and the water yield.  ")), 
                                     column(8, 
@@ -482,7 +491,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                            "Maximum Daily Withdrawals" = "max")
                                          ), 
                                          plotlyOutput("wells"), 
-                                         p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))) 
+                                         p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))),
+                                    tags$br(), 
+                                    h4("References:"),
+                                    p("[1] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")
                              
                      ) ) ,
                      tabPanel("Contamination",
@@ -497,9 +509,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                               septic systems (3%). Larger, more significant potential pollutant sources were also proximate (within one-half mile) to water supplies, according to participants. 59% of
                                               respondents indicated that their water supply was located within one-half mile of a farm animal operation and 31% indicated that their supply
                                               was within one half-mile of a field crop operation. The type of material used for water distribution in each home was also described by participants on the questionnaire. 
-                                              The two most common pipe materials were plastic (63%) and copper (25%).") , 
+                                              The two most common pipe materials were plastic (63%) and copper (25%). [1]") , 
                                                 p(" Old mines as well as abandoned wells pose considerable threats for groundwater contamination, with all drinking water coming from groundwater in the County. Essentially
-                                              these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off.")
+                                              these sites can provide direct routes for any contaminants to reach groundwater unless they are properly closed off."),
+                                              p()
                                        ),
                                       
                                        column(8, 
@@ -552,15 +565,15 @@ ui <- navbarPage(title = "DSPG 2021",
                                      
                               ),
                               
-                              h4("References", align = "center") , 
+                              h4("References") , 
                               p("[1] American Community Survey 5-year Estimates 2014/2019"), 
                               p("[2] U.S. Census Bureau, Weldon Cooper Center for Public Service"), 
                               p("[3] U.S Census Bureau"), 
                               p("[4]  2010 Census"), 
                               p("[5] U.S. Census Bureau, OnTheMap Application and LEHD Origin-Destination 
-                            Employment Statistics, 2014"), 
+                                Employment Statistics, 2014"), 
                               p("[6] Virginia Employment Commission, Economic Information & Analytics, 
-                            Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020."), 
+                                Quarterly Census of Employment and Wages (QCEW), 4th Quarter (October, November, December) 2020."), 
                               p("[7] American Community Survey 5-year Estimates 2014/2019"), 
                               p("[8]  Virginia Employment Commission")
                               
@@ -694,8 +707,9 @@ ui <- navbarPage(title = "DSPG 2021",
                      fluidRow(style = "margin-left: 100px; margin-right: 100px;",
                               column(6, align = "center",
                                      h4(strong("DSPG Team Members")),
-                                     img(src = "team-esha.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
-                                     img(src = "team-julie.jpg", style = "display: inline; margin-right: 5px; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-esha.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     img(src = "team-julie.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
+                                     br(), 
                                      img(src = "team-ryan.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      img(src = "team-john.jpg", style = "display: inline; border: 1px solid #C0C0C0;", width = "150px"),
                                      p(a(href = 'https://www.linkedin.com/in/esha-dwibedi-83a63476/', 'Esha Dwibedi', target = '_blank'), "(Virginia Tech, PHD in Economics);",
