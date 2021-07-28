@@ -47,11 +47,11 @@ grace_month %>%
        x = "Month") + theme_bw(base_size = 11)
 
 grace_yearly <- grace_month %>%
-  group_by(month) %>%
+  group_by(year) %>%
   summarise(average = mean(max_ELWT_CSR))
 
 grace_yearly %>%
-  ggplot(aes(x = month, y = average)) +
+  ggplot(aes(x = year, y = average)) +
   geom_line() +
   labs(title = "Yearly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
        subtitle = "Data of terrestrial water storage anomolies plotted by year",

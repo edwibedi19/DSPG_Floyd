@@ -467,16 +467,67 @@ ui <- navbarPage(title = "DSPG 2021",
                                          h1(strong("Remote Sensing Data"), align = "center"),
                                          p("", style = "padding-top:10px;"),
                                          tabsetPanel(
-                                           tabPanel("GRACE",
+                                           tabPanel("GRACE-CSR",
+                                                    p("", style = "padding-top:10px;"),
+                                                    h3(strong("What is GRACE-CSR?", align = "center")),
+                                                    p("The GRACE twin satellites, launched 17 March 2002, perform detailed measurements of Earth's gravity field changes and have
+                                                        revolutionized investigations about Earth's water reservoirs over land, ice and oceans, as well as earthquakes and crustal deformations.
+                                                        NASA’s GRACE mission provides the first opportunity to directly measure groundwater changes from space. By observing changes in the Earth’s 
+                                                        gravity field, scientists can estimate changes in the amount of water stored in a region, which cause changes in gravity. This makes a 
+                                                        huge difference for scientists and water managers who want to understand trends in how our resources are being consumed over the long term. 
+                                                        GRACE has returned data on some of the world’s biggest aquifers and how their water storage is changing 
+                                                        [Rodell and Famiglietti, 2001; Yeh et al., 2006; Rodell et al., 2007]. Using estimates of changes in snow and surface soil moisture, 
+                                                        scientists can calculate an exact change in groundwater in volume over a given time period. "),
+                                                    p("GRACE is a collaboration of the US and German space agencies (NASA and DLR). GRACE ground segment operations are currently 
+                                                        co-funded by the GFZ German Research Centre for Geosciences and the European Space Agency (ESA). NASA, ESA, GFZ and DLR support 
+                                                        the continuation of the measurements of mass redistribution in the Earth system. The key partners in the design, construction and
+                                                        launch of the mission have been the Jet Propulsion Laboratory, the University of Texas Center for Space Research, GFZ German Research 
+                                                        Centre for Geosciences, as well as Astrium GmBH, Space Systems Loral (SS/L), Onera and Eurockot GmBH. "), 
+                                                   
+                                                    h3(strong("Data", align = "center")),
+                                                    p("GRACE TELLUS provides user-friendly level-3 data grids of monthly surface mass changes, with most geophysical corrections applied, 
+                                                           to analyze changes in the mass of the Earth's hydrologic, cryospheric, and oceanographic components. This is done using GRACE Level-2 data,
+                                                           with additional post-processing, alone or in combination with other ancillary data, to generate gridded, geo-located products (monthly 
+                                                           and time-averaged) with the most up-to-date corrections. GRACE gravity data in spherical harmonic coefficients (Level-2 data), for both 
+                                                           the time-averaged and time-variable fields, are available from either JPL's PO.DAAC or GFZ's ISDC. ") , 
+                                                    p("Data available here are changes in equivalent water thickness relative to a time-mean baseline. The basic method is explained in Wahr 
+                                                           et al. (1998). The land and ocean grids are processed with different filters that are tuned to best filter out noise while preserving 
+                                                           real geophysical signals. The data we use come from the GRACE Ground System at CSR (University Texas / Center for Space Research) 
+                                                           which generate Level-2 data (spherical harmonic fields). Their output include spherical harmonic coefficients of the gravity field and of the 
+                                                           dealiasing fields used to compute them. "),
+                                                    img(src = "GRACE_image.gif", style="display: block; margin-left: auto; margin-right: auto;" , width = "300px"),
+                                                    tags$br(), 
+                                                    tags$br(), 
                                                     column(4, 
-                                                      h4(strong("What is GRACE?")),
-                                                      p(" ")
+                                                         h3(strong("What is 'Equivalent Water Thickness'? ")),
+                                                         p("The observed monthly changes in gravity are caused by monthly changes in mass. Most of the monthly gravity changes are caused by changes 
+                                                           in water storage in hydrologic reservoirs, by moving ocean, atmospheric and land ice masses, and by mass exchanges between these Earth 
+                                                           system compartments. Their vertical extent is measured in centimeters of equivalent water thickness, much smaller than the radius of the Earth 
+                                                           or the horizontal scales of the changes, which are measured in kilometers.  "),
+                                                         p("The mass of the atmosphere is removed during processing using ECMWF atmospheric pressure fields, so the GRACE Tellus surface mass grids do not 
+                                                           contain atmospheric mass variability over land or continental ice areas like Greenland and Antarctica (except, of course, for errors in ECMWF). "),
+                                                         tags$br(), 
+                                                         h3(strong("Limitations")),
+                                                         tags$li(strong("Abnormal earth mass changes: "), " Some changes in gravity are caused by mass redistribution in the 'solid' Earth, such as those following a large
+                                                           earthquake, or those due to glacial isostatic adjustment; in those cases, the interpretation of the gravity changes in terms of 'equivalent 
+                                                           water thickness' are not correct, even though it is still possible to compute this quantity (i.e., by removing the solid Earth effects to isolate 
+                                                           the water-related mass changes).  "),
+                                                         tags$li(strong("Spatial Smoothing: "), " The GRACE satellites fly at over 400 km altitude. The gravity field weakens with altitude, and short wavelengths 
+                                                           attenuate more than longer ones. As a consequence, it is necessary to smooth short wavelengths to recover the set of masses on the Earth surface 
+                                                           that cause the gravity field seen by GRACE at its altitude. To reduce this source of noise, a spatial averaging smoother (a Gaussian here) is applied here."),
+                                                         tags$li(strong("Months with Lower Accuracy: "), " The monthly grids have higher errors when the orbit is near exact repeat. Such months include July to December 
+                                                                 2004, and Jan & Feb 2015. Another source of larger error stems from a lack of data in some particular months. "),
+                                                         tags$li(strong("Data Gaps since 2011: "), " SActive 'battery management' started in 2011 due to the aging batteries on the GRACE satellites. 
+                                                                 During certain orbit periods over several consecutive weeks, no ranging data are collected and hence no gravity fields 
+                                                                 can be computed. These gaps occur approximately every 5-6 months, and last for 4-5 weeks (also see 'GRACE months' for a complete list of data months & outages).")
+                                                         
                                                ), 
                                                column(8, 
                                                       h4(strong("GRACE Measures")),
                                                       selectInput("graceM", "Select Graph:", width = "100%", choices = c(
-                                                        "Groundwater Table Level Anomolies" = "ground",
-                                                        "Total Monthly Equivalent Liquid Water Thickness" = "month"
+                                                        "Total Monthly Equivalent Liquid Water Thickness" = "month",
+                                                        "Groundwater Table Level Anomolies, Monthly" = "ground",
+                                                        "Groundwater Table Level Anomolies, Yearly" = "groundY"
                                                       )
                                                       ), 
                                                       plotlyOutput("grace", height = "650px", width = "100%"), 
@@ -485,6 +536,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          ),
                                          tabPanel("NDWI",
                                                   column(6, 
+                                                         p("", style = "padding-top:10px;"),
                                                          h4(strong("What is NDWI?")),
                                                          p(" ")
                                                   ), 
@@ -1386,17 +1438,32 @@ server <- function(input, output) {
     })
     output$grace <- renderPlotly({
       if (graceM() == "ground"){
+        grace_monthly<- grace_month %>%
+          group_by(month) %>%
+          summarise(average = mean(max_ELWT_CSR))
         
-      
-      
-      grace %>%
-        ggplot(aes(x = year, y = ELWT_CSR)) +
-        geom_point(color = "darkorchid4") +
-        labs(title = "Groundwater Table Level Anomolies, Floyd",
-             y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-             x = "Year") + theme_bw(base_size = 11)
+        grace_monthly %>%
+          ggplot(aes(x = month, y = average)) +
+          geom_line(color = "darkorchid4") +
+          labs(title = "Monthly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
+               subtitle = "Data of terrestrial water storage anomolies plotted by year",
+               y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
+               x = "Month") + theme_bw(base_size = 11)
         
-      } 
+      } else if (graceM() == "groundY"){
+        
+        grace_yearly <- grace_month %>%
+          group_by(year) %>%
+          summarise(average = mean(max_ELWT_CSR))
+        
+        grace_yearly %>%
+          ggplot(aes(x = year, y = average)) +
+          geom_line(color = "darkorchid4") +
+          labs(title = "Yearly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
+               subtitle = "Data of terrestrial water storage anomolies plotted by year",
+               y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
+               x = "Year") + theme_bw(base_size = 11)
+      }
       else {
         
         grace_month <- grace %>%

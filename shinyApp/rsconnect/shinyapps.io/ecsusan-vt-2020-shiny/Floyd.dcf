@@ -1,0 +1,13 @@
+name: Floyd
+title: Floyd
+username:
+account: ecsusan-vt-2020-shiny
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4433742
+bundleId: 4865606
+url: https://ecsusan-vt-2020-shiny.shinyapps.io/Floyd/
+when: 1627497952.40625
+lastSyncTime: 1627497952.40639
+asMultiple: FALSE
+asStatic: FALSE
