@@ -139,6 +139,11 @@ mult <- st_transform(mult, '+proj=longlat +datum=WGS84')
 com <- readRDS(paste0(getwd(), "/data/land_parcel/com.rds")) 
 com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
+## GRACE graphs 
+grace <- read.csv(paste0(getwd(), "/data/land_parcel/GRACE_Floyd.csv") ,
+                  header = TRUE,
+                  na.strings = 999.99)
+
 
 
 # CODE TO DETECT ORIGIN OF LINK AND CHANGE LOGO ACCORDINGLY
@@ -288,7 +293,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                        This format allows for easy digestion and comparison of factors to help us best understand who the residents of Floyd County really are on a statistical level.")
                             ) ,
                              column(8,
-                                   h4(strong("Map of Resident Socioeconomic Characteristics by Census Tract or Block Group")),
+                                   h4(strong("Resident Socioeconomic Characteristics by Census Tract or Block Group")),
                                     selectInput("char1", "Select Variable:", width = "100%", choices = c(
                                         "Population Median Household Income" = "income",
                                         "Population Median Home Value" = "home", 
@@ -396,7 +401,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          the county can withstand." ),
                                        ) ,
                                      column(8, 
-                                            h4(strong("Graph of Monthly Climate")),
+                                            h4(strong("Monthly Climate")),
                                            selectInput("var1", "Select Variable:", width = "100%", choices = c(
                                              "Rainfall" = "rainfall",
                                              "Minimum Temeprature" = "min", 
@@ -423,7 +428,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          and headwater streams of the Dan, Smith, Pigg, Backwater and Roanoke Rivers. Most of the drainage, primarily snowmelt atop Buffalo 
                                          Mountain, goes to the Gulf of Mexico via the New River, Kanawha and Ohio into the Mississippi River system.")),
                               column(8, 
-                                     h4(strong("Map of Water Features by Block Group")),
+                                     h4(strong("Water Features by Block Group")),
                                      leafletOutput("water"),
                                      p(tags$small("Data Source: USGS National Hydrography Dataset"))) ,
                               tags$br(), 
@@ -436,37 +441,65 @@ ui <- navbarPage(title = "DSPG 2021",
                       
             ), 
             ## Tab Water Usage--------------------------------------------
-            tabPanel("Water Usage", value = "usage",
-                     fluidRow(style = "margin: 6px;",
-                              h1(strong("Water Usage and Quantity" ), align = "center"),
-                              p("", style = "padding-top:10px;"),
-                              column(4, 
-                                     h4(strong("Land and Water Usage")),
-                                     ## maybe some valueBoxes to highlight how many people use groundwater as their main source??? 
-                                     p("Floyd’s location on the western most rural part of Virginia is a major factor as to why there was little data on the well water level of the public
-                                       and private wells that supports the county's water system. Similarly, there is little recent data on the water quality issues they have been facing for 
-                                       the past 20 years which is why we were looking at two different metrics to use to estimate the water quantity."),
-                                     p("First, Floyd County PSA provided us with data on land usage throughout the county seperated by type. Based on our research and short trip out to Floyd, the majority of the county is farmland and agriculture 
-                                       with the Town of Floyd in the southeast area. The town itself is very tiny and flat but the area is surrounded by the Blue Ridge Mountain Range. ")
-                                     ), 
-                              column(8, 
-                                  tabsetPanel(
-                                      tabPanel("Land Parcels",
-                                               h4(strong("Map of Land Parcels by Type")),
-                                               withSpinner(leafletOutput("landParcel")), 
-                                               p(tags$small("Data Source: Floyd County VCE"))
-                                               
-                                      ),
-                                      tabPanel("Remote Sensing Data",
-                                               #NDWI and GRACE-CSR
-                                               p()
-                                               
-                                      )
-                              ) 
-                     ) 
+            navbarMenu("Water Usage" , 
+                       tabPanel("Land Parcel", 
+                                fluidRow(style = "margin: 6px;",
+                                         h1(strong("Land Parcel in Floyd County"), align = "center"),
+                                         p("", style = "padding-top:10px;"), 
+                                         column(4, 
+                                                h4(strong("How is the land being used?")),
+                                                ## maybe some valueBoxes to highlight how many people use groundwater as their main source??? 
+                                                p("Floyd’s location on the western most rural part of Virginia is a major factor as to why there was little data on the well water level of the public
+                                               and private wells that supports the county's water system. Similarly, there is little recent data on the water quality issues they have been facing for 
+                                               the past 20 years which is why we were looking at two different metrics to use to estimate the water quantity."),
+                                                p("First, Floyd County PSA provided us with data on land usage throughout the county seperated by type. Based on our research and short trip out to Floyd, the majority of the county is farmland and agriculture 
+                                             with the Town of Floyd in the southeast area. The town itself is very tiny and flat but the area is surrounded by the Blue Ridge Mountain Range. ")
+                                         ), 
+                                         column(8, 
+                                             h4(strong("Land Parcel by Type")),
+                                             withSpinner(leafletOutput("landParcel")), 
+                                             p(tags$small("Data Source: Floyd County VCE"))
+                                         ))), 
+            
+            
+                       tabPanel("Remote Sensing Data", 
+                                fluidRow(style = "margin: 6px;",
+                                         h1(strong("Remote Sensing Data"), align = "center"),
+                                         p("", style = "padding-top:10px;"),
+                                         tabsetPanel(
+                                           tabPanel("GRACE",
+                                                    column(4, 
+                                                      h4(strong("What is GRACE?")),
+                                                      p(" ")
+                                               ), 
+                                               column(8, 
+                                                      h4(strong("GRACE Measures")),
+                                                      selectInput("graceM", "Select Graph:", width = "100%", choices = c(
+                                                        "Groundwater Table Level Anomolies" = "ground",
+                                                        "Total Monthly Equivalent Liquid Water Thickness" = "month"
+                                                      )
+                                                      ), 
+                                                      plotlyOutput("grace", height = "650px", width = "100%"), 
+                                                      p(tags$small("Data Source: "))
+                                               )   
+                                         ),
+                                         tabPanel("NDWI",
+                                                  column(6, 
+                                                         h4(strong("What is NDWI?")),
+                                                         p(" ")
+                                                  ), 
+                                                  column(8, 
+                                                         h4(strong("NDWI"))
+                                                  )   
+                                         )
+                                         
+                                 ) 
+                              )
+                       )
+                      
                      
                      
-            )), 
+            ), 
             
             ## Tab Wells and Water Quality --------------------------------------------
             navbarMenu("Water Quality", 
@@ -1348,6 +1381,48 @@ server <- function(input, output) {
       
     })
     
+    graceM <- reactive({
+      input$graceM
+    })
+    output$grace <- renderPlotly({
+      if (graceM() == "ground"){
+        
+      
+      
+      grace %>%
+        ggplot(aes(x = year, y = ELWT_CSR)) +
+        geom_point(color = "darkorchid4") +
+        labs(title = "Groundwater Table Level Anomolies, Floyd",
+             y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
+             x = "Year") + theme_bw(base_size = 11)
+        
+      } 
+      else {
+        
+        grace_month <- grace %>%
+          group_by(month, year) %>%
+          summarise(max_ELWT_CSR = sum(ELWT_CSR))
+        
+        # subset 2 months around anomalies
+        grace_month %>%
+          ggplot(aes(x = month, y = max_ELWT_CSR)) +
+          geom_bar(stat = "identity", fill = "darkorchid4") +
+          facet_wrap(~ year, ncol = 3) +
+          labs(title = "Total Monthly Equivalent Liquid Water Thickness calculated by CSR (in cm), Floyd",
+               subtitle = "Data of terrestrial water storage anomolies plotted by year",
+               y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
+               x = "Month") + theme_bw(base_size = 11)
+        
+        
+        
+      }
+      
+      
+      
+    })
+    
+ 
+    
     
     econ1 <- reactive({
         input$econ1
@@ -1370,7 +1445,8 @@ server <- function(input, output) {
         }else if (econ1() == "commute") {
             plot <- ggplot(data = commute_df,mapping = aes(Type,Quantity, fill = Type))+geom_bar(stat = "identity")+
               scale_fill_viridis_d() + 
-                labs(title = "Floyd County Commuting") 
+                labs(title = "Floyd County Commuting")  + 
+              theme(legend.position = "none")
             
             
             
@@ -1387,7 +1463,8 @@ server <- function(input, output) {
             
             ggplot(data = popage_df,mapping = aes(Age,Quantity, fill = Age))+geom_bar(stat = "identity")+
             scale_fill_viridis_d() + 
-                labs(title = "Floyd County Population by Age") + coord_flip()
+                labs(title = "Floyd County Population by Age") + coord_flip() + 
+            theme(legend.position = "none")
             
             
             

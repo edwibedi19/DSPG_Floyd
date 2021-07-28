@@ -13,7 +13,7 @@ library(scales)
 options(stringsAsFactors = FALSE)
 
 #import data
-grace <- read.csv("C:/Users/E DWIBEDI/Desktop/Interships/DGSP/DSPG_Floyd/data/GRACE_Floyd.csv",
+grace <- read.csv("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/shinyApp/data/land_parcel/GRACE_Floyd.csv",
                                  header = TRUE,
                                  na.strings = 999.99)
 # view structure of data
@@ -28,7 +28,7 @@ grace %>%
   geom_point(color = "darkorchid4") +
   labs(title = "Groundwater Table Level Anomolies, Floyd",
        y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-       x = "Year") + theme_bw(base_size = 15)
+       x = "Year") + theme_bw(base_size = 12)
 
 
 # calculate the sum grace value for each month
@@ -44,5 +44,17 @@ grace_month %>%
   labs(title = "Total Monthly Equivalent Liquid Water Thickness calculated by CSR (in cm), Floyd",
        subtitle = "Data of terrestrial water storage anomolies plotted by year",
        y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-       x = "Month") + theme_bw(base_size = 15)
+       x = "Month") + theme_bw(base_size = 11)
+
+grace_yearly <- grace_month %>%
+  group_by(year) %>%
+  summarise(average = mean(max_ELWT_CSR))
+
+grace_yearly %>%
+  ggplot(aes(x = year, y = average)) +
+  geom_line() +
+  labs(title = "Yearly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
+       subtitle = "Data of terrestrial water storage anomolies plotted by year",
+       y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
+       x = "Month") + theme_bw(base_size = 11)
 
