@@ -34,7 +34,22 @@ grace %>%
 # calculate the sum grace value for each month
 grace_month <- grace %>%
   group_by(month, year) %>%
-  summarise(max_ELWT_CSR = sum(ELWT_CSR))
+  summarise(max_ELWT_CSR = sum(ELWT_CSR))%>%
+  mutate(month = case_when(month == 1 ~ 'Jan', 
+                           month == 2 ~ 'Feb',
+                           month == 3 ~ 'Mar', 
+                           month == 4 ~ 'Apr',
+                           month == 5 ~ 'May', 
+                           month == 6 ~ 'Jun',
+                           month == 7 ~ 'Jul', 
+                           month == 8 ~ 'Aug',
+                           month == 9 ~ 'Sep', 
+                           month == 10 ~ 'Oct',
+                           month == 11 ~ 'Nov', 
+                           month == 12 ~ 'Dec'
+  ))
+
+
 
 # subset 2 months around anomalies
 grace_month %>%
@@ -44,14 +59,15 @@ grace_month %>%
   labs(title = "Total Monthly Equivalent Liquid Water Thickness calculated by CSR (in cm), Floyd",
        subtitle = "Data of terrestrial water storage anomolies plotted by year",
        y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-       x = "Month") + theme_bw(base_size = 11)
+       x = "Month") + theme_bw(base_size = 11)+scale_x_discrete(limits = month.abb)+ 
+theme(axis.text.x = element_text(angle = 90))
 
 grace_yearly <- grace_month %>%
-  group_by(year) %>%
-  summarise(average = mean(max_ELWT_CSR))
+  group_by(month) %>%
+  summarise(average = mean(max_ELWT_CSR)) 
 
 grace_yearly %>%
-  ggplot(aes(x = year, y = average)) +
+  ggplot(aes(x = month, y = average, group = 1)) +
   geom_line() +
   labs(title = "Yearly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
        subtitle = "Data of terrestrial water storage anomolies plotted by year",

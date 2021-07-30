@@ -498,9 +498,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                            ),
                                            plotlyOutput("precipitation"),
                                            p(tags$small("Data Source: US Climate"))),
-                                tags$br(), 
+                                column(12, 
                                 h4("References: "), 
-                                p(tags$small("[1] Groundwater: Groundwater sustainability. (2021). Retrieved July 27, 2021, from https://www.ngwa.org/what-is-groundwater/groundwater-issues/groundwater-sustainability")) 
+                                p(tags$small("[1] Groundwater: Groundwater sustainability. (2021). Retrieved July 27, 2021, from https://www.ngwa.org/what-is-groundwater/groundwater-issues/groundwater-sustainability")) ,
+                                p("", style = "padding-top:10px;")) 
                                 )), 
                      tabPanel("Surface Water", 
                               style = "margin: 6px;",
@@ -524,9 +525,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                      h4(strong("Water Features by Block Group")),
                                      leafletOutput("water"),
                                      p(tags$small("Data Source: USGS National Hydrography Dataset"))) ,
-                              tags$br(), 
+                              column(12, 
                               h4("References"),
-                              p(tags$small("[1] Martin, L., Turman, K., &amp; Hodge, T. (2009). What are our Natural Resources? (pp. 13-27, Publication No. 3). VA: Floyd County.")) 
+                              p(tags$small("[1] Martin, L., Turman, K., &amp; Hodge, T. (2009). What are our Natural Resources? (pp. 13-27, Publication No. 3). VA: Floyd County.")) ,
+                              p("", style = "padding-top:10px;")) 
                               
                         ) 
                       
@@ -547,19 +549,20 @@ ui <- navbarPage(title = "DSPG 2021",
                                                   mapping from various years, where with the county’s landscape is dominated by parcels designated “Agriculture 
                                                   over 99 acres” and “Agriculture 20-99 acres”. Alongside, “suburban residential” plots are scattered across 
                                                   the county leading to the prominence of individual water supply from private wells and natural springs in the 
-                                                  county. The changes in land usage over years can be tracked on the table displayed alongside. "),
-                                                h4(strong("Linkage with Water Usage ", align = "center")),
-                                                p("Land use models have been widely used to examine future land-use change and water resource assessments 
+                                                  county. The changes in land usage over years can be tracked on the table displayed alongside. ")
+                                                ) , 
+                                       column(4, 
+                                              h4(strong("Linkage with Water Usage ", align = "center")),
+                                              p("Land use models have been widely used to examine future land-use change and water resource assessments 
                                                   in global (Lotze-Campen et al., 2008; García-Ruiz et al., 2011), national (Calder et al., 2003), and regional analyses
                                                   (Baker et al., 2013; Wilson et al., 2015; Wilson et al., 2016). Understanding potential land-use related water demand in a 
                                                   region serves as a first step in evaluating prospective outcomes and relevant mitigation strategies to address potential vulnerabilities. "),
-                                                p("Private wells are not federally regulated or protected by the U.S. Environmental Protection Agency's (EPA) Safe Drinking 
+                                              p("Private wells are not federally regulated or protected by the U.S. Environmental Protection Agency's (EPA) Safe Drinking 
                                                   Water Act, despite the fact that an estimated 43 million people (15% of the population) in the United States rely 
                                                   on private wells for drinking water (DeSimone et al., 2009). This leads to an acute lack of data on the prevalence 
                                                   and extent of use of private wells and thus the burden on the groundwater level for counties like Floyd which are 
                                                   predominantly dependent on private wells. We try to form an estimate of the water usage by land parcel category
-                                                  in order to provide some insights on the water resource requirements of the county’s residents. ")) , 
-                                       column(4, 
+                                                  in order to provide some insights on the water resource requirements of the county’s residents. "), 
                                                 h4(strong("Future Directions")),
                                                 p("One potential model that can be used to study the water demand for the region is the LUCAS state-and-transition 
                                                   simulation model (STSM), which is a stochastic, Markov chain, empirical simulation model used to predict how defined 
@@ -593,10 +596,10 @@ ui <- navbarPage(title = "DSPG 2021",
                                                            
                                                            withSpinner(tableOutput("parcelTable")) ,
                                                            p(tags$small("Note: 2013 Data did not show any parcels for Agricultural/Undeveloped (20-99 acres) which is why 
-                                                                        the % change 13-17 and $ change 13-20 are so high. Though we do not have this data, 
+                                                                        the % change 13-17 and % change 13-20 are so high. Though we do not have this data, 
                                                                         we can assume the data is missing and the land parcel count is similar to that of 2017 and 2020 with 1-2% change. ")) , 
                                                            h4(strong("Parcel Count by Category")),
-                                                           plotlyOutput("percentChange")
+                                                           plotlyOutput("percentChange", height = "600px")
                                                            
                                                            )
                                                 )
@@ -673,7 +676,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                                            that cause the gravity field seen by GRACE at its altitude. To reduce this source of noise, a spatial averaging smoother (a Gaussian here) is applied here."),
                                                          tags$li(strong("Months with Lower Accuracy: "), " The monthly grids have higher errors when the orbit is near exact repeat. Such months include July to December 
                                                                  2004, and Jan & Feb 2015. Another source of larger error stems from a lack of data in some particular months. "),
-                                                         tags$li(strong("Data Gaps since 2011: "), " SActive 'battery management' started in 2011 due to the aging batteries on the GRACE satellites. 
+                                                         tags$li(strong("Data Gaps since 2011: "), " Active 'battery management' started in 2011 due to the aging batteries on the GRACE satellites. 
                                                                  During certain orbit periods over several consecutive weeks, no ranging data are collected and hence no gravity fields 
                                                                  can be computed. These gaps occur approximately every 5-6 months, and last for 4-5 weeks (also see 'GRACE months' for a complete list of data months & outages).")
                                                          
@@ -771,7 +774,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                              a low yield well, a storage tank four to five times larger than your total consumption (approximately 75 gallons a day per person) is recommended by experts. [1] 
                                              There are major differences between using public, private well systems or natural springs. First, public wells have to be regulated according to EPA and built to standards, but private wells are
                                              not regularly tested and the local government has no right to information regarding it so therefore, water coming from a private well does not have the EPA to backup its content [2].   Also,
-                                             for a well to be private, it can only serve up to 25 persons and for at least 60 days out of the year [2]. Using this information, we can predict that because public wells have to serve much more persons
+                                             for a well to be private, it can only serve up to 25 persons and for at least 60 days out of the year [2]. "),
+                                           p("Using this information, we can predict that because public wells have to serve much more persons
                                              in an area (25+), their yield amount of water may not be enough to sustain the county compared to a private well serving a family or two. This is why finding ways to prevent contamination 
                                              or condition a public well system is even more important than a private well because 1 public well serves more persons than 1 private well. In terms of natural springs as a source of water, 
                                              many residents in Floyd get their water from natural springs off the side of a mountain. When our team visited Floyd County, they witnessed multiple residents pulling off the side of the road and walking down to a natural springs to gather their water. 
@@ -799,10 +803,11 @@ ui <- navbarPage(title = "DSPG 2021",
                                          ), 
                                          plotlyOutput("wells"), 
                                          p(tags$small("Data Source: New River Valley Water Supply Plan 2011"))),
-                                    tags$br(), 
+                                    column(12, 
                                     h4("References:"),
                                     p(tags$small("[1] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")),
-                                    p(tags$small("[2] Private water systems. (2014, January 17). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/index.html")) 
+                                    p(tags$small("[2] Private water systems. (2014, January 17). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/index.html")) ,
+                                    p("", style = "padding-top:10px;")) 
                              
                      ) ) ,
                      tabPanel("Contamination",
@@ -870,7 +875,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                                  br(),
                                                 h4(strong("Table of Common Recommendations for Water Quality")), 
                                                 withSpinner(tableOutput("qualityRec")),
-                                                p(tags$small("Data Sources listed below"))
+                                                p(tags$small("Data Sources listed below")),
+                                                
 
                                          ) , 
                                          column(6, 
@@ -906,7 +912,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                          p(tags$small("[4] University of Massachusetts Amherst. (2018, March 22). Ph – acidity of private drinking water wells. Retrieved July 26, 2021, from https://ag.umass.edu/cafe/fact-sheets/ph-acidity-of-private-drinking-water-wells")), 
                                          p(tags$small("[5] General Information about Lead in Drinking Water. (n.d.). Retrieved July 26, 2021, from https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water#reducehome")), 
                                          p(tags$small("[6] Benham, B., Ling, E. J., Scott, J. P., Haering, K., &amp; Wright, B. (2011). Virginia Household Water Quality Program: Sodium and Chloride in Household Drinking Water (pp. 1-4, Publication No. 442-661). Communications and Marketing, College of Agriculture and Life Sciences, Virginia Polytechnic Institute and State University.")),
-                                         p(tags$small("[7] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) 
+                                         p(tags$small("[7] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")),
+                                         p("", style = "padding-top:10px;")
                                          
                                 ), 
                                 tabPanel("Well Testing Kit",
@@ -985,8 +992,8 @@ ui <- navbarPage(title = "DSPG 2021",
                                          h4("References:"),
                                          p(tags$small("[1] How Can You Help Protect Source Water? (n.d.). Retrieved July 29, 2021, from https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water")), 
                                          p(tags$small("[2] Well maintenance. (2009, April 10). Retrieved July 29, 2021, from https://www.cdc.gov/healthywater/drinking/private/wells/maintenance.html#:~:text=Wells%20should%20be%20checked%20and,example%2C%20arsenic%20and%20radon).")) ,
-                                         p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ) 
-                                         
+                                         p(tags$small("[3] A Guide to Private Wells (pp. 5-25, Publication). (1995). Blacksburg, VA: Virginia Water Resources Research Center.")) ,
+                                         p("", style = "padding-top:10px;")) 
                                 )
                               ) 
                      ) 
@@ -999,7 +1006,6 @@ ui <- navbarPage(title = "DSPG 2021",
                               align = "center",
                               br(""),
                               h1(strong("Team")),
-                              br(""), 
                               h4(strong("VT Data Science for the Public Good")),
                               p("The", a(href = 'https://aaec.vt.edu/academics/undergraduate/beyond-classroom/dspg.html', 'Data Science for the Public Good (DSPG) Young Scholars program', target = "_blank"),
                                 "is a summer immersive program held at the", a(href = 'https://aaec.vt.edu/index.html', 'Virginia Tech Department of Agricultural'), "and", a(href = 'https://ext.vt.edu/','Applied Economics and the Virginia Cooperative Extension Service.'),
@@ -1045,8 +1051,7 @@ ui <- navbarPage(title = "DSPG 2021",
                               p(a(href = '', 'Dawn Barnes', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech);",
                                 br(), 
                                 a(href = '', 'Jon Vest', target = '_blank'), "(Virginia Cooperative Extension, Floyd County at Virginia Tech)."),
-                              p("", style = "padding-top:10px;"),
-                              h4(strong("Acknowledgments"))
+                              p("", style = "padding-top:10px;")
                      )
             ) ,
             inverse = T) 
@@ -1774,24 +1779,39 @@ server <- function(input, output) {
     
     grace_month <- grace %>%
       group_by(month, year) %>%
-      summarise(max_ELWT_CSR = sum(ELWT_CSR))
+      summarise(max_ELWT_CSR = sum(ELWT_CSR))  %>%
+      mutate(month = case_when(month == 1 ~ 'Jan', 
+                                month == 2 ~ 'Feb',
+                                month == 3 ~ 'Mar', 
+                                month == 4 ~ 'Apr',
+                                month == 5 ~ 'May', 
+                                month == 6 ~ 'Jun',
+                                month == 7 ~ 'Jul', 
+                                month == 8 ~ 'Aug',
+                                month == 9 ~ 'Sep', 
+                                month == 10 ~ 'Oct',
+                                month == 11 ~ 'Nov', 
+                                month == 12 ~ 'Dec'
+      ))
     
     graceM <- reactive({
       input$graceM
     })
     output$grace <- renderPlotly({
       if (graceM() == "ground"){
-        grace_monthly<- grace_month %>%
+        
+        grace_monthly <- grace_month %>%
           group_by(month) %>%
           summarise(average = mean(max_ELWT_CSR))
         
         p <- grace_monthly %>%
           ggplot(aes(x = month, y = average)) +
-          geom_line(color = "darkorchid4") +
+          geom_bar(stat = "identity", fill = "darkorchid4") +
           labs(title = "Monthly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
                subtitle = "Data of terrestrial water storage anomolies plotted by year",
                y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-               x = "Month") + theme_bw(base_size = 11)
+               x = "Month") + theme_bw(base_size = 11)+scale_x_discrete(limits = month.abb)+ 
+          theme(axis.text.x = element_text(angle = 90))
         
         ggplotly(p, tooltip = "y")
         
@@ -1802,7 +1822,7 @@ server <- function(input, output) {
           summarise(average = mean(max_ELWT_CSR))
         
         p <- grace_yearly %>%
-          ggplot(aes(x = year, y = average)) +
+          ggplot(aes(x = year, y = average, group = 1)) +
           geom_line(color = "darkorchid4") +
           labs(title = "Yearly Average of Liquid Water Thickness calculated by CSR (in cm), Floyd",
                subtitle = "Data of terrestrial water storage anomolies plotted by year",
@@ -1820,7 +1840,9 @@ server <- function(input, output) {
           labs(title = "Total Monthly Equivalent Liquid Water Thickness calculated by CSR (in cm), Floyd",
                subtitle = "Data of terrestrial water storage anomolies plotted by year",
                y = "Equivalent Liquid Water Thickness calculated by CSR (in cm)",
-               x = "Month") + theme_bw(base_size = 11)
+               x = "Month") + theme_bw(base_size = 11)+scale_x_discrete(limits = month.abb)+ 
+          theme(axis.text.x = element_text(angle = 90))
+        
         
         ggplotly(p, tooltip = "y")
         
