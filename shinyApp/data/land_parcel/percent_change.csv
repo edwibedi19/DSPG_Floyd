@@ -1,0 +1,19 @@
+,X,Year,Amount,Percent.Change,Land
+1,1,2020,2994,0,Agricultural/Undeveloped (20 – 99 acres)
+2,2,2017,2961,1.11,Agricultural/Undeveloped (20 – 99 acres)
+3,3,2013,0,0,Agricultural/Undeveloped (20 – 99 acres)
+4,4,2020,514,0,Agricultural/Undeveloped (100 acres and up)
+5,5,2017,536,-4.1,Agricultural/Undeveloped (100 acres and up)
+6,6,2013,543,-1.29,Agricultural/Undeveloped (100 acres and up)
+7,7,2020,10307,0,Single-Family Residential(Suburban 0-19.99 acres)
+8,8,2017,10120,1.85,Single-Family Residential(Suburban 0-19.99 acres)
+9,9,2013,9749,3.81,Single-Family Residential(Suburban 0-19.99 acres)
+10,10,2020,237,0,Single-Family Residential(Urban)
+11,11,2017,243,-2.47,Single-Family Residential(Urban)
+12,12,2013,244,-0.41,Single-Family Residential(Urban)
+13,13,2020,2,0,Multi-Family
+14,14,2017,2,0,Multi-Family
+15,15,2013,2,0,Multi-Family
+16,16,2020,210,0,Commercial/Industrial
+17,17,2017,208,0.96,Commercial/Industrial
+18,18,2013,200,4,Commercial/Industrial
