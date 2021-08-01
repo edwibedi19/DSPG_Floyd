@@ -142,21 +142,19 @@ com <- readRDS(paste0(getwd(), "/data/land_parcel/com.rds"))
 com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
 #2017
-agr17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr17.rds")) 
-agr_large17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large17.rds")) 
-single17 <- readRDS(paste0(getwd(), "/data/land_parcel/single17.rds")) 
-single_urban17 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban17.rds"))
-mult17 <- readRDS(paste0(getwd(), "/data/land_parcel/mult17.rds"))
-com17 <- readRDS(paste0(getwd(), "/data/land_parcel/com17.rds")) 
+# agr17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr17.rds")) 
+# agr_large17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large17.rds")) 
+# single17 <- readRDS(paste0(getwd(), "/data/land_parcel/single17.rds")) 
+# single_urban17 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban17.rds"))
+# mult17 <- readRDS(paste0(getwd(), "/data/land_parcel/mult17.rds"))
+# com17 <- readRDS(paste0(getwd(), "/data/land_parcel/com17.rds")) 
 
 # 2013
-agr_large13 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large13.rds"))
-single13 <- readRDS(paste0(getwd(), "/data/land_parcel/single13.rds"))
-single_urban13 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban13.rds"))
-mult13 <- readRDS(paste0(getwd(), "/data/land_parcel/mult13.rds"))
-com13 <- readRDS(paste0(getwd(), "/data/land_parcel/com13.rds"))
-
-
+# agr_large13 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large13.rds"))
+# single13 <- readRDS(paste0(getwd(), "/data/land_parcel/single13.rds"))
+# single_urban13 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban13.rds"))
+# mult13 <- readRDS(paste0(getwd(), "/data/land_parcel/mult13.rds"))
+# com13 <- readRDS(paste0(getwd(), "/data/land_parcel/com13.rds"))
 percent_change <- read.csv(paste0(getwd(), "/data/land_parcel/percent_change.csv")) 
 
 
@@ -267,7 +265,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                        a(href = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.306.9815&rep=rep1&type=pdf","water quality assessment", target = "blank"), "and", 
                                        a(href = "http://nrvrc.org/wp-content/uploads/2015/08/NRVWSP0911_Final-Water-Supply-Plan.pdf", "water supply plan", target = "_blank"),
                                        "and held multiple meetings with the stakeholders to identify these challenges. Lack of data on private and public wells, 
-                                       water quality and quantity issues, out-commuter rates, and designing water management plans for residential and commercial
+                                       water quality and quantity issues, out-commuter rates, and design of water management plans for residential and commercial
                                        development had emerged as key problems where providing actionable insights could address barriers to Floyd County water resource management issues. "),
                                      p(),
                                      p("We implemented the", a(href = "https://doi.org/10.1162/99608f92.2d83f7f5", "data science framework", target = "_blank"), "and identified, acquired, profiled, and used
@@ -586,11 +584,11 @@ ui <- navbarPage(title = "DSPG 2021",
                                                 tabsetPanel(
                                                   tabPanel("Maps",
                                                            h4(strong("2020")), 
-                                                           withSpinner(leafletOutput("landParcel2020")), 
-                                                           h4(strong("2017")), 
-                                                           withSpinner(leafletOutput("landParcel2017")), 
-                                                           h4(strong("2013")), 
-                                                           withSpinner(leafletOutput("landParcel2013")), 
+                                                           leafletOutput("landParcel2020"), 
+                                                           # h4(strong("2017")), 
+                                                           # withSpinner(leafletOutput("landParcel2017")), 
+                                                           # h4(strong("2013")), 
+                                                           # withSpinner(leafletOutput("landParcel2013")), 
                                                            p(tags$small("Data Source: Floyd County VCE")) ),
                                                   tabPanel("Tables/Graphs",
                                                            
@@ -627,7 +625,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          tabsetPanel(
                                            tabPanel("GRACE-CSR",
                                                     p("", style = "padding-top:10px;"),
-                                                    h3(strong("What is GRACE-CSR?", align = "center")),
+                                                    h4(strong("What is GRACE-CSR?", align = "center")),
                                                     p("The GRACE twin satellites, launched 17 March 2002, perform detailed measurements of Earth's gravity field changes and have
                                                         revolutionized investigations about Earth's water reservoirs over land, ice and oceans, as well as earthquakes and crustal deformations.
                                                         NASA’s GRACE mission provides the first opportunity to directly measure groundwater changes from space. By observing changes in the Earth’s 
@@ -642,7 +640,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                                         launch of the mission have been the Jet Propulsion Laboratory, the University of Texas Center for Space Research, GFZ German Research 
                                                         Centre for Geosciences, as well as Astrium GmBH, Space Systems Loral (SS/L), Onera and Eurockot GmBH. "), 
                                                    
-                                                    h3(strong("Data", align = "center")),
+                                                    h4(strong("Data", align = "center")),
                                                     p("GRACE TELLUS provides user-friendly level-3 data grids of monthly surface mass changes, with most geophysical corrections applied, 
                                                            to analyze changes in the mass of the Earth's hydrologic, cryospheric, and oceanographic components. This is done using GRACE Level-2 data,
                                                            with additional post-processing, alone or in combination with other ancillary data, to generate gridded, geo-located products (monthly 
@@ -658,7 +656,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                                     tags$br(), 
                                                     tags$br(), 
                                                     column(4, 
-                                                         h3(strong("What is 'Equivalent Water Thickness'? ")),
+                                                         h4(strong("What is 'Equivalent Water Thickness'? ")),
                                                          p("The observed monthly changes in gravity are caused by monthly changes in mass. Most of the monthly gravity changes are caused by changes 
                                                            in water storage in hydrologic reservoirs, by moving ocean, atmospheric and land ice masses, and by mass exchanges between these Earth 
                                                            system compartments. Their vertical extent is measured in centimeters of equivalent water thickness, much smaller than the radius of the Earth 
@@ -666,7 +664,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                                          p("The mass of the atmosphere is removed during processing using ECMWF atmospheric pressure fields, so the GRACE Tellus surface mass grids do not 
                                                            contain atmospheric mass variability over land or continental ice areas like Greenland and Antarctica (except, of course, for errors in ECMWF). "),
                                                          tags$br(), 
-                                                         h3(strong("Limitations")),
+                                                         h4(strong("Limitations")),
                                                          tags$li(strong("Abnormal earth mass changes: "), " Some changes in gravity are caused by mass redistribution in the 'solid' Earth, such as those following a large
                                                            earthquake, or those due to glacial isostatic adjustment; in those cases, the interpretation of the gravity changes in terms of 'equivalent 
                                                            water thickness' are not correct, even though it is still possible to compute this quantity (i.e., by removing the solid Earth effects to isolate 
@@ -700,7 +698,7 @@ ui <- navbarPage(title = "DSPG 2021",
                                          ),
                                          tabPanel("NDWI",
                                                   p("", style = "padding-top:10px;"),
-                                                  h3(strong("What is NDWI?", align = "center")),
+                                                  h4(strong("What is NDWI?", align = "center")),
                                                   p("Measurements of natural phenomena are often too complex to be accurately described solely with remote sensing. Calculated indices bridge the 
                                                     gap between satellite imagery and internal vegetative processes. The Normalized Difference Water Index (NDWI) is strongly correlated to the amount of
                                                     water held in plant foliage. The different wavelengths of light captured by the Landsat 8 satellite can be used to synthesize the NDWI values for any given 
@@ -708,12 +706,12 @@ ui <- navbarPage(title = "DSPG 2021",
                                                   p("The Normalized Difference Water Index (NDWI) is highly correlated with the amount of water stored in the foliage of plants (Gao, 1996).
                                                   The USGS also provides a formula to calculate the NDWI by combining the Short-Wave Infrared with the Near Infrared wavelengths of light captured 
                                                   from the Landsat 8 satellite in the following formula:") , 
-                                                p("NDWI = (Band 5 – Band 6) / (Band 5 + Band 6) ", style="display: block; margin-left: auto; margin-right: auto;"), 
+                                                p("NDWI = (NIR – SWIR) / (NIR + SWIR)  ", style="display: block; margin-left: auto; margin-right: auto;"), 
                                                 p("This formula allows for per-pixel calculation of this index to describe the distribution of water in vegetation. The image below, shows the distribution of water in vegetation throughout the new river valley."), 
                                                 img(src = "NDWI-image.png", style="display: block; margin-left: auto; margin-right: auto;" , width = "300px"),
                                                 p(tags$small("Image Source: Analyzing Vegetative Health using Landsat 8 Satellite Imagery Project, DSPG 2021 ")), 
                                                 
-                                                h3(strong("Data", align = "center")),
+                                                h4(strong("Data", align = "center")),
                                                 p("We tested a model to predict the well water level within the county utilizing NDWI and other readily available data on elevation and precipitation
                                                   for the county. The NDWI values were hypothesized to be indicative of changes in groundwater levels across seasons over years. Elevation changes 
                                                   significantly impact NDWI values and were hence included in the model. Precipitation is the major source of groundwater replenishment within most
@@ -725,27 +723,32 @@ ui <- navbarPage(title = "DSPG 2021",
                                                   panel dataset was analyzed using a LSTM model, to get temporal predictions of well water level from the training data for the various well sites. 
                                                   This model was also used to spatially and temporally predict the well water level at Floyd given the county’s location, and the elevation, NDWI 
                                                   and precipitation values for the county.  "),
-                                                tags$br(), 
-                                                tags$br(), 
-                                                  column(6, 
-                                                         p("", style = "padding-top:10px;"),
-                                                         h4(strong("Model Prediction")),
-                                                         p(""), 
-                                                         h4(strong("Limitations")),
-                                                         p("One major limitation of the model was the lack of training data used in the LSTM model. Given the dearth of data in counties surrounding Floyd, 
+                                                column(6, 
+                                                       h4(strong("Model Predictions ")), 
+                                                       p("Unfortunately, the model was not able to provide an accurate prediction of the true well-depth for a given area. The model 
+                                                         hovered around a 75% accuracy in the training sets, and a 48.27% accuracy when being tested. A graph of the model’s
+                                                         prediction of well-depth over time is shown in the graph to the right. This shows that well-depth depends on more 
+                                                         than the data our team had access to and the need for further research to be able to predict water-table levels is high. 
+                                                         This is extremely important to regions like Floyd who do not have the means to drill wells in private locations and need a 
+                                                         remote sensing tool to estimate groundwater levels in these inaccessible areas. The results for the last well the model tested are 
+                                                         shown below. "), 
+                                                       
+                                                h4(strong("Limitations")),
+                                                p("One major limitation of the model was the lack of training data used in the LSTM model. Given the dearth of data in counties surrounding Floyd, 
                                                            the data used for training the model came from only ten well sites. Even within these well sites, the well water level data is sporadic across months. 
                                                            This is often coupled with the lack of corresponding NDWI data for the specific date ranges due to the limitations of satellite data collection, 
                                                            which often suffers due to any kind of atmospheric disturbances. This lack of sufficient data required for training the model might result in 
                                                            significant underfitting of the model which would result in biased predictions.  "),
-                                                         p("Our model also does not include other variables relevant variables which might significantly impact water table level predictions. 
+                                                p("Our model also does not include other variables relevant variables which might significantly impact water table level predictions. 
                                                            These factors include geological variables like soil type, permeability of the soil, as well as topology changes within the county, 
                                                            which all determine the extent to which groundwater can be replenished. Other relevant variables would include vegetation type and the extent of homogeneity 
                                                            of the vegetation, which would also impact the NDWI variations within a region. These factors can be further explored in future research on well 
-                                                           water predictions using NDWI. ")
-                                                  ), 
-                                                  column(8, 
-                                                         h4(strong("Model"))
-                                                  ),
+                                                           water predictions using NDWI. ")) , 
+                                                column(6, 
+                                                       img(src = "model.png", style="display: block; margin-left: auto; margin-right: auto;" , width = "550px"),
+                                                       p(tags$small("Image Source: Analyzing Vegetative Health using Landsat 8 Satellite Imagery Project, DSPG 2021 "))
+                                                       ), 
+                                                 
                                                 column(12, 
                                                        h4("References: "),
                                                 p(tags$small("Gao, B.-C. (1996). NDWI—A normalized difference water index for remote sensing of vegetation liquid water from space. Remote Sensing of Environment, 58(3), 257-266. ")) ) 
@@ -1626,8 +1629,6 @@ server <- function(input, output) {
     })
     
     state_class_colors <- c("#9dfef8","#00cc00","#2621ff","#ffa500","#ffff19","#ff0000" )
-    
-    
     output$landParcel2020 <- renderLeaflet({
       
       leaflet(options = leafletOptions(minZoom = 10)) %>%
@@ -1679,103 +1680,103 @@ server <- function(input, output) {
           options = layersControlOptions(collapsed = FALSE)) 
       
     }) 
-    output$landParcel2017 <-renderLeaflet({
-  
-        
-        leaflet(options = leafletOptions(minZoom = 10)) %>%
-          addProviderTiles(provider = "CartoDB.Positron") %>%
-          addPolygons(data = com17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[1],
-                      group = "Commercial/Industrial") %>%
-          addPolygons(data = agr17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[2] ,
-                      group = "Agricultural/Undeveloped (20 – 99 acres)") %>%
-          addPolygons(data = agr_large17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[3],
-                      group = "Agricultural/Undeveloped (100 acres and up)") %>%
-          addPolygons(data = single17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[4],
-                      group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
-          addPolygons(data = single_urban17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[5],
-                      group = "Single Family Residential(Urban)") %>%
-          addPolygons(data = mult17,
-                      stroke = FALSE,
-                      smoothFactor = 0,
-                      fillOpacity = 0.7,
-                      fillColor = state_class_colors[6],
-                      group = "Multi-Family") %>%
-          addLayersControl(
-            position = "bottomright",
-            overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
-                              "Agricultural/Undeveloped (100 acres and up)",
-                              "Single-Family Residential(Suburban 0-19.99 acres)",
-                              "Single Family Residential(Urban)",
-                              "Multi-Family",
-                              "Commercial/Industrial"),
-            options = layersControlOptions(collapsed = FALSE))
-      
-    }) 
-    
-    output$landParcel2013 <- renderLeaflet({
-          
-          leaflet(options = leafletOptions(minZoom = 10)) %>%
-            addProviderTiles(provider = "CartoDB.Positron") %>%
-            addPolygons(data = com13,
-                        stroke = FALSE,
-                        smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        fillColor = state_class_colors[1],
-                        group = "Commercial/Industrial") %>%
-            addPolygons(data = agr_large13,
-                        stroke = FALSE,
-                        smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        fillColor = state_class_colors[3],
-                        group = "Agricultural/Undeveloped (100 acres and up)") %>%
-            addPolygons(data = single13,
-                        stroke = FALSE,
-                        smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        fillColor = state_class_colors[4],
-                        group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
-            addPolygons(data = single_urban13,
-                        stroke = FALSE,
-                        smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        fillColor = state_class_colors[5],
-                        group = "Single Family Residential(Urban)") %>%
-            addPolygons(data = mult13,
-                        stroke = FALSE,
-                        smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        fillColor = state_class_colors[6],
-                        group = "Multi-Family") %>%
-            addLayersControl(
-              position = "bottomright",
-              overlayGroups = c(
-                                "Agricultural/Undeveloped (100 acres and up)",
-                                "Single-Family Residential(Suburban 0-19.99 acres)",
-                                "Single Family Residential(Urban)",
-                                "Multi-Family",
-                                "Commercial/Industrial"),
-              options = layersControlOptions(collapsed = FALSE))
-    })
+    # output$landParcel2017 <-renderLeaflet({
+    # 
+    #     
+    #     leaflet(options = leafletOptions(minZoom = 10)) %>%
+    #       addProviderTiles(provider = "CartoDB.Positron") %>%
+    #       addPolygons(data = com17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[1],
+    #                   group = "Commercial/Industrial") %>%
+    #       addPolygons(data = agr17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[2] ,
+    #                   group = "Agricultural/Undeveloped (20 – 99 acres)") %>%
+    #       addPolygons(data = agr_large17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[3],
+    #                   group = "Agricultural/Undeveloped (100 acres and up)") %>%
+    #       addPolygons(data = single17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[4],
+    #                   group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
+    #       addPolygons(data = single_urban17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[5],
+    #                   group = "Single Family Residential(Urban)") %>%
+    #       addPolygons(data = mult17,
+    #                   stroke = FALSE,
+    #                   smoothFactor = 0,
+    #                   fillOpacity = 0.7,
+    #                   fillColor = state_class_colors[6],
+    #                   group = "Multi-Family") %>%
+    #       addLayersControl(
+    #         position = "bottomright",
+    #         overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
+    #                           "Agricultural/Undeveloped (100 acres and up)",
+    #                           "Single-Family Residential(Suburban 0-19.99 acres)",
+    #                           "Single Family Residential(Urban)",
+    #                           "Multi-Family",
+    #                           "Commercial/Industrial"),
+    #         options = layersControlOptions(collapsed = FALSE))
+    #   
+    # }) 
+    # 
+    # output$landParcel2013 <- renderLeaflet({
+    #       
+    #       leaflet(options = leafletOptions(minZoom = 10)) %>%
+    #         addProviderTiles(provider = "CartoDB.Positron") %>%
+    #         addPolygons(data = com13,
+    #                     stroke = FALSE,
+    #                     smoothFactor = 0,
+    #                     fillOpacity = 0.7,
+    #                     fillColor = state_class_colors[1],
+    #                     group = "Commercial/Industrial") %>%
+    #         addPolygons(data = agr_large13,
+    #                     stroke = FALSE,
+    #                     smoothFactor = 0,
+    #                     fillOpacity = 0.7,
+    #                     fillColor = state_class_colors[3],
+    #                     group = "Agricultural/Undeveloped (100 acres and up)") %>%
+    #         addPolygons(data = single13,
+    #                     stroke = FALSE,
+    #                     smoothFactor = 0,
+    #                     fillOpacity = 0.7,
+    #                     fillColor = state_class_colors[4],
+    #                     group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
+    #         addPolygons(data = single_urban13,
+    #                     stroke = FALSE,
+    #                     smoothFactor = 0,
+    #                     fillOpacity = 0.7,
+    #                     fillColor = state_class_colors[5],
+    #                     group = "Single Family Residential(Urban)") %>%
+    #         addPolygons(data = mult13,
+    #                     stroke = FALSE,
+    #                     smoothFactor = 0,
+    #                     fillOpacity = 0.7,
+    #                     fillColor = state_class_colors[6],
+    #                     group = "Multi-Family") %>%
+    #         addLayersControl(
+    #           position = "bottomright",
+    #           overlayGroups = c(
+    #                             "Agricultural/Undeveloped (100 acres and up)",
+    #                             "Single-Family Residential(Suburban 0-19.99 acres)",
+    #                             "Single Family Residential(Urban)",
+    #                             "Multi-Family",
+    #                             "Commercial/Industrial"),
+    #           options = layersControlOptions(collapsed = FALSE))
+    # })
     
     grace_month <- grace %>%
       group_by(month, year) %>%
