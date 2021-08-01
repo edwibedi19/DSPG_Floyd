@@ -723,15 +723,17 @@ ui <- navbarPage(title = "DSPG 2021",
                                                   panel dataset was analyzed using a LSTM model, to get temporal predictions of well water level from the training data for the various well sites. 
                                                   This model was also used to spatially and temporally predict the well water level at Floyd given the county’s location, and the elevation, NDWI 
                                                   and precipitation values for the county.  "),
-                                                column(6, 
-                                                       h4(strong("Model Predictions ")), 
-                                                       p("Unfortunately, the model was not able to provide an accurate prediction of the true well-depth for a given area. The model 
-                                                         hovered around a 75% accuracy in the training sets, and a 48.27% accuracy when being tested. A graph of the model’s
-                                                         prediction of well-depth over time is shown in the graph to the right. This shows that well-depth depends on more 
-                                                         than the data our team had access to and the need for further research to be able to predict water-table levels is high. 
-                                                         This is extremely important to regions like Floyd who do not have the means to drill wells in private locations and need a 
-                                                         remote sensing tool to estimate groundwater levels in these inaccessible areas. The results for the last well the model tested are 
-                                                         shown below. "), 
+                                               h4(strong("Model Predictions ")), 
+                                               p("Unfortunately, the model was not able to provide an accurate prediction of the true well-depth for a given area. The model 
+                                                 hovered around a 75% accuracy in the training sets, and a 48.27% accuracy when being tested. A graph of the model’s
+                                                 prediction of well-depth over time is shown in the graph to the right. This shows that well-depth depends on more 
+                                                 than the data our team had access to and the need for further research to be able to predict water-table levels is high. 
+                                                 This is extremely important to regions like Floyd who do not have the means to drill wells in private locations and need a 
+                                                 remote sensing tool to estimate groundwater levels in these inaccessible areas. The results for the last well the model tested are 
+                                                 shown below. "), 
+                                               
+                                               img(src = "model.png", style="display: block; margin-left: auto; margin-right: auto;" , width = "550px"),
+                                               p(tags$small("Image Source: Analyzing Vegetative Health using Landsat 8 Satellite Imagery Project, DSPG 2021 ")), 
                                                        
                                                 h4(strong("Limitations")),
                                                 p("One major limitation of the model was the lack of training data used in the LSTM model. Given the dearth of data in counties surrounding Floyd, 
@@ -743,11 +745,9 @@ ui <- navbarPage(title = "DSPG 2021",
                                                            These factors include geological variables like soil type, permeability of the soil, as well as topology changes within the county, 
                                                            which all determine the extent to which groundwater can be replenished. Other relevant variables would include vegetation type and the extent of homogeneity 
                                                            of the vegetation, which would also impact the NDWI variations within a region. These factors can be further explored in future research on well 
-                                                           water predictions using NDWI. ")) , 
-                                                column(6, 
-                                                       img(src = "model.png", style="display: block; margin-left: auto; margin-right: auto;" , width = "550px"),
-                                                       p(tags$small("Image Source: Analyzing Vegetative Health using Landsat 8 Satellite Imagery Project, DSPG 2021 "))
-                                                       ), 
+                                                           water predictions using NDWI. "), 
+                                               
+              
                                                  
                                                 column(12, 
                                                        h4("References: "),
