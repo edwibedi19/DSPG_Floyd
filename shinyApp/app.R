@@ -141,6 +141,20 @@ mult <- st_transform(mult, '+proj=longlat +datum=WGS84')
 com <- readRDS(paste0(getwd(), "/data/land_parcel/com.rds")) 
 com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
+#2017
+# agr17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr17.rds")) 
+# agr_large17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large17.rds")) 
+# single17 <- readRDS(paste0(getwd(), "/data/land_parcel/single17.rds")) 
+# single_urban17 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban17.rds"))
+# mult17 <- readRDS(paste0(getwd(), "/data/land_parcel/mult17.rds"))
+# com17 <- readRDS(paste0(getwd(), "/data/land_parcel/com17.rds")) 
+
+# 2013
+# agr_large13 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large13.rds"))
+# single13 <- readRDS(paste0(getwd(), "/data/land_parcel/single13.rds"))
+# single_urban13 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban13.rds"))
+# mult13 <- readRDS(paste0(getwd(), "/data/land_parcel/mult13.rds"))
+# com13 <- readRDS(paste0(getwd(), "/data/land_parcel/com13.rds"))
 percent_change <- read.csv(paste0(getwd(), "/data/land_parcel/percent_change.csv")) 
 
 
