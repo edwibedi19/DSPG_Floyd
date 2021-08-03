@@ -151,60 +151,66 @@ land <- ms_simplify(readOGR(dsn = "/Users/julierebstock/Desktop/Virginia-Tech/DS
 land_t <- ms_simplify(st_read("/Users/julierebstock/Desktop/Virginia-Tech/DSPG-2021/Floyd-County/DSPG_Floyd/shinyApp/data/Parcels_with_Class/Parcels_with_Class.shp")) 
 
 state_class_colors <- c("#9dfef8","#00cc00","#2621ff","#ffa500","#ffff19","#ff0000" )
+land@data$PropClass
 
+
+land%>% leaflet(
+  options = leafletOptions(
+    minZoom = 0, maxZoom= 18,
+    drag = FALSE)) %>% addTiles() %>%
+  addPolygons(MAP_2017_91_T_o, pal, M0, M0_labels, "M0") %>%
+  clearControls() %>%
+  htmlwidgets::prependContent(html_fix)
   
   leaflet(options = leafletOptions(minZoom = 10)) %>%
     addProviderTiles(provider = "CartoDB.Positron") %>%
-    addPolygons(data = com, 
+    addPolygons(data = land, 
                 stroke = FALSE,
                 smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[1],
-                group = "Commercial/Industrial") %>%
-    addPolygons(data = agr, 
-                stroke = FALSE,
-                smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[2] ,
-                group = "Agricultural/Undeveloped (20 – 99 acres)") %>%
-    addPolygons(data = agr_large, 
-                stroke = FALSE,
-                smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[3],
-                group = "Agricultural/Undeveloped (100 acres and up)") %>%
-    addPolygons(data = single, 
-                stroke = FALSE,
-                smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[4],
-                group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
-    addPolygons(data = single_urban, 
-                stroke = FALSE,
-                smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[5],
-                group = "Single Family Residential(Urban)") %>%
-    addPolygons(data = mult, 
-                stroke = FALSE,
-                smoothFactor = 0,
-                fillOpacity = 0.7,
-                fillColor = state_class_colors[6],
-                group = "Multi-Family") %>%
-    addLayersControl(
-      position = "bottomright",
-      overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
-                        "Agricultural/Undeveloped (100 acres and up)",
-                        "Single-Family Residential(Suburban 0-19.99 acres)",
-                        "Single Family Residential(Urban)",
-                        "Multi-Family",
-                        "Commercial/Industrial"), 
-      options = layersControlOptions(collapsed = FALSE)) 
+                fillOpacity = 0.7) 
+    # addPolygons(data = agr, 
+    #             stroke = FALSE,
+    #             smoothFactor = 0,
+    #             fillOpacity = 0.7,
+    #             fillColor = state_class_colors[2] ,
+    #             group = "Agricultural/Undeveloped (20 – 99 acres)") %>%
+    # addPolygons(data = agr_large, 
+    #             stroke = FALSE,
+    #             smoothFactor = 0,
+    #             fillOpacity = 0.7,
+    #             fillColor = state_class_colors[3],
+    #             group = "Agricultural/Undeveloped (100 acres and up)") %>%
+    # addPolygons(data = single, 
+    #             stroke = FALSE,
+    #             smoothFactor = 0,
+    #             fillOpacity = 0.7,
+    #             fillColor = state_class_colors[4],
+    #             group = "Single-Family Residential(Suburban 0-19.99 acres)") %>%
+    # addPolygons(data = single_urban, 
+    #             stroke = FALSE,
+    #             smoothFactor = 0,
+    #             fillOpacity = 0.7,
+    #             fillColor = state_class_colors[5],
+    #             group = "Single Family Residential(Urban)") %>%
+    # addPolygons(data = mult, 
+    #             stroke = FALSE,
+    #             smoothFactor = 0,
+    #             fillOpacity = 0.7,
+    #             fillColor = state_class_colors[6],
+    #             group = "Multi-Family") %>%
+    # addLayersControl(
+    #   position = "bottomright",
+    #   overlayGroups = c("Agricultural/Undeveloped (20 – 99 acres)",
+    #                     "Agricultural/Undeveloped (100 acres and up)",
+    #                     "Single-Family Residential(Suburban 0-19.99 acres)",
+    #                     "Single Family Residential(Urban)",
+    #                     "Multi-Family",
+    #                     "Commercial/Industrial"), 
+    #   options = layersControlOptions(collapsed = FALSE)) 
 
 
-agr <- land_t %>%
-  filter(PropClass == "Agricultural/Undeveloped (20 – 99 acres)")%>%
-  st_transform(crs = "+init=epsg:4326")
+agr <- land %>%
+  filter(land@data$PropClass == "Agricultural/Undeveloped (20 – 99 acres)")
 
 agr_large <- land_t %>% 
   filter(PropClass == "Agricultural/Undeveloped (100 acres and up)")%>%

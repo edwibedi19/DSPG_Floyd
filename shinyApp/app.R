@@ -141,20 +141,6 @@ mult <- st_transform(mult, '+proj=longlat +datum=WGS84')
 com <- readRDS(paste0(getwd(), "/data/land_parcel/com.rds")) 
 com <- st_transform(com, '+proj=longlat +datum=WGS84')
 
-#2017
-# agr17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr17.rds")) 
-# agr_large17 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large17.rds")) 
-# single17 <- readRDS(paste0(getwd(), "/data/land_parcel/single17.rds")) 
-# single_urban17 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban17.rds"))
-# mult17 <- readRDS(paste0(getwd(), "/data/land_parcel/mult17.rds"))
-# com17 <- readRDS(paste0(getwd(), "/data/land_parcel/com17.rds")) 
-
-# 2013
-# agr_large13 <- readRDS(paste0(getwd(), "/data/land_parcel/agr_large13.rds"))
-# single13 <- readRDS(paste0(getwd(), "/data/land_parcel/single13.rds"))
-# single_urban13 <- readRDS(paste0(getwd(), "/data/land_parcel/single_urban13.rds"))
-# mult13 <- readRDS(paste0(getwd(), "/data/land_parcel/mult13.rds"))
-# com13 <- readRDS(paste0(getwd(), "/data/land_parcel/com13.rds"))
 percent_change <- read.csv(paste0(getwd(), "/data/land_parcel/percent_change.csv")) 
 
 
@@ -273,7 +259,6 @@ ui <- navbarPage(title = "DSPG 2021",
                                      tags$li("Provided census tract and block group-level maps of Floyd County residents'", strong("sociodemographic and socioeconomic characteristics,"), " highlighting underprivileged areas."),
                                      tags$li("Created barplots of", strong("monthly temperatures and precipitation levels"), "and compared data from Floyd with surrounding counties to better determine the groundwater retention of the area."),
                                      tags$li("Mapped locations of", strong("streams, lakes, and mines"), "at census block group level to highlight the surface water sources and the potential contaminations sources in the county.  "),
-                                     tags$li("Calculated and mapped", strong("water usage"), "of households to  "),
                                      tags$li("Constructed", strong("land parcel"), "maps by census tract in order to determine the county's water capacity for future development. "),
                                      tags$li("Provided ",strong("estimates of groundwater level and water usage")," in the county through land usage and remote sensing data "), 
                                      p(),
